@@ -16,6 +16,7 @@
 
 ## 📂 프로젝트 구조
 
+```
 project-root/
 ├─ public/                     # 정적 리소스 (favicon, robots.txt 등)
 │
@@ -91,6 +92,7 @@ project-root/
 ├─ tsconfig.json
 ├─ tsconfig.node.json
 └─ vite.config.ts
+```
 
 
 
