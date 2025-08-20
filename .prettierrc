@@ -1,0 +1,14 @@
+{
+  "semi": true,                  // 세미콜론 항상 사용
+  "singleQuote": false,          // 큰따옴표 (React JSX 일관성)
+  "trailingComma": "all",        // 함수 매개변수/객체/배열 끝 콤마 유지
+  "tabWidth": 2,                 // 들여쓰기 2칸
+  "useTabs": false,              // space 사용
+  "printWidth": 80,              // 한 줄 최대 길이
+  "bracketSpacing": true,        // { foo: bar } 띄어쓰기
+  "arrowParens": "always",       // 화살표 함수 매개변수 괄호 항상
+  "jsxSingleQuote": false,       // JSX에서는 큰따옴표
+  "jsxBracketSameLine": false,   // 닫는 > 는 새로운 줄 (Prettier v2),
+  "bracketSameLine": false,      // (Prettier v3+ 대응)
+  "endOfLine": "lf"              // LF 개행 (협업 환경 통일)
+}
