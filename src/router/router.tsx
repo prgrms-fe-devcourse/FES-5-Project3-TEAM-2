@@ -2,7 +2,10 @@ import { createBrowserRouter, redirect } from "react-router-dom";
 import Root from "../root";
 import Home from "../pages/Home";
 import Dashboard from "../pages/Dashboard";
-import supabase from "@/lib/supabase";
+import { supabase } from "@/lib/supabaseClient";
+import GroupsPage from "@/pages/GroupsPage";
+import Budget from "@/pages/BudgetPage";
+import Album from "@/pages/AlbumPage";
 
 /** 로그인 요구 */
 async function requireAuth() {
@@ -24,7 +27,7 @@ async function loadGroup({ params }: { params: any }) {
     .from("group_members").select("group_id").eq("group_id", groupId).limit(1);
   if (!member || member.length === 0) throw redirect("/groups");
 
-  return group; // 각 페이지에서 useLoaderData()로 받음
+  return group; 
 }
 
 const router = createBrowserRouter([

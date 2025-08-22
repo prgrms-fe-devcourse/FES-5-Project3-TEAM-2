@@ -10,7 +10,6 @@ export default function Sidebar() {
 
   return (
     <aside className="bg-white border-r p-4 min-h-screen w-[240px]">
-      <div className="mb-6 text-xl font-bold">Plammingo</div>
       <nav className="space-y-1">
         <NavLink to="/groups" className={linkCls}>그룹 관리</NavLink>
 
