@@ -1,50 +1,54 @@
-import { createBrowserRouter } from "react-router";
-import Dashboard from "../pages/Dashboard";
-import Home from "../pages/Home";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import Root from "../root";
+import Home from "../pages/Home";
+import Dashboard from "../pages/Dashboard";
+import supabase from "@/lib/supabase";
 
+/** 로그인 요구 */
+async function requireAuth() {
+  const { data } = await supabase.auth.getSession();
+  if (!data.session) throw redirect("/");
+  return null;
+}
 
-// const routes = [
-//   {
-//     path:'/',
-//     Component: Root,
-//     children: [
-//       {
-//         text:'홈',
-//         path:'/',
-//         Component: Home,
-//       },
-//       {
-//         text:'대시보드',
-//         path:'dashboard',
-//         Component: Dashboard,
-//       },
-//     ]
-//   }
-// ]
+/** 그룹 로더: 존재 + 멤버십 확인 후 그룹 데이터 반환 */
+async function loadGroup({ params }: { params: any }) {
+  await requireAuth();
+  const groupId = params.groupId;
 
-// const router = createBrowserRouter(routes, {
-//   basename: import.meta.env.BASE_URL,
-// });
+  const { data: group, error: gErr } = await supabase
+    .from("groups").select("id,name").eq("id", groupId).single();
+  if (gErr || !group) throw redirect("/groups");
 
-// export default router;
+  const { data: member } = await supabase
+    .from("group_members").select("group_id").eq("group_id", groupId).limit(1);
+  if (!member || member.length === 0) throw redirect("/groups");
 
+  return group; // 각 페이지에서 useLoaderData()로 받음
+}
 
 const router = createBrowserRouter([
   {
-    path:'/',
+    path: "/",
     element: <Root />,
     children: [
+      { index: true, element: <Home /> },
+
+      // 그룹 관리: 로그인만 확인
+      { path: "groups", element: <GroupsPage />, loader: requireAuth },
+
+      // 그룹 내부: 로더에서 멤버십 확인 + 그룹 데이터 공급
       {
-        index: true,
-        element: <Home />,
+        path: "g/:groupId",
+        loader: loadGroup,
+        children: [
+          { index: true, element: <Dashboard /> },
+          { path: "budget", element: <Budget /> },
+          { path: "album", element: <Album /> },
+        ],
       },
-      {
-        path:'dashboard',
-        element: <Dashboard />,
-      }
-    ]
-  }
-])
+    ],
+  },
+]);
 
 export default router;
