@@ -46,13 +46,13 @@ function PlanList() {
           {
             planItems.map(({ index, content, hour }) => (
               <li key={index}>
-                <article className="h-[60px] pr-2 flex items-center gap-2 rounded-[10px] border-2 border-[#F9B5D0] font-extrabold">
+                <article className="h-[60px] pr-2 flex items-center gap-2 rounded-[10px] border-2 border-secondary font-extrabold">
                   <img src={dragIcon} className='size-10 cursor-pointer' />
-                  <span className="shrink-0 text-2xl text-[#FF8E9E]">{index}</span>
+                  <span className="shrink-0 text-2xl text-primary">{index}</span>
                   <p className="font-extrabold">{content}</p>
 
                   <div className="ml-auto flex items-center gap-2">
-                    <p className='text-lg text-pink-500'>{hour}시간</p>
+                    <p className='text-lg text-primary'>{hour}시간</p>
                     <img src={editIcon} className='size-6 cursor-pointer'/>
                     <img src={deleteIcon} className='size-6 cursor-pointer' />
                   </div>
@@ -64,7 +64,7 @@ function PlanList() {
           <li>
             <button
               type="button"
-              className="h-[60px] flex w-full items-center justify-center rounded-[10px] bg-[#F9B5D0] font-extrabold text-white hover:brightness-95 active:brightness-90"
+              className="h-[60px] flex w-full items-center justify-center rounded-[10px] bg-secondary font-extrabold text-white hover:brightness-95 active:brightness-90"
             >
               + 커스텀 일정 추가하기
             </button>
