@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router";
-import Dashboard from "../pages/Dashboard";
+import DashBoard from "../pages/DashBoard";
 import Home from "../pages/Home";
 import Root from "../root";
 
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
       },
       {
         path:'dashboard',
-        element: <Dashboard />,
+        element: <DashBoard />,
       }
     ]
   }
