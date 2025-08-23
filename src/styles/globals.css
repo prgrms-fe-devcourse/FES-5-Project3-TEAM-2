@@ -2,27 +2,27 @@
 
 @theme {
   /* 테마 컬러 */
-  --color-primary:   oklch(0.7301 0.1881 22.6);  /* #FF8E9E */
-  --color-secondary: oklch(0.8622 0.1204 345.2); /* #F9B5D0 */
-  --color-tertiary:  oklch(0.8219 0.0794 204.1); /* #8ACCD5 */
-  --color-fourth:    oklch(0.9580 0.0048 270.0); /* #EEEEEE */
+  --color-primary:   oklch(77.23% 0.137 11.77);  /* #FF8E9E */
+  --color-secondary: oklch(84.38% 0.086 353.51); /* #F9B5D0 */
+  --color-tertiary:  oklch(80.41% 0.068 206.67); /* #8ACCD5 */
+  --color-fourth:    oklch(94.91% 0.000 0); /* #EEEEEE */
 
   /* 회색 스펙트럼 */
-  --color-gray-10:   oklch(0.9847 0.0013 270.0); /* #FAFAFA */
-  --color-gray-50:   oklch(0.9532 0.0022 270.0); /* #F0F0F0 */
-  --color-gray-100:  oklch(0.8906 0.0034 270.0); /* #DBDBDB */
-  --color-gray-200:  oklch(0.7901 0.0048 270.0); /* #BFBFBF */
-  --color-gray-300:  oklch(0.6393 0.0049 270.0); /* #999999 */
-  --color-gray-400:  oklch(0.5802 0.0042 270.0); /* #868686 */
-  --color-gray-500:  oklch(0.4703 0.0040 270.0); /* #666666 */
-  --color-gray-600:  oklch(0.4302 0.0032 270.0); /* #5E5E5E */
-  --color-gray-700:  oklch(0.3803 0.0030 270.0); /* #525252 */
-  --color-gray-800:  oklch(0.3002 0.0024 270.0); /* #404040 */
-  --color-gray-900:  oklch(0.2304 0.0021 270.0); /* #303030 */
-  --color-gray-950:  oklch(0.1497 0.0014 270.0); /* #1F1F1F */
+  --color-gray-10:   oklch(98.51% 0.000 0); /* #FAFAFA */
+  --color-gray-50:   oklch(95.51% 0.000 0); /* #F0F0F0 */
+  --color-gray-100:  oklch(89.14% 0.000 0); /* #DBDBDB */
+  --color-gray-200:  oklch(80.47% 0.000 0); /* #BFBFBF */
+  --color-gray-300:  oklch(68.30% 0.000 0); /* #999999 */
+  --color-gray-400:  oklch(62.01% 0.000 0); /* #868686 */
+  --color-gray-500:  oklch(51.03% 0.000 0); /* #666666 */
+  --color-gray-600:  oklch(48.19% 0.000 0); /* #5E5E5E */
+  --color-gray-700:  oklch(43.86% 0.000 0); /* #525252 */
+  --color-gray-800:  oklch(37.15% 0.000 0); /* #404040 */
+  --color-gray-900:  oklch(30.92% 0.000 0); /* #303030 */
+  --color-gray-950:  oklch(23.93% 0.000 0); /* #1F1F1F */
 
   /* 블랙 */
-  --color-black:     oklch(0.1803 0.0020 270.0); /* #2B2B2B */
+  --color-black:     oklch(28.91% 0.000 0); /* #2B2B2B */
 
   /* 폰트 크기 (16px ~ 52px, 4px씩 증가) */
   --text-1: 1rem;    /* 16px */
