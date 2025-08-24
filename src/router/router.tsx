@@ -2,11 +2,12 @@ import { createBrowserRouter, redirect } from "react-router-dom";
 import Root from "../root";
 import HomeLayout from "../HomeLayout";
 import Home from "../pages/Home";
-import Dashboard from "../pages/Dashboard";
+import DashBoard from "../pages/DashBoard/index";
 import { supabase } from "@/lib/supabaseClient";
 import GroupsPage from "@/pages/GroupsPage";
 import Budget from "@/pages/BudgetPage";
 import Album from "@/pages/AlbumPage";
+
 
 /** 로그인 요구 */
 async function requireAuth() {
@@ -47,16 +48,16 @@ const router = createBrowserRouter([
     children: [
       { path: "groups", element: <GroupsPage /> /*, loader: requireAuth*/ },
       {
-        path: "g/:groupId",
+        path:'g/:groupId',
         loader: loadGroup,
         children: [
-          { index: true, element: <Dashboard /> },
-          { path: "budget", element: <Budget /> },
-          { path: "album", element: <Album /> },
-        ],
-      },
-    ],
-  },
-]);
+          {index:true, element: <DashBoard />},
+          {path: "budget", element: <Budget />},
+          {path: "album", element: <Album />},
+        ]
+      }
+    ]
+  }
+])
 
 export default router;
