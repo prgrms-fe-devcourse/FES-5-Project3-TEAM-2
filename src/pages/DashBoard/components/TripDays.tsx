@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import slideIcon from '../../../assets/icons/slide_icon.png' 
+import slideIcon from '@/assets/icons/slide_icon.png' 
 
 function TripDays() { 
   const [startIndex, setStartIndex] = useState(0)

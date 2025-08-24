@@ -1,5 +1,5 @@
-import Map from "../DashBoard/components/Map"
-import Schedule from "../DashBoard/components/Schedule"
+import Map from "@/pages/DashBoard/components/Map"
+import Schedule from "@/pages/DashBoard/components/Schedule"
 
 function DashBoard() {
   return (

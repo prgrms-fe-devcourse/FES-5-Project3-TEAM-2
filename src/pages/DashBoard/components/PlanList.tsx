@@ -1,6 +1,6 @@
-import dragIcon from '../../../assets/icons/drag_indicator_icon.png'
-import deleteIcon from '../../../assets/icons/delete_icon.png'
-import editIcon from '../../../assets/icons/edit_icon.png'
+import dragIcon from '@/assets/icons/drag_indicator_icon.png'
+import deleteIcon from '@/assets/icons/delete_icon.png'
+import editIcon from '@/assets/icons/edit_icon.png'
 import TripDays from './TripDays'
 
 
