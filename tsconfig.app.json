@@ -7,7 +7,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-
+   
     /* 경로 매핑 */
     "baseUrl": ".",
     "paths": {
@@ -30,5 +30,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src", "src/types/*.d.ts", "vite-env.d.ts"]
 }

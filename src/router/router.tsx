@@ -1,47 +1,60 @@
-import { createBrowserRouter } from "react-router";
-import DashBoard from "../pages/DashBoard";
-import Home from "../pages/Home";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import Root from "../root";
+import HomeLayout from "../HomeLayout";
+import Home from "../pages/Home";
+import DashBoard from "../pages/DashBoard/index";
+import { supabase } from "@/lib/supabaseClient";
+import GroupsPage from "@/pages/GroupsPage";
+import Budget from "@/pages/BudgetPage";
+import Album from "@/pages/AlbumPage";
 
 
-// const routes = [
-//   {
-//     path:'/',
-//     Component: Root,
-//     children: [
-//       {
-//         text:'홈',
-//         path:'/',
-//         Component: Home,
-//       },
-//       {
-//         text:'대시보드',
-//         path:'dashboard',
-//         Component: Dashboard,
-//       },
-//     ]
-//   }
-// ]
+/** 로그인 요구 */
+async function requireAuth() {
+  const { data } = await supabase.auth.getSession();
+  if (!data.session) throw redirect("/");
+  return null;
+}
 
-// const router = createBrowserRouter(routes, {
-//   basename: import.meta.env.BASE_URL,
-// });
+/** 그룹 로더: 존재 + 멤버십 확인 후 그룹 데이터 반환 */
+async function loadGroup({ params }: { params: any }) {
+  await requireAuth();
+  const groupId = params.groupId;
 
-// export default router;
+  const { data: group, error: gErr } = await supabase
+    .from("groups").select("id,name").eq("id", groupId).single();
+  if (gErr || !group) throw redirect("/groups");
 
+  const { data: member } = await supabase
+    .from("group_members").select("group_id").eq("group_id", groupId).limit(1);
+  if (!member || member.length === 0) throw redirect("/groups");
+
+  return group; 
+}
 
 const router = createBrowserRouter([
+  // 홈 전용 트리 (사이드바 없음)
   {
-    path:'/',
-    element: <Root />,
+    path: "/",
+    element: <HomeLayout />,
     children: [
+      { index: true, element: <Home /> },
+    ],
+  },
+
+  // 앱 트리 (사이드바 있는 Root)
+  {
+    element: <Root />, 
+    children: [
+      { path: "groups", element: <GroupsPage /> /*, loader: requireAuth*/ },
       {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path:'dashboard',
-        element: <DashBoard />,
+        path:'g/:groupId',
+        loader: loadGroup,
+        children: [
+          {index:true, element: <DashBoard />},
+          {path: "budget", element: <Budget />},
+          {path: "album", element: <Album />},
+        ]
       }
     ]
   }
