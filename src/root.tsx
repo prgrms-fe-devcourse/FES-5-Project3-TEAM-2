@@ -1,17 +1,13 @@
-import { Outlet } from "react-router";
-
+import { Outlet } from "react-router-dom";
+import Sidebar from "@/components/common/Sidebar";
 
 export default function Root() {
   return (
-    <div>
-
-      {/* 왼쪽 사이드 바 */}
-
-      {/* 메인 컨텐츠 */}
-      <main>
-            <Outlet></Outlet> {/* Home, Dashboard 등 페이지가 여기 들어옴 */}
-        </main>
-
+    <div className="grid grid-cols-[240px_1fr] min-h-screen bg-slate-50">
+      <Sidebar />
+      <main className="p-6">
+        <Outlet />
+      </main>
     </div>
-  )
+  );
 }
