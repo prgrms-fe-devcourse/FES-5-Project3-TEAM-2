@@ -1,5 +1,6 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
 import Root from "../root";
+import HomeLayout from "../HomeLayout";
 import Home from "../pages/Home";
 import Dashboard from "../pages/Dashboard";
 import { supabase } from "@/lib/supabaseClient";
@@ -31,16 +32,20 @@ async function loadGroup({ params }: { params: any }) {
 }
 
 const router = createBrowserRouter([
+  // 홈 전용 트리 (사이드바 없음)
   {
     path: "/",
-    element: <Root />,
+    element: <HomeLayout />,
     children: [
       { index: true, element: <Home /> },
+    ],
+  },
 
-      // 그룹 관리: 로그인만 확인
-      { path: "groups", element: <GroupsPage />, loader: requireAuth },
-
-      // 그룹 내부: 로더에서 멤버십 확인 + 그룹 데이터 공급
+  // 앱 트리 (사이드바 있는 Root)
+  {
+    element: <Root />, 
+    children: [
+      { path: "groups", element: <GroupsPage /> /*, loader: requireAuth*/ },
       {
         path: "g/:groupId",
         loader: loadGroup,

@@ -3,18 +3,18 @@ import { useGroupStore } from "@/store/groupStore";
 
 import logo from "@/assets/logo.png";
 import defaultProfile from "@/assets/default-profile.png";
-import group from "@/assets/icon/group.svg";
+import GroupIcon from "@/assets/icon/group.svg?react";
 import calendar from "@/assets/icon/calendar.svg";
 import money from "@/assets/icon/money.svg";
 import photo from "@/assets/icon/photo.svg";
+import logout from "@/assets/icon/logout.svg";
 
 const link = ({ isActive }: { isActive: boolean }) =>
   [
-    
     "flex flex-row items-center gap-5  w-full px-3 py-2 rounded-lg text-sm font-semibold transition",
     isActive
       ? "bg-primary text-white shadow-sm"
-      : "text-slate-700 hover:bg-primary",
+      : "text-black hover:bg-primary hover:text-white",
   ].join(" ");
 
 export default function Sidebar() {
@@ -44,23 +44,23 @@ export default function Sidebar() {
       {/* 메뉴 */}
       <nav className="space-y-1">
         <NavLink to="/groups" className={link}>
-          <img src={group} alt="그룹 아이콘" className="w-5 h-5" />
-          <span className="text-black text-1 font-sans font-semibold">그룹 관리</span>
+          <GroupIcon className="w-5 h-5" />
+          <span className="text-1 font-sans font-semibold">그룹 관리</span>
         </NavLink>
 
         {currentGroup ? (
           <>
             <NavLink end to={`/g/${currentGroup.id}`} className={link}>
               <img src={calendar} alt="달력 아이콘" className="w-5 h-5" />
-              <span className="text-black text-1 font-sans font-semibold">대시보드</span>
+              <span className="text-1 font-sans font-semibold">대시보드</span>
             </NavLink>
             <NavLink to={`/g/${currentGroup.id}/budget`} className={link}>
               <img src={money} alt="예산 아이콘" className="w-5 h-5" />
-              <span className="text-black text-1 font-sans font-semibold">예산 관리</span>
+              <span className="text-1 font-sans font-semibold">예산 관리</span>
             </NavLink>
             <NavLink to={`/g/${currentGroup.id}/album`} className={link}>
               <img src={photo} alt="앨범 아이콘" className="w-5 h-5" />
-              <span className="text-black text-1 font-sans font-semibold">앨범</span>
+              <span className="text-1 font-sans font-semibold">앨범</span>
             </NavLink>
           </>
         ) : (
@@ -72,8 +72,9 @@ export default function Sidebar() {
 
       <div className="flex-1" />
 
-      <button className="flex items-center gap-2 text-slate-400 hover:text-slate-700 transition">
-        ↪ <span className="font-medium">로그아웃</span>
+      <button className="flex items-center gap-2 text-gray-200 hover:gray-400 transition">
+``      <img src={logout} alt="로그아웃 아이콘" className="w-5 h-5" />
+        <span className="font-medium">로그아웃</span>
       </button>
     </aside>
   );
