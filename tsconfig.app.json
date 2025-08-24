@@ -7,11 +7,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "paths": {
-<<<<<<< HEAD
       "@/*": ["./src/*"]
-=======
-      "@/*": ["src/*"]
->>>>>>> fe0ed3e2c6cc3c9ea203dde8c30186251c7fb175
     },
 
     /* Bundler mode */

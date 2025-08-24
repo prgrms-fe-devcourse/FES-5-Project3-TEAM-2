@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Pretendard";
+  src: url("@/assets/fonts/PretendardVariable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style : normal;
+}
+
+
 @theme {
   /* 테마 컬러 */
   --color-primary:   oklch(0.7301 0.1881 22.6);  /* #FF8E9E */
@@ -35,4 +43,7 @@
   --text-8: 2.75rem; /* 44px */
   --text-9: 3rem;    /* 48px */
   --text-10: 3.25rem;/* 52px */
+
+  /* 폰트 종류 */
+  --font-sans: "Pretendard", sans-serif;
 }

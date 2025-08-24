@@ -1,30 +1,80 @@
 import { NavLink } from "react-router-dom";
 import { useGroupStore } from "@/store/groupStore";
 
+import logo from "@/assets/logo.png";
+import defaultProfile from "@/assets/default-profile.png";
+import group from "@/assets/icon/group.svg";
+import calendar from "@/assets/icon/calendar.svg";
+import money from "@/assets/icon/money.svg";
+import photo from "@/assets/icon/photo.svg";
+
+const link = ({ isActive }: { isActive: boolean }) =>
+  [
+    
+    "flex flex-row items-center gap-5  w-full px-3 py-2 rounded-lg text-sm font-semibold transition",
+    isActive
+      ? "bg-primary text-white shadow-sm"
+      : "text-slate-700 hover:bg-primary",
+  ].join(" ");
+
 export default function Sidebar() {
   const currentGroup = useGroupStore((s) => s.currentGroup);
 
-  const linkCls = ({ isActive }: { isActive: boolean }) =>
-    `block px-3 py-2 rounded-md text-sm
-     ${isActive ? "bg-rose-500 text-white" : "text-slate-700 hover:bg-slate-200"}`;
-
   return (
-    <aside className="bg-white border-r p-4 min-h-screen w-[240px]">
-      <nav className="space-y-1">
-        <NavLink to="/groups" className={linkCls}>그룹 관리</NavLink>
+    <aside className="w-[248px] min-h-screen shadow-[0_4px_12px_rgba(0,0,0,0.15)] bg-white flex flex-col px-5 pt-6 pb-4">
+      {/* 로고 */}
+      <img src={logo} alt="로고" className="w-[208px] pb-[50px]" />
 
-        {currentGroup && (
+      {/* 프로필 */}
+      <div className="flex flex-col items-center text-center">
+        <div className="w-20 h-20 border border-gray-200 rounded-full grid place-items-center">
+          <img
+            src={defaultProfile}
+            alt="기본 프로필 이미지"
+          />
+        </div>
+        <div className="mt-2 text-black text-2 font-sans font-semibold">user</div>
+        <div className="mt-2 text-1 text-gray-400 font-sans font-medium">
+          {currentGroup ? <>현재 그룹 : <span className="font-semibold">{currentGroup.name}</span></> : "현재 그룹 없음"}
+        </div>
+      </div>
+
+      <hr className="my-4 border-slate-200" />
+
+      {/* 메뉴 */}
+      <nav className="space-y-1">
+        <NavLink to="/groups" className={link}>
+          <img src={group} alt="그룹 아이콘" className="w-5 h-5" />
+          <span className="text-black text-1 font-sans font-semibold">그룹 관리</span>
+        </NavLink>
+
+        {currentGroup ? (
           <>
-            <NavLink end to={`/g/${currentGroup.id}`} className={linkCls}>대시보드</NavLink>
-            <NavLink to={`/g/${currentGroup.id}/budget`} className={linkCls}>예산</NavLink>
-            <NavLink to={`/g/${currentGroup.id}/album`} className={linkCls}>앨범</NavLink>
+            <NavLink end to={`/g/${currentGroup.id}`} className={link}>
+              <img src={calendar} alt="달력 아이콘" className="w-5 h-5" />
+              <span className="text-black text-1 font-sans font-semibold">대시보드</span>
+            </NavLink>
+            <NavLink to={`/g/${currentGroup.id}/budget`} className={link}>
+              <img src={money} alt="예산 아이콘" className="w-5 h-5" />
+              <span className="text-black text-1 font-sans font-semibold">예산 관리</span>
+            </NavLink>
+            <NavLink to={`/g/${currentGroup.id}/album`} className={link}>
+              <img src={photo} alt="앨범 아이콘" className="w-5 h-5" />
+              <span className="text-black text-1 font-sans font-semibold">앨범</span>
+            </NavLink>
+          </>
+        ) : (
+          <>
+          
           </>
         )}
       </nav>
 
-      <div className="mt-6 text-xs text-slate-500">
-        {currentGroup ? `현재 그룹: ${currentGroup.name}` : "그룹을 선택하세요"}
-      </div>
+      <div className="flex-1" />
+
+      <button className="flex items-center gap-2 text-slate-400 hover:text-slate-700 transition">
+        ↪ <span className="font-medium">로그아웃</span>
+      </button>
     </aside>
   );
 }
