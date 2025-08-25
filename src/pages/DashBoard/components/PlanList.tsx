@@ -1,8 +1,6 @@
 import dragIcon from '@/assets/icons/drag_indicator_icon.png'
 import deleteIcon from '@/assets/icons/delete_icon.png'
 import editIcon from '@/assets/icons/edit_icon.png'
-import TripDays from './TripDays'
-
 
 
 const planItems = [
@@ -29,19 +27,9 @@ const planItems = [
 ];
 
 
-
 function PlanList() {
-
   return (
-    <section className="">
-      <header>
-        <h2 className="text-[28px] font-bold">일정 관리 📆</h2>
-      </header>
-
-      <div className='flex flex-col gap-6'>
-        <TripDays />
-
-        <ul className="flex flex-col gap-2 h-[350px] overflow-auto -mr-4" role="list">
+    <ul className="flex flex-col gap-2 h-[350px] overflow-auto -mr-4" role="list">
 
           {
             planItems.map(({ index, content, hour }) => (
@@ -70,8 +58,6 @@ function PlanList() {
             </button>
           </li>
         </ul>
-      </div>
-    </section>
   )
 }
 export default PlanList
