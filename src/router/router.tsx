@@ -26,12 +26,12 @@ async function loadGroup({ params }: LoaderFunctionArgs) {
    // 1) 그룹 존재 확인
   const { data: group, error: gErr } = await supabase
     .from("groups").select("id,name").eq("id", groupId).single();
-  // if (gErr || !group) throw redirect(`/groups/${myId}`); // ‼️테스트용으로 자동 redirect 주석처리 했습니다
+  if (gErr || !group) throw redirect(`/groups/${myId}`); // ‼️테스트용으로 자동 redirect 주석처리 했습니다
 
   // 2) 현재 로그인한 사용자가 이 그룹 멤버인지 확인
   const { data: member } = await supabase
     .from("groupmembers").select("group_id").eq("group_id", groupId).limit(1);
-  // if (!member || member.length === 0) throw redirect(`/groups/${myId}`); // ‼️테스트용으로 자동 redirect 주석처리 했습니다
+  if (!member || member.length === 0) throw redirect(`/groups/${myId}`); // ‼️테스트용으로 자동 redirect 주석처리 했습니다
 
   return group;
 }
