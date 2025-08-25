@@ -6,12 +6,21 @@ import SearchBox from "./SearchBox";
 import SearchResults from "./SearchResults";
 import { useSearchPlace } from "../hooks/useSearchPlace";
 import { useMapHandlers } from "../hooks/useMapHandler";
+import { useSearchMarkers } from "../hooks/useSearchMarkers";
 
 function Map() {
-  const { map, handleMapLoad, handleZoom, handleResultClick } =
-    useMapHandlers();
-  const { searchResults, isSearching, searchPlaces, clearResults } =
-    useSearchPlace(map);
+  const { map, handleMapLoad, handleZoom, handleResultClick } = useMapHandlers();
+  const {
+    searchResults,
+    isSearching,
+    isResultsVisible,
+    searchPlaces,
+    clearResults,
+    hideResults,
+    showResults
+  } = useSearchPlace(map);
+
+  useSearchMarkers(map, searchResults);
 
   const handleSearch = useCallback(
     (query: string) => {
@@ -33,6 +42,7 @@ function Map() {
           onSearch={handleSearch}
           isSearching={isSearching}
           onClear={clearResults}
+          onFocus={showResults}
         />
 
         <MapZoom
@@ -42,7 +52,9 @@ function Map() {
 
         <SearchResults
           results={searchResults}
+          isVisible={isResultsVisible}
           onResultClick={handleResultClick}
+          onHide={hideResults}
         />
       </Wrapper>
     </div>
