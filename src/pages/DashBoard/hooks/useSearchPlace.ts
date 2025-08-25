@@ -14,9 +14,21 @@ interface SearchResult {
 export function useSearchPlace(map: google.maps.Map | null) {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isResultsVisible, setIsResultsVisible] = useState(false);
 
   const clearResults = useCallback(() => {
     setSearchResults([]);
+    setIsResultsVisible(false);
+  }, []);
+
+  const hideResults = useCallback(() => {
+    setIsResultsVisible(false);
+  }, []);
+
+  const showResults = useCallback(() => {
+    if (searchResults.length > 0) {
+      setIsResultsVisible(true);
+    }
   }, []);
 
   const searchPlaces = useCallback(
@@ -25,6 +37,7 @@ export function useSearchPlace(map: google.maps.Map | null) {
 
       setIsSearching(true);
       setSearchResults([]);
+      setIsResultsVisible(false);
 
       try {
         const { Place } = (await google.maps.importLibrary(
@@ -56,6 +69,7 @@ export function useSearchPlace(map: google.maps.Map | null) {
             }));
 
           setSearchResults(formattedResults);
+          setIsResultsVisible(true);
 
           // 첫 번째 결과로 지도 이동
           if (formattedResults[0] && map) {
@@ -74,7 +88,10 @@ export function useSearchPlace(map: google.maps.Map | null) {
   return {
     searchResults,
     isSearching,
+    isResultsVisible,
     searchPlaces,
     clearResults,
+    hideResults,
+    showResults,
   };
 }
