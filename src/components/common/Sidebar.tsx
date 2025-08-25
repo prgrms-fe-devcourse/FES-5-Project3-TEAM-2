@@ -25,7 +25,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const [signingOut, setSigningOut] = useState(false);
 
-  const {profile, setProfile} = useProfileStore();
+  const {profile} = useProfileStore();
   const currentGroup = useGroupStore((s) => s.currentGroup);
 
   const handleLogout = async() => {

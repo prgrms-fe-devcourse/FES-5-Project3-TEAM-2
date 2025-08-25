@@ -15,10 +15,10 @@ export default function AuthCallback() {
         // 세션이 없으면 이벤트 한 번 대기
         if (!session) {
           session = await new Promise((resolve) => {
-            const { data: subscription } = supabase.auth.onAuthStateChange(
+            const { data: {subscription} } = supabase.auth.onAuthStateChange(
               (event, s) => {
                 if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
-                  subscription.subscription.unsubscribe();
+                  subscription.unsubscribe();
                   resolve(s ?? null);
                 }
               }
