@@ -1,56 +1,52 @@
-import { GoogleMap, LoadScript } from "@react-google-maps/api";
-import { useState } from "react";
+import { Wrapper } from "@googlemaps/react-wrapper";
+import { useCallback } from "react";
+import GoogleMap from "./GoogleMap";
+import MapZoom from "./MapZoom";
 import SearchBox from "./SearchBox";
-import { FaPlus, FaMinus } from "react-icons/fa";
+import SearchResults from "./SearchResults";
+import { useSearchPlace } from "../hooks/useSearchPlace";
+import { useMapHandlers } from "../hooks/useMapHandler";
 
 function Map() {
-  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const { map, handleMapLoad, handleZoom, handleResultClick } =
+    useMapHandlers();
+  const { searchResults, isSearching, searchPlaces, clearResults } =
+    useSearchPlace(map);
 
-  const handleZoom = (zoomChange: number) => {
-    if (!map) return;
-
-    const currentZoom = map.getZoom();
-    if (currentZoom === undefined) return;
-
-    map.setZoom(currentZoom + zoomChange);
-  };
-
-  const zoomIn = () => handleZoom(1);
-  const zoomOut = () => handleZoom(-1);
+  const handleSearch = useCallback(
+    (query: string) => {
+      searchPlaces(query);
+    },
+    [searchPlaces],
+  );
 
   return (
     <div className="flex-1 relative">
-      <LoadScript googleMapsApiKey="google_api_key">
-        <GoogleMap
-          mapContainerStyle={{ width: "100%", height: "100%" }}
-          center={{ lat: 37.5665, lng: 126.978 }}
-          zoom={12}
-          options={{
-            disableDefaultUI: true,
-          }}
-          onLoad={setMap}
+      <Wrapper
+        apiKey="google_api_key"
+        libraries={["places"]}
+        version="weekly"
+      >
+        <GoogleMap onMapLoad={handleMapLoad} />
+
+        <SearchBox
+          onSearch={handleSearch}
+          isSearching={isSearching}
+          onClear={clearResults}
         />
-        <div className="absolute top-12 left-12 right-12">
-          <SearchBox />
-        </div>
-        {map && (
-          <div className="absolute bottom-12 right-12 flex flex-col gap-6">
-            <button
-              onClick={zoomIn}
-              className="w-12 h-12 bg-white rounded-xl shadow-[2px_2px_2px_0_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer"
-            >
-              <FaPlus className="text-2xl text-primary" />
-            </button>
-            <button
-              onClick={zoomOut}
-              className="w-12 h-12 bg-white rounded-xl shadow-[2px_2px_2px_0_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer"
-            >
-              <FaMinus className="text-2xl text-primary" />
-            </button>
-          </div>
-        )}
-      </LoadScript>
+
+        <MapZoom
+          onZoomIn={() => handleZoom(1)}
+          onZoomOut={() => handleZoom(-1)}
+        />
+
+        <SearchResults
+          results={searchResults}
+          onResultClick={handleResultClick}
+        />
+      </Wrapper>
     </div>
   );
 }
+
 export default Map;

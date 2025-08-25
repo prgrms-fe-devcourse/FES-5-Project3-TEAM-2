@@ -1,0 +1,25 @@
+import { useRef, useEffect } from "react";
+
+interface GoogleMapProps {
+  onMapLoad: (map: google.maps.Map) => void;
+}
+
+function GoogleMap({ onMapLoad }: GoogleMapProps) {
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const map = new google.maps.Map(mapRef.current, {
+      center: { lat: 37.5665, lng: 126.978 },
+      zoom: 12,
+      disableDefaultUI: true,
+    });
+
+    onMapLoad(map);
+  }, []);
+
+  return <div ref={mapRef} style={{ width: "100%", height: "100%" }} />;
+}
+
+export default GoogleMap;
