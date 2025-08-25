@@ -1,13 +1,16 @@
-import { NavLink } from "react-router-dom";
 import { useGroupStore } from "@/store/groupStore";
+import { NavLink, useNavigate } from "react-router-dom";
 
-import logo from "@/assets/logo.png";
 import defaultProfile from "@/assets/default-profile.png";
-import GroupIcon from "@/assets/icon/group.svg?react";
 import calendar from "@/assets/icon/calendar.svg";
+import GroupIcon from "@/assets/icon/group.svg?react";
+import logoutIcon from "@/assets/icon/logout.svg";
 import money from "@/assets/icon/money.svg";
 import photo from "@/assets/icon/photo.svg";
-import logout from "@/assets/icon/logout.svg";
+import logo from "@/assets/logo.png";
+import { supabase } from "@/lib/supabaseClient";
+import { useProfileStore } from "@/store/profileStore";
+import { useState } from "react";
 
 const link = ({ isActive }: { isActive: boolean }) =>
   [
@@ -18,7 +21,27 @@ const link = ({ isActive }: { isActive: boolean }) =>
   ].join(" ");
 
 export default function Sidebar() {
+
+  const navigate = useNavigate();
+  const [signingOut, setSigningOut] = useState(false);
+
+  const {profile} = useProfileStore();
   const currentGroup = useGroupStore((s) => s.currentGroup);
+
+  const handleLogout = async() => {
+    if(signingOut) return;
+    setSigningOut(true);
+
+    try{
+      const {error} = await supabase.auth.signOut();
+      if(error) throw error;
+
+      navigate('/', {replace: true});
+    } catch(e){
+      alert('로그아웃 중 문제가 발생했습니다.');
+      setSigningOut(false);
+    }
+  }
 
   return (
     <aside className="w-[248px] min-h-screen shadow-[0_4px_12px_rgba(0,0,0,0.15)] bg-white flex flex-col px-5 pt-6 pb-4">
@@ -29,11 +52,12 @@ export default function Sidebar() {
       <div className="flex flex-col items-center text-center">
         <div className="w-20 h-20 border border-gray-200 rounded-full grid place-items-center">
           <img
-            src={defaultProfile}
+            src={profile?.avatar_url ?? defaultProfile}
             alt="기본 프로필 이미지"
+            className="w-full h-full object-cover rounded-full"
           />
         </div>
-        <div className="mt-2 text-black text-2 font-sans font-semibold">user</div>
+        <div className="mt-2 text-black text-2 font-sans font-semibold">{profile?.name ?? "Guest"}</div>
         <div className="mt-2 text-1 text-gray-400 font-sans font-medium">
           {currentGroup ? <>현재 그룹 : <span className="font-semibold">{currentGroup.name}</span></> : "현재 그룹 없음"}
         </div>
@@ -65,15 +89,20 @@ export default function Sidebar() {
           </>
         ) : (
           <>
-          
+
           </>
         )}
       </nav>
 
       <div className="flex-1" />
 
-      <button className="flex items-center gap-2 text-gray-200 hover:gray-400 transition">
-``      <img src={logout} alt="로그아웃 아이콘" className="w-5 h-5" />
+      <button
+      type="button"
+      onClick={handleLogout}
+      disabled={signingOut}
+      className="flex items-center gap-2 text-gray-200 hover:text-gray-400 transition cursor-pointer
+                  disabled:opacity-60 disabled:cursor-default">
+        <img src={logoutIcon} alt="로그아웃 아이콘" className="w-5 h-5" />
         <span className="font-medium">로그아웃</span>
       </button>
     </aside>
