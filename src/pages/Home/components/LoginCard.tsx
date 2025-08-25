@@ -1,13 +1,34 @@
 
-
-import { supabase } from "../lib/supabaseClient";
+import google from "@/assets/icon/google.svg";
+import logo from "@/assets/logo.png";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { supabase } from "../../../lib/supabaseClient";
 
 
 export default function LoginCard() {
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+
 
 const handleGoogleLogin = async () => {
-  const redirectTo = `${window.location.origin}/auth/callback`;
-  console.log("[login] redirectTo =", redirectTo);
+  if(loading) return;
+
+  // 이미 로그인 한 상태라면 바로 그룹 페이지로 이동
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user?.id) {
+    navigate(`/groups/${session.user.id}`, { replace: true });
+    return;
+  }
+
+  setLoading(true);
+
+  const redirectTo =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:3000/auth/callback"
+    : "https://fes-5-project3-team-2.vercel.app/auth/callback";
+  // console.log("[login] redirectTo =", redirectTo);
 
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -18,8 +39,9 @@ const handleGoogleLogin = async () => {
   });
 
   if (error) {
-    console.error("Google login error:", error.message);
-    alert("로그인 중 오류가 발생했습니다.");
+    // console.error("Google login error:", error.message);
+    alert("로그인 중 문제가 발생했습니다.");
+    setLoading(false);
   }
 };
 
@@ -32,13 +54,10 @@ const handleGoogleLogin = async () => {
       <div className="w-full flex flex-col items-center justify-center mb-6">
         <div>
           <img
-          src="logo.svg"
+          src={logo}
           alt="로고 이미지"
-          className="block mx-auto w-[140px] h-[60px]"
+          className="block mx-auto w-[400px] pb-[50px]"
           />
-          <h2 className="text-6xl text-primary tracking-wide mb-[48px]">
-            Planmingo
-          </h2>
         </div>
 
         <div className="text-center mb-6">
@@ -51,12 +70,14 @@ const handleGoogleLogin = async () => {
         <button
         type="button"
         onClick={handleGoogleLogin}
+        disabled={loading}
         className="w-full flex items-center justify-center gap-5 py-5
                     bg-white border-2 border-secondary rounded-lg shadow-sm
-                    hover:bg-rose-50 transition text-sm text-neutral-700 cursor-pointer"
+                    hover:bg-rose-50 transition text-sm text-neutral-700 cursor-pointer
+                      disabled:opacity-60 disabled:cursor-default"
         >
           <img
-          src="google.svg"
+          src={google}
           alt="구글 아이콘"
           width="30" height="30"
           />
