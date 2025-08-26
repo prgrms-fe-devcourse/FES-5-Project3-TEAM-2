@@ -1,7 +1,8 @@
-import dragIcon from '@/assets/icons/drag_indicator_icon.png'
-import deleteIcon from '@/assets/icons/delete_icon.png'
-import editIcon from '@/assets/icons/edit_icon.png'
-
+import { DndContext, closestCenter, DragOverlay } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { useSortableList } from "../hooks/useSortableList";
+import PlanItem from "./PlanItem";
+import PlanItemOverlay from "./PlanItemOverlay";
 
 const planItems = [
   { index: 1, content: "수영하기", hour: 3 },
@@ -26,38 +27,44 @@ const planItems = [
   { index: 20, content: "사진·영상 정리 및 회고", hour: 2 },
 ];
 
-
 function PlanList() {
+  const { items, activeId, sensors, handleDragStart, handleDragEnd, handleDragCancel } =
+    useSortableList(planItems.map((item) => String(item.index)));
+
+  const activePlan = activeId ? planItems.find((p) => String(p.index) === activeId) : null;
+
   return (
-    <ul className="flex flex-col gap-2 h-[350px] overflow-auto -mr-4" role="list">
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
+    >
+      <ul className="flex flex-col gap-2 h-[350px] overflow-auto" role="list">
+        <SortableContext items={items} strategy={verticalListSortingStrategy}>
+          {items.map((id) => {
+            const plan = planItems.find((p) => String(p.index) === id);
+            if (!plan) return null;
+            return <PlanItem key={plan.index} {...plan} />;
+          })}
+        </SortableContext>
 
-          {
-            planItems.map(({ index, content, hour }) => (
-              <li key={index}>
-                <article className="h-[60px] pr-2 flex items-center gap-2 rounded-[10px] border-2 border-secondary font-extrabold">
-                  <img src={dragIcon} className='size-10 cursor-pointer' />
-                  <span className="shrink-0 text-2xl text-primary">{index}</span>
-                  <p className="font-extrabold">{content}</p>
+        <li>
+          <button
+            type="button"
+            className="h-[60px] flex w-full items-center justify-center rounded-[10px] bg-secondary font-extrabold text-white hover:brightness-95 active:brightness-90"
+          >
+            + 커스텀 일정 추가하기
+          </button>
+        </li>
+      </ul>
 
-                  <div className="ml-auto flex items-center gap-2">
-                    <p className='text-lg text-primary'>{hour}시간</p>
-                    <img src={editIcon} className='size-6 cursor-pointer'/>
-                    <img src={deleteIcon} className='size-6 cursor-pointer' />
-                  </div>
-                </article>
-              </li>
-            ))
-          }
-
-          <li>
-            <button
-              type="button"
-              className="h-[60px] flex w-full items-center justify-center rounded-[10px] bg-secondary font-extrabold text-white hover:brightness-95 active:brightness-90"
-            >
-              + 커스텀 일정 추가하기
-            </button>
-          </li>
-        </ul>
-  )
+      <DragOverlay>
+        {activePlan ? <PlanItemOverlay {...activePlan} /> : null}
+      </DragOverlay>
+    </DndContext>
+  );
 }
-export default PlanList
+
+export default PlanList;
