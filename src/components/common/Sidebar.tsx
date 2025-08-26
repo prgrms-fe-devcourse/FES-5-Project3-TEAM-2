@@ -2,11 +2,11 @@ import { useGroupStore } from "@/store/groupStore";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import defaultProfile from "@/assets/default-profile.png";
-import calendar from "@/assets/icon/calendar.svg";
-import GroupIcon from "@/assets/icon/group.svg?react";
-import logoutIcon from "@/assets/icon/logout.svg";
-import money from "@/assets/icon/money.svg";
-import photo from "@/assets/icon/photo.svg";
+import calendar from "@/assets/icons/calendar.svg";
+import GroupIcon from "@/assets/icons/group.svg?react";
+import logoutIcon from "@/assets/icons/logout.svg";
+import money from "@/assets/icons/money.svg";
+import photo from "@/assets/icons/photo.svg";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/lib/supabaseClient";
 import { useProfileStore } from "@/store/profileStore";
