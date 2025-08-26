@@ -46,7 +46,7 @@ export default function HomeSections() {
       align === "right" ? "md:ml-auto" : ""; // 가운데 그리드에서 좌/우로 배치 느낌
     return (
       <article
-        className={`relative w-[400px] ${alignCls}
+        className={`feature-card relative w-[400px] ${alignCls}
                     rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.12)]`}
       >
         <img
