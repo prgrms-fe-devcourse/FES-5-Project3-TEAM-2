@@ -29,7 +29,7 @@ export function useSearchPlace(map: google.maps.Map | null) {
     if (searchResults.length > 0) {
       setIsResultsVisible(true);
     }
-  }, []);
+  }, [searchResults.length]);
 
   const searchPlaces = useCallback(
     async (query: string) => {
@@ -53,12 +53,12 @@ export function useSearchPlace(map: google.maps.Map | null) {
         const { places } = await Place.searchByText(request);
 
         if (places && places.length > 0) {
+          const searchTimestamp = Date.now();
+
           const formattedResults: SearchResult[] = places
             .slice(0, 20)
             .map((place, idx) => ({
-              id: place.location
-                ? `${place.location.lat()}_${place.location.lng()}`
-                : `place_${Date.now()}_${idx}`,
+              id: `search_${searchTimestamp}_${idx}`,
               name: place.displayName || "장소명 없음",
               address: place.formattedAddress || "주소 없음",
               location: {

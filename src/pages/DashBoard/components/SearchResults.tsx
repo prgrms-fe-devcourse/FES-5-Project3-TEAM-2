@@ -1,24 +1,15 @@
 import { useEffect, useRef } from "react";
-
-interface SearchResult {
-  id: string;
-  name: string;
-  address: string;
-  location: {
-    lat: number;
-    lng: number;
-  };
-  rating?: number;
-}
+import type { SearchResult } from "../types/map";
 
 interface SearchResultsProps {
   results: SearchResult[];
   isVisible: boolean;
   onResultClick: (location: { lat: number; lng: number }) => void;
   onHide: () => void;
+  onAddSchedule: (result: SearchResult) => void;
 }
 
-function SearchResults({ results, isVisible, onResultClick, onHide }: SearchResultsProps) {
+function SearchResults({ results, isVisible, onResultClick, onHide, onAddSchedule }: SearchResultsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // 검색 결과 바깥 클릭 시
@@ -38,10 +29,6 @@ function SearchResults({ results, isVisible, onResultClick, onHide }: SearchResu
   }, [isVisible, onHide]);
 
   if (results.length === 0 || !isVisible) return null;
-
-  const handleAddSchedule = (result: SearchResult) => {
-    console.log("일정 추가:", result);
-  };
 
   return (
     <div 
@@ -65,7 +52,7 @@ function SearchResults({ results, isVisible, onResultClick, onHide }: SearchResu
             className="px-3 py-1 text-sm bg-secondary text-white rounded-lg hover:bg-primary"
             onClick={(e) => {
               e.stopPropagation();
-              handleAddSchedule(result);
+              onAddSchedule(result);
             }}
           >
             일정 추가
