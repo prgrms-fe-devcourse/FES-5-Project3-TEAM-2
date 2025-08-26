@@ -2,8 +2,8 @@ import { supabase } from "@/lib/supabaseClient";
 import Album from "@/pages/AlbumPage";
 import AuthCallback from "@/pages/auth/AuthCallback";
 import Budget from "@/pages/BudgetPage";
-import GroupsPage from "@/pages/Group/GroupsPage";
-import { createBrowserRouter, redirect, type LoaderFunctionArgs } from "react-router-dom";
+import GroupsPage from "@/pages/Group/pages/GroupsPage";
+import { createBrowserRouter, Outlet, redirect, type LoaderFunctionArgs } from "react-router-dom";
 import HomeLayout from "../HomeLayout";
 import DashBoard from "../pages/DashBoard/index";
 import Home from "../pages/Home";
@@ -26,12 +26,17 @@ async function loadGroup({ params }: LoaderFunctionArgs) {
    // 1) 그룹 존재 확인
   const { data: group, error: gErr } = await supabase
     .from("groups").select("id,name").eq("id", groupId).single();
-  if (gErr || !group) throw redirect(`/groups/${myId}`); // ‼️테스트용으로 자동 redirect 주석처리 했습니다
+  if (gErr || !group) throw redirect(`/groups/${myId}`);
 
-  // 2) 현재 로그인한 사용자가 이 그룹 멤버인지 확인
+  // 2) 현재 로그인한 사용자가 이 그룹 멤버인지 확인 : user_id = myId
   const { data: member } = await supabase
-    .from("groupmembers").select("group_id").eq("group_id", groupId).limit(1);
-  if (!member || member.length === 0) throw redirect(`/groups/${myId}`); // ‼️테스트용으로 자동 redirect 주석처리 했습니다
+    .from("groupmembers")
+    .select("group_id")
+    .eq("group_id", groupId)
+    .eq('user_id', myId)
+    .limit(1);
+
+  if (!member || member.length === 0) throw redirect(`/groups/${myId}`);
 
   return group;
 }
@@ -56,30 +61,46 @@ const router = createBrowserRouter([
   {
     element: <Root />,
     children: [
-      // 본인 일치 검증 포함
+      // /groups/:userId
       { path: "groups/:userId",
-        element: <GroupsPage />,
+        element: <Outlet />,
         loader: async({params}: LoaderFunctionArgs) => {
           const myId = await requireAuthAndGetUserId();
           if(params.userId !== myId) {
             throw redirect(`/groups/${myId}`);
           }
           return null;
-        }},
+        },
+        children:[
+          {index:true, element:<GroupsPage />},
 
-      // 부모 라우트에 id 부여 → 자식 탭에서 useRouteLoaderData("group-layout")로 group 공유
+        // /groups/:userId/g/:groupId
+        {
+          id: "group-layout",
+          path:'g/:groupId',
+          loader: loadGroup,
+          children: [
+            {index:true, element: <DashBoard />},
+            {path: "budget", element: <Budget />},
+            {path: "album", element: <Album />},
+          ],
+        },
+        ],
+      },
+
+      // 매직링크
       {
-        id: "group-layout",
-        path:'g/:groupId',
-        loader: loadGroup,
-        children: [
-          {index:true, element: <DashBoard />},
-          {path: "budget", element: <Budget />},
-          {path: "album", element: <Album />},
-        ]
+        path: "g/:groupId",
+        loader: async ({params}: LoaderFunctionArgs) => {
+          const myId = await requireAuthAndGetUserId();
+          const groupId = params.groupId;
+          if(!groupId) throw redirect(`/groups/${myId}`);
+          throw redirect(`/groups/${myId}/g/${groupId}`);
+        }
       }
-    ]
-  }
-])
+    ],
+  },
+],
+)
 
 export default router;
