@@ -1,17 +1,17 @@
 import { useEffect, useRef } from "react";
+import type { SearchResult } from "../types/map";
 
-interface SearchResult {
-  id: string;
-  name: string;
-  address: string;
-  location: {
-    lat: number;
-    lng: number;
-  };
-  rating?: number;
+interface UseSearchMarkersProps {
+  map: google.maps.Map | null;
+  searchResults: SearchResult[];
+  onMarkerClick: (place: SearchResult, marker: google.maps.marker.AdvancedMarkerElement) => void;
 }
 
-export function useSearchMarkers(map: google.maps.Map | null, searchResults: SearchResult[]) {
+export function useSearchMarkers({ 
+  map, 
+  searchResults, 
+  onMarkerClick 
+}: UseSearchMarkersProps) {
   const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
 
   useEffect(() => {
@@ -41,11 +41,10 @@ export function useSearchMarkers(map: google.maps.Map | null, searchResults: Sea
           content: div,
         });
 
-          // 마커 클릭 시 동작
-          marker.addListener("click", () => {
-            map.panTo(result.location);
-            map.setZoom(15);
-          });
+        // 마커 클릭 시 동작
+        marker.addListener("click", () => {
+          onMarkerClick(result, marker);
+        });
 
           return marker;
         });
