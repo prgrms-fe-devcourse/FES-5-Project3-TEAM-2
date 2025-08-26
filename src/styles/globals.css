@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@layer base {
+  html, body, #root, #react-app { height: 100%; }
+}
 
 @font-face {
   font-family: "Pretendard";
