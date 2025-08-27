@@ -27,14 +27,14 @@ export default function GroupsPage() {
   return (
     <div className="px-25 py-20">
       <div className="mb-20">
-        <h1 className="text-2xl font-extrabold">
-          안녕하세요 {profile.name ?? "사용자"}님!
+        <h1 className="text-3 font-extrabold mb-3">
+          안녕하세요 {profile.name ?? "사용자"}님!🤗
         </h1>
-        <p className="text-1 font-bold">오늘은 어떤 여행을 계획해 볼까요?</p>
+        <p className="text-2 mb-20">오늘은 어떤 여행을 계획해 볼까요?</p>
       </div>
 
       <div>
-        <h2 className="text-2xl font-extrabold mb-10">나의 그룹</h2>
+        <h2 className="text-4 font-extrabold mb-10">나의 그룹 👯‍♀️</h2>
         {loading ? (
           <p>불러오는 중…</p>
         ) : (

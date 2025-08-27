@@ -1,5 +1,5 @@
 import { useGroupStore } from "@/store/groupStore";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 
 import defaultProfile from "@/assets/default-profile.png";
 import calendar from "@/assets/icons/calendar.svg";
@@ -9,6 +9,8 @@ import money from "@/assets/icons/money.svg";
 import photo from "@/assets/icons/photo.svg";
 import logo from "@/assets/logo.png";
 import { supabase } from "@/lib/supabaseClient";
+import useCurrentGroup from "@/pages/Group/hooks/useCurrentGroup";
+import useCurrentProfile from "@/pages/Group/hooks/useCurrentProfile";
 import { useProfileStore } from "@/store/profileStore";
 import { useState } from "react";
 
@@ -21,6 +23,8 @@ const link = ({ isActive }: { isActive: boolean }) =>
   ].join(" ");
 
 export default function Sidebar() {
+  useCurrentProfile(); // 사용자 프로필
+  useCurrentGroup(); // 현재 참여한 그룹
 
   const navigate = useNavigate();
   const [signingOut, setSigningOut] = useState(false);
@@ -28,8 +32,12 @@ export default function Sidebar() {
   const {profile} = useProfileStore();
   const currentGroup = useGroupStore((s) => s.currentGroup);
 
-  // g/:groupId
-  const groupBase = currentGroup ? `/g/${currentGroup.id}` : null;
+
+  const {userId} = useParams<{userId:string}>();
+  // groups/:userId
+  const userBase = userId ? `/groups/${userId}` : null;
+  // groups/:userId/g/:groupId
+  const groupBase = currentGroup ? `${userBase}/g/${currentGroup.id}` : null;
 
   const handleLogout = async() => {
     if(signingOut) return;
@@ -55,11 +63,11 @@ export default function Sidebar() {
       <div className="flex flex-col items-center text-center">
         <div className="w-20 h-20 border border-gray-200 rounded-full grid place-items-center">
           <img
-            src={profile?.avatar_url ?? defaultProfile} //💡
+            src={profile?.avatar_url ?? defaultProfile}
             alt="기본 프로필 이미지"
             className="w-full h-full object-cover rounded-full"
             onError={(e) => {
-              (e.currentTarget as HTMLImageElement).src = defaultProfile; // 💡
+              (e.currentTarget as HTMLImageElement).src = defaultProfile;
             }}
           />
         </div>
@@ -73,7 +81,7 @@ export default function Sidebar() {
 
       {/* 메뉴 */}
       <nav className="space-y-1">
-        <NavLink to="/groups" className={link}>
+        <NavLink end to={userBase ?? "/groups"} className={link}>
           <GroupIcon className="w-5 h-5" />
           <span className="text-1 font-sans font-semibold">그룹 관리</span>
         </NavLink>
@@ -84,11 +92,11 @@ export default function Sidebar() {
               <img src={calendar} alt="달력 아이콘" className="w-5 h-5" />
               <span className="text-1 font-sans font-semibold">대시보드</span>
             </NavLink>
-            <NavLink to={`{groupBase}/budget`} className={link}>
+            <NavLink to={`${groupBase}/budget`} className={link}>
               <img src={money} alt="예산 아이콘" className="w-5 h-5" />
               <span className="text-1 font-sans font-semibold">예산 관리</span>
             </NavLink>
-            <NavLink to={`{groupBase}/album`} className={link}>
+            <NavLink to={`${groupBase}/album`} className={link}>
               <img src={photo} alt="앨범 아이콘" className="w-5 h-5" />
               <span className="text-1 font-sans font-semibold">앨범</span>
             </NavLink>

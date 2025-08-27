@@ -47,7 +47,7 @@ const handleGoogleLogin = async () => {
 
 
   return (
-    <div className="w-[580px] h-[700px] mt-[120px] 
+    <div className="w-[580px] h-[700px] mt-[120px]
                     bg-secondary/10 border-2 border-secondary rounded-[18px] shadow-[4px_4px_4px_rgba(0,0,0,0.25)] p-8
                     flex flex-col items-center justify-center"
                   >
@@ -61,7 +61,7 @@ const handleGoogleLogin = async () => {
         </div>
 
         <div className="text-center mb-6">
-          <h3 className="text-2xl font-sans font-extrabold mb-[48px]">Login</h3>
+          <h3 className="text-2xl font-sans font-semibold mb-[48px]">Login</h3>
           <p className="text-lg text-neutral-600 mt-1 mb-[48px]">
             로그인하고 Planmingo의 <br /> 다양한 서비스를 이용해 보세요.
           </p>

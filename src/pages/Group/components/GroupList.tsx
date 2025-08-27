@@ -26,7 +26,7 @@ export default function GroupList({
       >
         <div className="flex flex-col items-center justify-center gap-4">
           <img src={cardAdd} alt="그룹 카드 추가" />
-          <p className="text-4xl font-extrabold text-white">
+          <p className="text-5 font-extrabold text-white">
             {creating ? "생성 중..." : "그룹 추가"}
           </p>
         </div>
