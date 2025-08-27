@@ -7,7 +7,7 @@ export async function fetchMyGroups(userId:string) {
     .from("groups")
     .select("id, name, start_day, end_day, groupmembers!inner(user_id)")
     .eq("groupmembers.user_id", userId)
-    .order("start_day", { ascending: false });
+    .order("start_day", { ascending: true }); // 여행시작일 빠른게 앞에 보이게
 
     if (error) throw error;
 
