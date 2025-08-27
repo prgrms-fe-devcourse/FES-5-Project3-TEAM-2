@@ -52,7 +52,7 @@ export function useMyGroups(enabled = true) {
         endISO: toISO(end),
       });
 
-      setGroups((prev) => [newGroup, ...prev]);
+      setGroups((prev) => [...prev, newGroup]); // 새카드 추가 -> 뒤에서 생기게
     } catch (e) {
       alert("그룹 생성에 실패했습니다.");
       console.error(e);
