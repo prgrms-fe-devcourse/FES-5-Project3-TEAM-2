@@ -11,6 +11,7 @@ export interface PlanItem {
   sort_order: string;
   duration: number;
   day: string;
+  jitter:string;
 }
 
 // 편집 업데이트용 파라미터
@@ -43,11 +44,6 @@ export async function editUpdate({
       throw new Error('듀레이션은 0보다 크고 24보다 작아야 합니다.');
     }
 
-    // console.log(`🔧 Plan Item 편집:`);
-    // console.log(`   ID: ${itemId}`);
-    // console.log(`   제목: ${title}`);
-    // console.log(`   시간: ${duration}분`);
-
     // Supabase 업데이트
     const { data, error } = await supabase
       .from('planitems')
@@ -69,7 +65,7 @@ export async function editUpdate({
       throw new Error('업데이트할 아이템을 찾을 수 없습니다. (권한 또는 존재하지 않는 아이템)');
     }
 
-    console.log('✅ Plan item updated successfully');
+    console.log('✅ edit 수정이 성공했습니다.');
     return data;
 
   } catch (error) {
