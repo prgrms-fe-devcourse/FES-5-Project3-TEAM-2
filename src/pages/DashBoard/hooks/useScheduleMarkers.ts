@@ -10,7 +10,6 @@ import {
 interface UseScheduleMarkersProps {
   map: google.maps.Map | null;
   groupId: string;
-  day: string;
   onMarkerClick?: (
     schedule: Schedule,
     marker: google.maps.marker.AdvancedMarkerElement,
@@ -20,7 +19,6 @@ interface UseScheduleMarkersProps {
 export function useScheduleMarkers({
   map,
   groupId,
-  day,
   onMarkerClick,
 }: UseScheduleMarkersProps) {
   const markersRef = useRef<
@@ -89,7 +87,7 @@ export function useScheduleMarkers({
     const loadSchedules = async () => {
       setIsLoading(true);
       try {
-        const data = await scheduleApi.getSchedules(groupId, day);
+        const data = await scheduleApi.getSchedules(groupId);
         setSchedules(data);
       } catch (error) {
         console.error("일정 로드 오류:", error);
@@ -99,7 +97,7 @@ export function useScheduleMarkers({
     };
 
     loadSchedules();
-  }, [groupId, day]);
+  }, [groupId]);
 
   // schedules 상태 변경시 마커 업데이트
   useEffect(() => {
@@ -160,11 +158,11 @@ export function useScheduleMarkers({
     ) => {
       const { eventType, new: newSchedule, old } = payload;
 
-      if (eventType === "INSERT" && newSchedule?.day === day) {
+      if (eventType === "INSERT" && newSchedule) {
         setSchedules((prev) => [...prev, newSchedule]);
       } else if (eventType === "DELETE" && old?.id) {
         setSchedules((prev) => prev.filter((s) => s.id !== old.id));
-      } else if (eventType === "UPDATE" && newSchedule?.day === day) {
+      } else if (eventType === "UPDATE" && newSchedule) {
         setSchedules((prev) =>
           prev.map((s) => (s.id === newSchedule.id ? newSchedule : s)),
         );
@@ -179,7 +177,7 @@ export function useScheduleMarkers({
     return () => {
       scheduleApi.removeSubscription(channel);
     };
-  }, [groupId, day]);
+  }, [groupId]);
 
   // 컴포넌트 언마운트시 마커 정리
   useEffect(() => {
