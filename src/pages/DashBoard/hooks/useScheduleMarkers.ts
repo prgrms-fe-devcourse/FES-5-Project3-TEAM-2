@@ -66,6 +66,7 @@ export function useScheduleMarkers({
         position: { lat: schedule.latitude!, lng: schedule.longitude! },
         map,
         content: createMarkerContent(schedule.title),
+        zIndex: 10,
       });
 
       if (onMarkerClickRef.current) {
