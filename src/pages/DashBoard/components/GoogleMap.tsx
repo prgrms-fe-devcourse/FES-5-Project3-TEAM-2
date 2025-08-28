@@ -13,6 +13,16 @@ function GoogleMap({ onMapLoad }: GoogleMapProps) {
     const map = new google.maps.Map(mapRef.current, {
       center: { lat: 37.5665, lng: 126.978 },
       zoom: 12,
+      restriction: {
+        latLngBounds: {
+          north: 85,
+          south: -85,
+          west: -180,
+          east: 180,
+        },
+        strictBounds: true,
+      },
+      minZoom: 3,
       disableDefaultUI: true,
       mapId: "DEMO_MAP_ID",
       clickableIcons: false,
