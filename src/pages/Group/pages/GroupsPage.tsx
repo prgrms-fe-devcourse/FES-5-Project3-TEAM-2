@@ -20,15 +20,15 @@ export default function GroupsPage() {
     }
   }, [sessionReady, userId, fetchProfile]);
 
-  if (!sessionReady) return <p>세션 확인 중...</p>;
+  // if (!sessionReady) return <p>세션 확인 중...</p>;
   if (profileLoading) return <p>프로필 불러오는 중...</p>;
-  if (!profile) return <p>프로필이 없습니다.</p>;
+  // if (!profile) return <p>프로필이 없습니다.</p>;
 
   return (
     <div className="px-25 py-20">
       <div className="mb-20">
         <h1 className="text-3 font-extrabold mb-3">
-          안녕하세요 {profile.name ?? "사용자"}님!🤗
+          안녕하세요 {profile?.name ?? "사용자"}님!🤗
         </h1>
         <p className="text-2 mb-20">오늘은 어떤 여행을 계획해 볼까요?</p>
       </div>
