@@ -13,7 +13,12 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 
-export function useSortableList(initialItems: string[]) {
+interface UseSortableListProps {
+  initialItems: string[];
+  onItemsReordered?: (newItems: string[], draggedItemId: string) => void;
+}
+
+export function useSortableList({ initialItems, onItemsReordered }: UseSortableListProps) {
   const [items, setItems] = useState(initialItems);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
@@ -37,7 +42,15 @@ export function useSortableList(initialItems: string[]) {
       setItems((prev) => {
         const oldIndex = prev.indexOf(active.id as string);
         const newIndex = prev.indexOf(over.id as string);
-        return arrayMove(prev, oldIndex, newIndex);
+        
+        const newItems = arrayMove(prev, oldIndex, newIndex);
+        
+        // 리스트 재정렬 완료 후 콜백 호출
+        if (onItemsReordered) {
+          onItemsReordered(newItems, active.id as string);
+        }
+        
+        return newItems;
       });
     }
 
@@ -50,6 +63,7 @@ export function useSortableList(initialItems: string[]) {
 
   return {
     items,
+    setItems,
     activeId,
     sensors,
     handleDragStart,

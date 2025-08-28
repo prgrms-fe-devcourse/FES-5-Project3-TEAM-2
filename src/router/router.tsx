@@ -8,6 +8,7 @@ import HomeLayout from "../HomeLayout";
 import DashBoard from "../pages/DashBoard/index";
 import Home from "../pages/Home";
 import Root from "../root";
+import { dashboardLoader } from "./loader/dashBoardLoader";
 
 
 /** 로그인 요구 + userId 반환 */
@@ -80,7 +81,7 @@ const router = createBrowserRouter([
           path:'g/:groupId',
           loader: loadGroup,
           children: [
-            {index:true, element: <DashBoard />},
+            {index:true, element: <DashBoard />, loader: dashboardLoader},
             {path: "budget", element: <Budget />},
             {path: "album", element: <Album />},
           ],
