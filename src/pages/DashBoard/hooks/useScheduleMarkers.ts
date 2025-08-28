@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { scheduleApi, type Schedule } from "../api/schedule";
+import { scheduleApi, type Schedule } from "../api/mapSchedule";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import {
   clearAllMarkers,
