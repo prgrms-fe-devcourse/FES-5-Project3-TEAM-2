@@ -28,6 +28,9 @@ export default function Sidebar() {
   const {profile} = useProfileStore();
   const currentGroup = useGroupStore((s) => s.currentGroup);
 
+  // g/:groupId
+  const groupBase = currentGroup ? `/g/${currentGroup.id}` : null;
+
   const handleLogout = async() => {
     if(signingOut) return;
     setSigningOut(true);
@@ -35,7 +38,7 @@ export default function Sidebar() {
     try{
       const {error} = await supabase.auth.signOut();
       if(error) throw error;
-
+      // replace로 뒤로가기 방지
       navigate('/', {replace: true});
     } catch(e){
       alert('로그아웃 중 문제가 발생했습니다.');
@@ -52,9 +55,12 @@ export default function Sidebar() {
       <div className="flex flex-col items-center text-center">
         <div className="w-20 h-20 border border-gray-200 rounded-full grid place-items-center">
           <img
-            src={profile?.avatar_url ?? defaultProfile}
+            src={profile?.avatar_url ?? defaultProfile} //💡
             alt="기본 프로필 이미지"
             className="w-full h-full object-cover rounded-full"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).src = defaultProfile; // 💡
+            }}
           />
         </div>
         <div className="mt-2 text-black text-2 font-sans font-semibold">{profile?.name ?? "Guest"}</div>
@@ -72,24 +78,20 @@ export default function Sidebar() {
           <span className="text-1 font-sans font-semibold">그룹 관리</span>
         </NavLink>
 
-        {currentGroup ? (
+        {groupBase && (
           <>
-            <NavLink end to={`/g/${currentGroup.id}`} className={link}>
+            <NavLink end to={groupBase} className={link}>
               <img src={calendar} alt="달력 아이콘" className="w-5 h-5" />
               <span className="text-1 font-sans font-semibold">대시보드</span>
             </NavLink>
-            <NavLink to={`/g/${currentGroup.id}/budget`} className={link}>
+            <NavLink to={`{groupBase}/budget`} className={link}>
               <img src={money} alt="예산 아이콘" className="w-5 h-5" />
               <span className="text-1 font-sans font-semibold">예산 관리</span>
             </NavLink>
-            <NavLink to={`/g/${currentGroup.id}/album`} className={link}>
+            <NavLink to={`{groupBase}/album`} className={link}>
               <img src={photo} alt="앨범 아이콘" className="w-5 h-5" />
               <span className="text-1 font-sans font-semibold">앨범</span>
             </NavLink>
-          </>
-        ) : (
-          <>
-
           </>
         )}
       </nav>
