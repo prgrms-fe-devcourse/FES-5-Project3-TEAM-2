@@ -1,7 +1,7 @@
 import { useGroupStore } from "@/store/groupStore";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 
-import defaultProfile from "@/assets/default-profile.png";
+import defaultProfile from "@/assets/defaultprofile.svg";
 import calendar from "@/assets/icons/calendar.svg";
 import GroupIcon from "@/assets/icons/group.svg?react";
 import logoutIcon from "@/assets/icons/logout.svg";
