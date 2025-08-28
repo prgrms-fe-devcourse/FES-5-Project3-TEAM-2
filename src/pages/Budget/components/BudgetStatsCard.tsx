@@ -5,6 +5,7 @@ import {
   ResponsiveContainer,
   Legend,
   Tooltip,
+  type PieLabelRenderProps,
 } from "recharts";
 
 type Item = { name: string; value: number; color?: string };
@@ -26,27 +27,20 @@ function formatWon(n: number) {
 
 // 커스텀 라벨: Pie가 주는 percent(0~1)를 사용
 const renderLabel = ({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-}: {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  innerRadius: number;
-  outerRadius: number;
-  percent: number;
-}) => {
-  // 도넛 두께의 중간 지점
-  const r = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + r * Math.cos(-midAngle * RADIAN);
-  const y = cy + r * Math.sin(-midAngle * RADIAN);
+  cx = 0,
+  cy = 0,
+  midAngle = 0,
+  innerRadius = 0,
+  outerRadius = 0,
+  percent = 0,
+}: PieLabelRenderProps): React.ReactNode => {
+  const r =
+    Number(innerRadius ?? 0) +
+    (Number(outerRadius ?? 0) - Number(innerRadius ?? 0)) * 0.5;
+  const x = Number(cx ?? 0) + r * Math.cos(-Number(midAngle ?? 0) * RADIAN);
+  const y = Number(cy ?? 0) + r * Math.sin(-Number(midAngle ?? 0) * RADIAN);
   const p = Math.round(percent * 100);
 
-  // 조각이 너무 얇으면 라벨 숨김(겹침 방지)
   if (p < 5) return null;
 
   return (
