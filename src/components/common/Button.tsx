@@ -8,8 +8,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
   isLoading?: boolean;
-  startIcon?: ReactNode;   // ← 앞쪽 아이콘
-  endIcon?: ReactNode;     // ← 뒤쪽 아이콘
+  startIcon?: ReactNode; // ← 앞쪽 아이콘
+  endIcon?: ReactNode; // ← 뒤쪽 아이콘
 }
 
 export default function Button({
@@ -23,11 +23,11 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center rounded-xl font-medium transition-colors focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed";
 
   const variants: Record<Variant, string> = {
     primary: "bg-primary text-white hover:bg-primary/90",
-    secondary: "bg-secondary text-gray-800 hover:bg-gray-300",
+    secondary: "bg-secondary text-gray-800 hover:bg-gray-200",
     outline: "border border-gray-300 text-gray-700 bg-white hover:bg-gray-50",
     danger: "bg-red-500 text-white hover:bg-red-600",
   };

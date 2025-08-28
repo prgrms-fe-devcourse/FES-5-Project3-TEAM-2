@@ -3,9 +3,9 @@ import Sidebar from "@/components/common/Sidebar";
 
 export default function Root() {
   return (
-    <div className="grid grid-cols-[240px_1fr] min-h-screen bg-slate-50">
+    <div className="grid grid-cols-[240px_1fr] h-dvh overflow-hidden bg-slate-50">
       <Sidebar />
-      <main className="p-6">
+      <main className="p-6 min-h-0 overflow-hidden">
         <Outlet />
       </main>
     </div>
