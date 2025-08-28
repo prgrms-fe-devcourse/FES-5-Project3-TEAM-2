@@ -8,11 +8,28 @@ import { useSearchPlace } from "../hooks/useSearchPlace";
 import { useMapHandlers } from "../hooks/useMapHandler";
 import { useSearchMarkers } from "../hooks/useSearchMarkers";
 import { useInfoWindow } from "../hooks/useInfoWindow";
-import { createInfoContent } from "../utils/createInfoContent";
+import { createSearchInfoContent } from "../utils/searchInfoContent";
 import type { SearchResult } from "../types/map";
+import { useScheduleMarkers } from "../hooks/useScheduleMarkers";
+import { createScheduleInfoContent } from "../utils/scheduleInfoContent";
+import { useMapClick } from "../hooks/useMapClick";
+import { createMapClickInfoContent } from "../utils/mapClickInfoContent";
 
-function Map() {
-  const { map, handleMapLoad, handleZoom, handleResultClick } = useMapHandlers();
+interface MapProps {
+  day: string;
+  groupId: string;
+}
+
+type ScheduleItem =
+  | { lat: number; lng: number; address: string }
+  | SearchResult;
+
+function Map({
+  day = "2025-08-27",
+  groupId = "d02a8611-bfac-4c54-8251-2c5af49ab183",
+}: MapProps) {
+  const { map, handleMapLoad, handleZoom, handleResultClick } =
+    useMapHandlers();
   const {
     searchResults,
     isSearching,
@@ -20,44 +37,92 @@ function Map() {
     searchPlaces,
     clearResults,
     hideResults,
-    showResults
+    showResults,
   } = useSearchPlace(map);
 
+  const { showInfo, hideInfo } = useInfoWindow();
+
+  // 일정 추가 핸들러
+  const handleAddSchedule = useCallback(
+    (item: ScheduleItem) => {
+      console.log("일정 추가:", item);
+      hideInfo();
+    },
+    [hideInfo],
+  );
+
+  // 검색 핸들러
   const handleSearch = useCallback(
     (query: string) => {
       searchPlaces(query);
     },
     [searchPlaces],
   );
-  
-  const { showInfo, hideInfo } = useInfoWindow();
 
-  const handleAddSchedule = useCallback(
-    (place: SearchResult) => {
-      console.log('일정 추가:', place);
-      hideInfo();
-    },
-    [hideInfo]
-  );
-  
-  const handleMarkerClick = useCallback(
+  // 검색 마커 클릭 핸들러
+  const handleSearchMarkerClick = useCallback(
     (place: SearchResult, marker: google.maps.marker.AdvancedMarkerElement) => {
-      
-      if (map) {
-        const htmlContent = createInfoContent(place, handleAddSchedule);
-        showInfo(map, marker, htmlContent);
-      }
+      if (!map) return;
+
+      const content = createSearchInfoContent(place, handleAddSchedule);
+      showInfo(map, marker, content);
     },
-    [map, showInfo, handleAddSchedule]
+    [map, showInfo, handleAddSchedule],
   );
 
-  useSearchMarkers({map, searchResults, onMarkerClick: handleMarkerClick });
-  
+  // 스케줄 마커 클릭 핸들러
+  const handleScheduleMarkerClick = useCallback(
+    (schedule: any, marker: google.maps.marker.AdvancedMarkerElement) => {
+      if (!map) return;
+
+      const content = createScheduleInfoContent(schedule);
+      showInfo(map, marker, content);
+    },
+    [map, showInfo],
+  );
+
+  // 지도 클릭 핸들러
+  const handleMapClick = useCallback(
+    (location: {
+      lat: number;
+      lng: number;
+      address: string;
+      clickEvent: google.maps.MapMouseEvent;
+    }) => {
+      if (!map) return;
+
+      const content = createMapClickInfoContent(location, handleAddSchedule);
+      const position = location.clickEvent.latLng || {
+        lat: location.lat,
+        lng: location.lng,
+      };
+      showInfo(map, position, content);
+    },
+    [map, showInfo, handleAddSchedule],
+  );
+
+  useSearchMarkers({
+    map,
+    searchResults,
+    onMarkerClick: handleSearchMarkerClick,
+  });
+
+  useScheduleMarkers({
+    map,
+    groupId,
+    day,
+    onMarkerClick: handleScheduleMarkerClick,
+  });
+
+  useMapClick({
+    map,
+    onLocationClick: handleMapClick,
+  });
 
   return (
     <div className="flex-1 relative">
       <Wrapper
-        apiKey="google_api_key"
+        apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
         libraries={["places"]}
         version="weekly"
       >
@@ -81,7 +146,6 @@ function Map() {
           onResultClick={handleResultClick}
           onHide={hideResults}
           onAddSchedule={handleAddSchedule}
-
         />
       </Wrapper>
     </div>
