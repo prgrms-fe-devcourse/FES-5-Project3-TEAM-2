@@ -15,19 +15,13 @@ import { createScheduleInfoContent } from "../utils/scheduleInfoContent";
 import { useMapClick } from "../hooks/useMapClick";
 import { createMapClickInfoContent } from "../utils/mapClickInfoContent";
 
-interface MapProps {
-  day: string;
-  groupId: string;
-}
-
 type ScheduleItem =
   | { lat: number; lng: number; address: string }
   | SearchResult;
 
-function Map({
-  day = "2025-08-27",
-  groupId = "d02a8611-bfac-4c54-8251-2c5af49ab183",
-}: MapProps) {
+function Map() {
+  const day = "2025-08-27";
+  const groupId = "d02a8611-bfac-4c54-8251-2c5af49ab183";
   const { map, handleMapLoad, handleZoom, handleResultClick } =
     useMapHandlers();
   const {
