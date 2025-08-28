@@ -13,12 +13,11 @@ export interface Schedule {
 
 export const scheduleApi = {
   // 마커에 보여줄 수 있는 특정 그룹 + 날짜 일정 조회 (초기 데이터 로드)
-  async getSchedules(groupId: string, day: string): Promise<Schedule[]> {
+  async getSchedules(groupId: string): Promise<Schedule[]> {
     const { data, error } = await supabase
       .from("planitems")
       .select("id, title, address, day, group_id, latitude, longitude")
       .eq("group_id", groupId)
-      .eq("day", day)
       .not("latitude", "is", null)
       .not("longitude", "is", null);
     if (error) throw error;

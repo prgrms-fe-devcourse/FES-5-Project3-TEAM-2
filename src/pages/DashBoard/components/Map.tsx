@@ -14,6 +14,7 @@ import { useScheduleMarkers } from "../hooks/useScheduleMarkers";
 import { createScheduleInfoContent } from "../utils/scheduleInfoContent";
 import { useMapClick } from "../hooks/useMapClick";
 import { createMapClickInfoContent } from "../utils/mapClickInfoContent";
+import type { Schedule } from "../api/mapSchedule";
 
 type ScheduleItem =
   | { lat: number; lng: number; address: string }
@@ -40,6 +41,7 @@ function Map() {
   const handleAddSchedule = useCallback(
     (item: ScheduleItem) => {
       console.log("일정 추가:", item);
+      console.log(day);
       hideInfo();
     },
     [hideInfo],
@@ -66,7 +68,7 @@ function Map() {
 
   // 스케줄 마커 클릭 핸들러
   const handleScheduleMarkerClick = useCallback(
-    (schedule: any, marker: google.maps.marker.AdvancedMarkerElement) => {
+    (schedule: Schedule, marker: google.maps.marker.AdvancedMarkerElement) => {
       if (!map) return;
 
       const content = createScheduleInfoContent(schedule);
@@ -104,7 +106,6 @@ function Map() {
   useScheduleMarkers({
     map,
     groupId,
-    day,
     onMarkerClick: handleScheduleMarkerClick,
   });
 
