@@ -1,6 +1,8 @@
+import BudgetPage from "./Budget"
+
 function Budget() {
   return (
-    <div>Budget</div>
+    <BudgetPage />
   )
 }
 export default Budget
