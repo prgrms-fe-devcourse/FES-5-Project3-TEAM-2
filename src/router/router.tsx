@@ -24,6 +24,7 @@ async function requireAuthAndGetUserId() {
 async function loadGroup({ params }: LoaderFunctionArgs) {
   const myId = await requireAuthAndGetUserId(); // 세션 확인 + userId 확보
   const groupId = params.groupId;
+  if (!groupId) throw redirect(`/groups/${myId}`);
 
    // 1) 그룹 존재 확인
   const { data: group, error: gErr } = await supabase
@@ -69,10 +70,11 @@ const router = createBrowserRouter([
         loader: async({params}: LoaderFunctionArgs) => {
           const myId = await requireAuthAndGetUserId();
           if(params.userId !== myId) {
+          if(params.userId && params.userId !== myId) {
             throw redirect(`/groups/${myId}`);
           }
           return null;
-        },
+        }},
         children:[
           {index:true, element:<GroupsPage />},
 
@@ -89,6 +91,7 @@ const router = createBrowserRouter([
         },
         ],
       },
+    
 
       // 매직링크
       {
