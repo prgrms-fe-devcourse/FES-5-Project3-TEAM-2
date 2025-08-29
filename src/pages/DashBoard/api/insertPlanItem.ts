@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
 import { generateKeyBetween } from "fractional-indexing";
 import { createJitter } from "../utils/createJitter";
+import type { Database } from "@/types/supabase";
 
 export interface PlanItemInsert {
   group_id: string;
@@ -12,18 +13,7 @@ export interface PlanItemInsert {
   day: string; // 'YYYY-MM-DD' format
 }
 
-export interface PlanItem {
-  id: string;
-  group_id: string;
-  title: string;
-  address: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  sort_order: string;   
-  duration: number;
-  day: string;
-  jitter: string;       
-}
+export type PlanItem = Database["public"]["Tables"]["planitems"]["Row"];
 
 export async function insertPlanItem(
   item: PlanItemInsert,

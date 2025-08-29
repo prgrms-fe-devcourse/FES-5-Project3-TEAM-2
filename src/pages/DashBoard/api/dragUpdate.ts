@@ -1,20 +1,9 @@
 import { supabase } from "@/lib/supabaseClient";
 import { generateKeyBetween } from "fractional-indexing";
 import { createJitter } from "../utils/createJitter";
+import type { Database } from "@/types/supabase";
 
-// 기존 PlanItem 타입 재사용
-export interface PlanItem {
-  id: string;
-  group_id: string;
-  title: string;
-  address: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  sort_order: string;   // fractional_index
-  duration: number;
-  day: string;
-  jitter: string; 
-}
+export type PlanItem = Database["public"]["Tables"]["planitems"]["Row"];
 
 // 드래그 앤 드롭용 확장 타입
 export interface DraggedPlanItem extends PlanItem {
