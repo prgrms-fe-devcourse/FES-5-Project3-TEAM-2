@@ -12,7 +12,7 @@ export default function GroupList({
   creating: boolean;
 }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-3 py-5">
       {groups.map((g) => (
         <GroupCard key={g.id} g={g} />
       ))}
