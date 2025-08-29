@@ -6,6 +6,8 @@ import {
   Legend,
   Tooltip,
   type PieLabelRenderProps,
+  type ValueType,
+  type NameType,
 } from "recharts";
 
 type Item = { name: string; value: number; color?: string };
@@ -109,14 +111,10 @@ export default function BudgetStatsCard({
               </Pie>
 
               <Tooltip
-                formatter={(v: any, _n: any, props: any) => {
-                  const value = Number(v);
-                  const percent =
-                    total > 0 ? Math.round((value / total) * 100) : 0;
-                  return [
-                    `${formatWon(value)} (${percent}%)`,
-                    props?.payload?.name,
-                  ];
+                formatter={(v: ValueType, name: NameType) => {
+                  const value = Array.isArray(v) ? Number(v[0]) : Number(v);
+                  const percent = total > 0 ? Math.round((value / total) * 100) : 0;
+                  return [`${formatWon(value)} (${percent}%)`, String(name)];
                 }}
               />
               <Legend
