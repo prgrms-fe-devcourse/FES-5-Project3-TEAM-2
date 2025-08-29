@@ -1,37 +1,41 @@
-import { create } from "zustand"
-import type { PlanItem } from "@/pages/DashBoard/api/loadPlanItem"
-import type { TripDay } from "../utils/generateTripDays"
-import { dragUpdate, type DraggedPlanItem } from "../api/dragUpdate" 
-import { deletePlanItem } from "../api/deletePlanItem"
-import { editUpdate } from "../api/editUpdate"
+import { create } from "zustand";
+import type { PlanItem } from "@/pages/DashBoard/api/loadPlanItem";
+import type { TripDay } from "../utils/generateTripDays";
+import { dragUpdate, type DraggedPlanItem } from "../api/dragUpdate";
+import { deletePlanItem } from "../api/deletePlanItem";
+import { editUpdate } from "../api/editUpdate";
 
 type PlanStore = {
-  tripDays: TripDay[]
-  selectedDay: string
-  allPlanItems: PlanItem[]
-  editingItemIds: string[] 
+  tripDays: TripDay[];
+  selectedDay: string;
+  allPlanItems: PlanItem[];
+  editingItemIds: string[];
 
-  setTripDays: (days: TripDay[]) => void
-  setSelectedDay: (day: string) => void
-  setAllPlanItems: (items: PlanItem[]) => void
-  addPlanItem: (item: PlanItem) => void
-  updatePlanItem: (itemId: string, updates: Partial<PlanItem>) => void
-  deletePlanItem: (itemId: string) => Promise<void>
+  setTripDays: (days: TripDay[]) => void;
+  setSelectedDay: (day: string) => void;
+  setAllPlanItems: (items: PlanItem[]) => void;
+  addPlanItem: (item: PlanItem) => void;
+  updatePlanItem: (itemId: string, updates: Partial<PlanItem>) => void;
+  removePlanItem: (itemId: string) => void;
+  deletePlanItem: (itemId: string) => Promise<void>;
 
-  addEditingItem: (itemId: string) => void
-  removeEditingItem: (itemId: string) => void
-  clearEditingItems: () => void
-  confirmEditItem: (itemId: string, updates: { title: string; duration: number }) => Promise<void>
+  addEditingItem: (itemId: string) => void;
+  removeEditingItem: (itemId: string) => void;
+  clearEditingItems: () => void;
+  confirmEditItem: (
+    itemId: string,
+    updates: { title: string; duration: number },
+  ) => Promise<void>;
 
   reorderPlanItems: (
     itemId: string,
     groupId: string,
     day: string,
-    currentItems: PlanItem[]
-  ) => Promise<void>
+    currentItems: PlanItem[],
+  ) => Promise<void>;
 
-  getSelectedDayItems: () => PlanItem[]
-}
+  getSelectedDayItems: () => PlanItem[];
+};
 
 export const usePlanStore = create<PlanStore>((set, get) => ({
   tripDays: [],
@@ -44,29 +48,36 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
   setAllPlanItems: (items) => set({ allPlanItems: items }),
 
   addPlanItem: (item) => {
-    const { allPlanItems } = get()
-    set({ allPlanItems: [...allPlanItems, item] })
+    const { allPlanItems } = get();
+    set({ allPlanItems: [...allPlanItems, item] });
   },
 
   updatePlanItem: (itemId, updates) => {
-    const { allPlanItems } = get()
+    const { allPlanItems } = get();
     set({
       allPlanItems: allPlanItems.map((item) =>
-        item.id === itemId ? { ...item, ...updates } : item
+        item.id === itemId ? { ...item, ...updates } : item,
       ),
-    })
+    });
   },
 
-  deletePlanItem: async (itemId) => {
+  removePlanItem: (itemId: string) => { // postgres_changes로 받아온 내용을 반영하기 위한 목적.
+    const { allPlanItems } = get();
+    set({
+      allPlanItems: allPlanItems.filter((item) => item.id !== itemId),
+    });
+  },
+
+  deletePlanItem: async (itemId) => { // 내 UI 위한 목적.
     try {
-      await deletePlanItem(itemId)
-      const { allPlanItems } = get()
+      await deletePlanItem(itemId);
+      const { allPlanItems } = get();
       set({
         allPlanItems: allPlanItems.filter((item) => item.id !== itemId),
-      })
-      console.log("✅ 일정 삭제 성공:", itemId)
+      });
+      console.log("✅ 일정 삭제 성공:", itemId);
     } catch (err) {
-      console.error("❌ 일정 삭제 실패:", err)
+      console.error("❌ 일정 삭제 실패:", err);
     }
   },
 
@@ -81,9 +92,9 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
   clearEditingItems: () => set({ editingItemIds: [] }),
 
   confirmEditItem: async (itemId, updates) => {
-    const { selectedDay, allPlanItems } = get()
-    const item = allPlanItems.find((i) => i.id === itemId)
-    if (!item) return
+    const { selectedDay, allPlanItems } = get();
+    const item = allPlanItems.find((i) => i.id === itemId);
+    if (!item) return;
 
     try {
       const updated = await editUpdate({
@@ -92,16 +103,16 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
         day: selectedDay,
         title: updates.title,
         duration: updates.duration,
-      })
+      });
 
       set({
         allPlanItems: allPlanItems.map((i) =>
-          i.id === updated.id ? updated : i
+          i.id === updated.id ? updated : i,
         ),
         editingItemIds: get().editingItemIds.filter((id) => id !== itemId),
-      })
+      });
     } catch (err) {
-      console.error("❌ 수정 실패:", err)
+      console.error("❌ 수정 실패:", err);
     }
   },
 
@@ -110,30 +121,30 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
       const withDraggedFlag: DraggedPlanItem[] = currentItems.map((item) => ({
         ...item,
         dragged: item.id === itemId,
-      }))
+      }));
 
       const updated = await dragUpdate({
         itemId,
         groupId,
         day,
         currentItems: withDraggedFlag,
-      })
+      });
 
-      const { allPlanItems } = get()
+      const { allPlanItems } = get();
       set({
         allPlanItems: allPlanItems.map((i) =>
-          i.id === updated.id ? updated : i
+          i.id === updated.id ? updated : i,
         ),
-      })
+      });
     } catch (err) {
-      console.error("reorderPlanItems 실패:", err)
+      console.error("reorderPlanItems 실패:", err);
     }
   },
 
   getSelectedDayItems: () => {
-    const { allPlanItems, selectedDay } = get()
+    const { allPlanItems, selectedDay } = get();
     return allPlanItems
       .filter((item) => item.day === selectedDay)
-      .sort((a, b) => a.sort_order.localeCompare(b.sort_order))
+      .sort((a, b) => a.sort_order.localeCompare(b.sort_order));
   },
-}))
+}));
