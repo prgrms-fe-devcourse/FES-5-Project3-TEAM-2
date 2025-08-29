@@ -7,6 +7,8 @@ export default function AddExpenseModal({ onClose }: { onClose: () => void }) {
   const members = useBudgetStore((s) => s.members);
   const addExpense = useBudgetStore((s) => s.addExpense);
   const addShares = useBudgetStore((s) => s.addShares);
+  const removeExpense = useBudgetStore((s) => s.removeExpense);
+  const removeSharesByExpense = useBudgetStore((s) => s.removeSharesByExpense);
   const { groupId } = useParams<{ groupId: string }>();
 
   const [amount, setAmount] = useState("");
@@ -76,10 +78,47 @@ export default function AddExpenseModal({ onClose }: { onClose: () => void }) {
     }
   };
 
+  // Optimistic onSubmit: add locally first, rollback if server fails
+  const submitOptimistic = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const a = Number(amount.replace(/[^0-9]/g, ""));
+    if (!a || !memberId || (participants?.length ?? 0) === 0 || !groupId) return;
+
+    let tempId: string | null = null;
+    try {
+      tempId = addExpense({ amount: a, category, memberId, participants, memo });
+      const allForSplit = new Set<string>([...participants, memberId]);
+      const n = allForSplit.size || 1;
+      const share = a / n;
+      addShares(
+        participants
+          .filter((id) => id !== memberId)
+          .map((uid) => ({ expenseId: tempId!, userId: uid, amount: share }))
+      );
+
+      await insertExpenseWithShares({
+        groupId,
+        description: memo || `${category} 지출`,
+        totalAmount: a,
+        expenseTime: new Date().toISOString().slice(0, 10),
+        category: koToEnumCategory[category],
+        payerId: memberId,
+        participantIds: participants,
+      });
+      onClose();
+    } catch (err) {
+      if (tempId) {
+        removeSharesByExpense(tempId);
+        removeExpense(tempId);
+      }
+      alert("저장 중 오류가 발생했습니다. 다시 시도해 주세요.");
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 grid place-items-center">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} aria-hidden />
-      <form onSubmit={submit} className="relative w-[460px] rounded-xl bg-white p-5 shadow-xl">
+      <form onSubmit={submitOptimistic} className="relative w-[460px] rounded-xl bg-white p-5 shadow-xl">
         <h3 className="mb-4 text-lg font-bold">경비 추가</h3>
 
         {/* 금액 */}

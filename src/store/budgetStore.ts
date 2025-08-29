@@ -32,7 +32,8 @@ export interface Expense {
     setExpenses: (es: Expense[]) => void;
     setShares: (ss: ExpenseShare[]) => void;
     addShares: (ss: ExpenseShare[]) => void;
-    addExpense: (e: Omit<Expense, "id" | "createdAt">) => void;
+    removeSharesByExpense: (expenseId: string) => void;
+    addExpense: (e: Omit<Expense, "id" | "createdAt">) => string; // returns id for optimistic updates
     removeExpense: (id: string) => void;
   }
   
@@ -44,10 +45,15 @@ export interface Expense {
     setExpenses: (es) => set({ expenses: es }),
     setShares: (ss) => set({ shares: ss }),
     addShares: (ss) => set((s) => ({ shares: [...s.shares, ...ss] })),
-    addExpense: (e) =>
+    removeSharesByExpense: (expenseId) =>
+      set((s) => ({ shares: s.shares.filter((sh) => sh.expenseId !== expenseId) })),
+    addExpense: (e) => {
+      const id = nanoid();
       set((s) => ({
-        expenses: [{ id: nanoid(), createdAt: new Date().toISOString(), ...e }, ...s.expenses],
-      })),
+        expenses: [{ id, createdAt: new Date().toISOString(), ...e }, ...s.expenses],
+      }));
+      return id;
+    },
     removeExpense: (id) =>
       set((s) => ({ expenses: s.expenses.filter((x) => x.id !== id) })),
   }));
