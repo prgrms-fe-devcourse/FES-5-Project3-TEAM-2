@@ -23,13 +23,17 @@ import { createMapClickInfoContent } from "../utils/mapClickInfoContent";
 // 타입
 import type { SearchResult } from "../types/map";
 import type { Schedule } from "../api/mapSchedule";
+import { usePlanStore } from "../store/planStore";
+import { useGroupStore } from "../store/groupStore";
 
 type ScheduleItem =
   | { lat: number; lng: number; address: string }
   | SearchResult;
 
 function Map() {
-  const groupId = "d02a8611-bfac-4c54-8251-2c5af49ab183";
+  const day = usePlanStore((state) => state.selectedDay);
+  const group = useGroupStore((state) => state.group);
+  const groupId = group?.id;
 
   // === 기본 훅 ===
   const { map, handleMapLoad, handleZoom, handleResultClick } =
@@ -51,7 +55,7 @@ function Map() {
   // === 일정 ===
   const { schedules } = useScheduleMarkers({
     map,
-    groupId,
+    groupId: groupId || "",
     onMarkerClick: handleScheduleMarkerClick,
   });
 
@@ -59,6 +63,7 @@ function Map() {
   const handleAddSchedule = useCallback(
     (item: ScheduleItem) => {
       console.log("일정 추가:", item);
+      console.log(day);
       hideInfo();
     },
     [hideInfo],
