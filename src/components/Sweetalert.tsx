@@ -10,7 +10,10 @@ export function LoginAlert(message:string, icon:'success' | 'error') {
     position:'top-end',
     title:message,
     icon,
+<<<<<<< HEAD
     iconColor: "#8ACCD5",
+=======
+>>>>>>> cd32224 (ui: SweetAlert 추가)
     showConfirmButton:false,
     timer:1800,
     timerProgressBar:true,
@@ -23,8 +26,14 @@ export async function LogoutAlert(navigate:any) {
   const result = await Swal.fire({
     title:'정말 로그아웃 하시겠습니까?',
     icon:'warning',
+<<<<<<< HEAD
     iconColor: "#8ACCD5",
     showCancelButton:true,
+=======
+    showCancelButton:true,
+    confirmButtonColor:'#FF8E9E',
+    cancelButtonColor:'#8ACCD5',
+>>>>>>> cd32224 (ui: SweetAlert 추가)
     confirmButtonText:'로그아웃',
     cancelButtonText:'취소',
   });
@@ -35,7 +44,10 @@ export async function LogoutAlert(navigate:any) {
   if(error) {
     await Swal.fire({
       icon:'error',
+<<<<<<< HEAD
       iconColor: "#8ACCD5",
+=======
+>>>>>>> cd32224 (ui: SweetAlert 추가)
       title:'로그아웃 실패',
       text:'다시 시도해주세요',
     });
@@ -46,8 +58,12 @@ export async function LogoutAlert(navigate:any) {
     toast:true,
     position:'top-end',
     icon:'info',
+<<<<<<< HEAD
     iconColor: "#8ACCD5",
     title:'로그아웃 완료!🖐️',
+=======
+    title:'로그아웃 성공!🖐️',
+>>>>>>> cd32224 (ui: SweetAlert 추가)
     showConfirmButton:false,
     timer:1800,
     timerProgressBar:true,
@@ -64,7 +80,10 @@ export function GroupAddAlert() {
     toast:true,
     position:'top',
     icon:'success',
+<<<<<<< HEAD
     iconColor: "#8ACCD5",
+=======
+>>>>>>> cd32224 (ui: SweetAlert 추가)
     title:'새 그룹 추가 완료!🌟',
     showConfirmButton:false,
     timer:1500,
