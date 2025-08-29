@@ -4,13 +4,39 @@ import type { SearchResult } from "../types/map";
 interface UseSearchMarkersProps {
   map: google.maps.Map | null;
   searchResults: SearchResult[];
-  onMarkerClick: (place: SearchResult, marker: google.maps.marker.AdvancedMarkerElement) => void;
+  onMarkerClick: (
+    place: SearchResult,
+    marker: google.maps.marker.AdvancedMarkerElement,
+  ) => void;
 }
 
-export function useSearchMarkers({ 
-  map, 
-  searchResults, 
-  onMarkerClick 
+export const createMarkerContent = () => {
+  const pin = document.createElement("div");
+
+  // 클릭 가능 영역
+  pin.style.width = "36px";
+  pin.style.height = "48px";
+  pin.style.display = "flex";
+  pin.style.justifyContent = "center";
+  pin.style.alignItems = "center";
+  pin.style.cursor = "pointer";
+
+  // 실제 보이는 마커
+  pin.innerHTML = `
+    <svg width="28" height="40" viewBox="0 0 56 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M28 0C12.52 0 0 12.52 0 28C0 49 28 80 28 80C28 80 56 49 56 28C56 12.52 43.48 0 28 0ZM28 38C22.48 38 18 33.52 18 28C18 22.48 22.48 18 28 18C33.52 18 38 22.48 38 28C38 33.52 33.52 38 28 38Z" fill="#F9B5D0"/>
+    </svg>
+  `;
+
+  pin.style.pointerEvents = "auto";
+
+  return pin;
+};
+
+export function useSearchMarkers({
+  map,
+  searchResults,
+  onMarkerClick,
 }: UseSearchMarkersProps) {
   const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
 
@@ -18,7 +44,7 @@ export function useSearchMarkers({
     if (!map) return;
 
     // 기존 마커 제거
-    markersRef.current.forEach(marker => marker.map = null);
+    markersRef.current.forEach((marker) => (marker.map = null));
     markersRef.current = [];
 
     if (searchResults.length === 0) return;
@@ -26,39 +52,35 @@ export function useSearchMarkers({
     // 마커 생성
     const createMarkers = async () => {
       try {
-        const { AdvancedMarkerElement } = await google.maps.importLibrary("marker") as google.maps.MarkerLibrary;
+        const { AdvancedMarkerElement } = (await google.maps.importLibrary(
+          "marker",
+        )) as google.maps.MarkerLibrary;
 
         const newMarkers = searchResults.map((result) => {
-        const div = document.createElement("div");
-        div.style.width = "16px";
-        div.style.height = "16px";
-        div.style.background = "#F9B5D0";
-        div.style.borderRadius = "50%";
+          const marker = new AdvancedMarkerElement({
+            position: result.location,
+            map: map,
+            content: createMarkerContent(),
+          });
 
-        const marker = new AdvancedMarkerElement({
-          position: result.location,
-          map: map,
-          content: div,
-        });
-
-        // 마커 클릭 시 동작
-        marker.addListener("click", () => {
-          onMarkerClick(result, marker);
-        });
+          // 마커 클릭 시 동작
+          marker.addListener("click", () => {
+            onMarkerClick(result, marker);
+          });
 
           return marker;
         });
 
         markersRef.current = newMarkers;
       } catch (error) {
-        console.error('마커 생성 중 오류:', error);
+        console.error("마커 생성 중 오류:", error);
       }
     };
 
     createMarkers();
 
     return () => {
-      markersRef.current.forEach(marker => marker.map = null);
+      markersRef.current.forEach((marker) => (marker.map = null));
       markersRef.current = [];
     };
   }, [searchResults, map]);

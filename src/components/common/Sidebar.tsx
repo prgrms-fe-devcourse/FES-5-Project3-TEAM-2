@@ -1,7 +1,7 @@
 import { useGroupStore } from "@/store/groupStore";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 
-import defaultProfile from "@/assets/default-profile.png";
+import defaultProfile from "@/assets/defaultprofile.svg";
 import calendar from "@/assets/icons/calendar.svg";
 import GroupIcon from "@/assets/icons/group.svg?react";
 import logoutIcon from "@/assets/icons/logout.svg";
@@ -110,7 +110,7 @@ export default function Sidebar() {
       type="button"
       onClick={handleLogout}
       disabled={signingOut}
-      className="flex items-center gap-2 text-gray-200 hover:text-gray-400 transition cursor-pointer
+      className="flex items-center justify-center gap-2 mb-2 text-gray-200 hover:text-gray-400 transition cursor-pointer
                   disabled:opacity-60 disabled:cursor-default">
         <img src={logoutIcon} alt="로그아웃 아이콘" className="w-5 h-5" />
         <span className="font-medium">로그아웃</span>

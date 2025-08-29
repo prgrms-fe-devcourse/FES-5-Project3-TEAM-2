@@ -1,24 +1,39 @@
 import { useRef } from "react";
+import { addInfoWindowStyles } from "../utils/addInfoWindowStyles";
 
 export function useInfoWindow() {
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
 
   const showInfo = async (
-    map: google.maps.Map, 
-    marker: google.maps.marker.AdvancedMarkerElement, 
-    content: string
+    map: google.maps.Map,
+    target:
+      | google.maps.marker.AdvancedMarkerElement
+      | google.maps.LatLng
+      | google.maps.LatLngLiteral,
+    content: string | HTMLElement,
   ) => {
     try {
-      // 있으면 재사용
+      addInfoWindowStyles();
+      // InfoWindow 생성/재사용
       if (!infoWindowRef.current) {
-        const { InfoWindow } = await google.maps.importLibrary("maps") as google.maps.MapsLibrary;
+        const { InfoWindow } = (await google.maps.importLibrary(
+          "maps",
+        )) as google.maps.MapsLibrary;
         infoWindowRef.current = new InfoWindow({ maxWidth: 280 });
       }
-      
+
+      // 콘텐츠 설정
       infoWindowRef.current.setContent(content);
-      infoWindowRef.current.open(map, marker);
+
+      // 타입에 따라 처리
+      if (target instanceof google.maps.marker.AdvancedMarkerElement) {
+        infoWindowRef.current.open(map, target);
+      } else {
+        infoWindowRef.current.setPosition(target);
+        infoWindowRef.current.open(map);
+      }
     } catch (error) {
-      console.error('InfoWindow 오류:', error);
+      console.error("InfoWindow 오류:", error);
     }
   };
 

@@ -2,12 +2,14 @@ import { supabase } from "@/lib/supabaseClient";
 import Album from "@/pages/AlbumPage";
 import AuthCallback from "@/pages/auth/AuthCallback";
 import Budget from "@/pages/BudgetPage";
+import GroupJoinPage from "@/pages/Group/pages/GroupJoinPage";
 import GroupsPage from "@/pages/Group/pages/GroupsPage";
 import { createBrowserRouter, Outlet, redirect, type LoaderFunctionArgs } from "react-router-dom";
 import HomeLayout from "../HomeLayout";
 import DashBoard from "../pages/DashBoard/index";
 import Home from "../pages/Home";
 import Root from "../root";
+import { dashboardLoader } from "./loader/dashBoardLoader";
 
 
 /** 로그인 요구 + userId 반환 */
@@ -80,7 +82,7 @@ const router = createBrowserRouter([
           path:'g/:groupId',
           loader: loadGroup,
           children: [
-            {index:true, element: <DashBoard />},
+            {index:true, element: <DashBoard />, loader: dashboardLoader},
             {path: "budget", element: <Budget />},
             {path: "album", element: <Album />},
           ],
@@ -91,12 +93,7 @@ const router = createBrowserRouter([
       // 매직링크
       {
         path: "g/:groupId",
-        loader: async ({params}: LoaderFunctionArgs) => {
-          const myId = await requireAuthAndGetUserId();
-          const groupId = params.groupId;
-          if(!groupId) throw redirect(`/groups/${myId}`);
-          throw redirect(`/groups/${myId}/g/${groupId}`);
-        }
+        element: <GroupJoinPage />
       }
     ],
   },

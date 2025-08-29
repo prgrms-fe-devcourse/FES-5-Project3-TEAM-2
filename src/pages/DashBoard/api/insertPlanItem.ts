@@ -19,30 +19,32 @@ export interface PlanItem {
   address: string | null;
   latitude: number | null;
   longitude: number | null;
-  sort_order: string;
+  sort_order: string;   
   duration: number;
   day: string;
+  jitter: string;       
 }
 
 export async function insertPlanItem(
-  item: PlanItemInsert, 
-  cachedItems?: PlanItem[] // 이미 특정 day로 필터링되고 정렬된 리스트
+  item: PlanItemInsert,
+  cachedItems?: PlanItem[]
 ): Promise<PlanItem> {
+  console.log("📌 insertPlanItem 실행:", item);
   try {
     let lastSortOrder: string | null = null;
 
-    // 캐시 활용 
+    // 캐시 활용
     if (cachedItems && cachedItems.length > 0) {
       lastSortOrder = cachedItems[cachedItems.length - 1].sort_order;
     } else {
       // 캐시에 없으면 DB 조회
-      console.log('캐시된 데이터가 없으므로 DB에서 마지막 인덱스를 가져오겠습니다.');
+      console.log("캐시된 데이터가 없으므로 DB에서 마지막 인덱스를 가져오겠습니다.");
       const { data: lastItem, error: queryError } = await supabase
-        .from('planitems')
-        .select('sort_order')
-        .eq('group_id', item.group_id)
-        .eq('day', item.day)
-        .order('sort_order', { ascending: false })
+        .from("planitems")
+        .select("sort_order")
+        .eq("group_id", item.group_id)
+        .eq("day", item.day)
+        .order("sort_order", { ascending: false })
         .limit(1)
         .maybeSingle();
 
@@ -53,32 +55,35 @@ export async function insertPlanItem(
       lastSortOrder = lastItem?.sort_order || null;
     }
 
-    // Fractional index + 지터로 새 키 생성
-    const baseKey = generateKeyBetween(lastSortOrder, null);
-    const finalKey = `${baseKey}_${createJitter()}`;
+    const newSortOrder = generateKeyBetween(lastSortOrder, null);
+    const newJitter = createJitter();
 
     const newItem = {
       ...item,
-      sort_order: finalKey,
-      duration: item.duration || 120 // 기본값 2시간
+      sort_order: newSortOrder,
+      jitter: newJitter,
+      duration: item.duration || 120, // 기본값 2시간
     };
 
     // DB에 삽입
     const { data, error } = await supabase
-      .from('planitems')
+      .from("planitems")
       .insert(newItem)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) {
       throw new Error(`Failed to insert plan item: ${error.message}`);
     }
 
-    console.log('✅ Plan item inserted successfully');
-    return data;
+    if (!data) {
+      throw new Error("Insert succeeded but no data returned");
+    }
 
+    console.log("✅ 일정 추가가 정상적으로 수행되었습니다.");
+    return data;
   } catch (error) {
-    console.error('Error inserting plan item:', error);
+    console.error("Error inserting plan item:", error);
     throw error;
   }
 }

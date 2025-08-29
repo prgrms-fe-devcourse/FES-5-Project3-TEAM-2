@@ -14,7 +14,8 @@ function GoogleMap({ onMapLoad }: GoogleMapProps) {
       center: { lat: 37.5665, lng: 126.978 },
       zoom: 12,
       disableDefaultUI: true,
-      mapId: "DEMO_MAP_ID"
+      mapId: "DEMO_MAP_ID",
+      clickableIcons: false,
     });
 
     onMapLoad(map);
