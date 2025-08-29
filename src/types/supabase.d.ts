@@ -195,7 +195,7 @@ export type Database = {
           duration: number
           group_id: string
           id: string
-          jitter: string | null
+          jitter: string 
           latitude: number | null
           longitude: number | null
           sort_order: string
@@ -207,7 +207,7 @@ export type Database = {
           duration?: number
           group_id: string
           id?: string
-          jitter?: string | null
+          jitter?: string 
           latitude?: number | null
           longitude?: number | null
           sort_order: string
@@ -219,7 +219,7 @@ export type Database = {
           duration?: number
           group_id?: string
           id?: string
-          jitter?: string | null
+          jitter?: string 
           latitude?: number | null
           longitude?: number | null
           sort_order?: string
