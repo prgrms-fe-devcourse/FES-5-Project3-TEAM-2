@@ -68,7 +68,7 @@ export default function BudgetStatsCard({
   const rows = Array.isArray(data) ? data : [];
   const normalized = rows.map((d) => ({
     name: d?.name ?? "",
-    value: Number((d as any)?.value ?? 0),
+    value: Number(d?.value ?? 0),
     color: d?.color,
   }));
 
@@ -109,14 +109,10 @@ export default function BudgetStatsCard({
               </Pie>
 
               <Tooltip
-                formatter={(v: any, _n: any, props: any) => {
-                  const value = Number(v);
-                  const percent =
-                    total > 0 ? Math.round((value / total) * 100) : 0;
-                  return [
-                    `${formatWon(value)} (${percent}%)`,
-                    props?.payload?.name,
-                  ];
+                formatter={(v: string | number, name: string | number) => {
+                  const value = Array.isArray(v as any) ? Number((v as any)[0]) : Number(v);
+                  const percent = total > 0 ? Math.round((value / total) * 100) : 0;
+                  return [`${formatWon(value)} (${percent}%)`, String(name)];
                 }}
               />
               <Legend

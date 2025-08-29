@@ -1,10 +1,11 @@
-import { useBudgetStore } from "@/store/budgetStore";
+import { useBudgetStore, type Expense } from "@/store/budgetStore";
 import { useMemo } from "react";
 
 const fmt = (n: number) => n.toLocaleString() + "원";
 
-export default function ExpenseList() {
-  const expenses = useBudgetStore((s) => s.expenses); // 원본만
+export default function ExpenseList({ items }: { items?: Expense[] }) {
+  const sourceExpenses = useBudgetStore((s) => s.expenses); // 원본(기본값)
+  const expenses = items ?? sourceExpenses; // 외부에서 전달되면 그걸 사용
   const members = useBudgetStore((s) => s.members);
 
   const sorted = useMemo(

@@ -4,8 +4,8 @@ import { nanoid } from "nanoid";
 export type Category = "식비" | "교통비" | "숙박비" | "활동비" | "기타";
 
 export interface Member {
-  id: string
-  name: string;
+  id: string; // profile.id
+  name: string; // profile.name
 }
 
 export interface Expense {
@@ -18,24 +18,42 @@ export interface Expense {
     createdAt: string;
   }
   
+  export interface ExpenseShare {
+    expenseId: string;
+    userId: string;
+    amount: number;
+  }
+  
   interface BudgetState {
     members: Member[];
     expenses: Expense[];
-    addExpense: (e: Omit<Expense, "id" | "createdAt">) => void;
+    shares: ExpenseShare[];
+    setMembers: (ms: Member[]) => void;
+    setExpenses: (es: Expense[]) => void;
+    setShares: (ss: ExpenseShare[]) => void;
+    addShares: (ss: ExpenseShare[]) => void;
+    removeSharesByExpense: (expenseId: string) => void;
+    addExpense: (e: Omit<Expense, "id" | "createdAt">) => string; // returns id for optimistic updates
     removeExpense: (id: string) => void;
   }
   
   export const useBudgetStore = create<BudgetState>((set) => ({
-    members: [
-      { id: "u1", name: "user" },
-      { id: "u2", name: "user2" },
-      { id: "u3", name: "user3" },
-    ],
+    members: [],
     expenses: [],
-    addExpense: (e) =>
+    shares: [],
+    setMembers: (ms) => set({ members: ms }),
+    setExpenses: (es) => set({ expenses: es }),
+    setShares: (ss) => set({ shares: ss }),
+    addShares: (ss) => set((s) => ({ shares: [...s.shares, ...ss] })),
+    removeSharesByExpense: (expenseId) =>
+      set((s) => ({ shares: s.shares.filter((sh) => sh.expenseId !== expenseId) })),
+    addExpense: (e) => {
+      const id = nanoid();
       set((s) => ({
-        expenses: [{ id: nanoid(), createdAt: new Date().toISOString(), ...e }, ...s.expenses],
-      })),
+        expenses: [{ id, createdAt: new Date().toISOString(), ...e }, ...s.expenses],
+      }));
+      return id;
+    },
     removeExpense: (id) =>
       set((s) => ({ expenses: s.expenses.filter((x) => x.id !== id) })),
   }));

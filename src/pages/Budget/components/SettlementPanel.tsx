@@ -8,42 +8,60 @@ const fmt = (n: number) => n.toLocaleString() + "원";
 export default function SettlementPanel() {
   const members = useBudgetStore((s) => s.members);
   const expenses = useBudgetStore((s) => s.expenses);
+  const shares = useBudgetStore((s) => s.shares);
 
-  // 참여자 + 지출자 = 분배 인원
-  // 각 share = amount / (참여자 ∪ 지출자)의 인원수
-  // 실제 '내야 하는 금액(dues)'은 지출자 제외 대상에게만 share 누적
-  const dues = useMemo(() => {
-    const map: Record<string, number> = {};
-    members.forEach((m) => (map[m.id] = 0));
+  // 반환: { owe: 내가 내야 할 돈, receive: 내가 받아야 할 돈 }
+  const { owe, receive } = useMemo(() => {
+    const oweMap: Record<string, number> = {};
+    const recvMap: Record<string, number> = {};
+    members.forEach((m) => {
+      oweMap[m.id] = 0;
+      recvMap[m.id] = 0;
+    });
 
+    if (shares.length > 0) {
+      // owes: expenseshares의 user_id 합계
+      shares.forEach((s) => {
+        oweMap[s.userId] = (oweMap[s.userId] || 0) + s.amount;
+      });
+      // receive: 각 expense의 payer에게 해당 expense로 생성된 shares 합산
+      const sharesByExpense: Record<string, number> = {};
+      shares.forEach((s) => {
+        sharesByExpense[s.expenseId] = (sharesByExpense[s.expenseId] || 0) + s.amount;
+      });
+      expenses.forEach((e) => {
+        const amt = sharesByExpense[e.id] || 0;
+        if (e.memberId) recvMap[e.memberId] = (recvMap[e.memberId] || 0) + amt;
+      });
+      return { owe: oweMap, receive: recvMap };
+    }
+
+    // Fallback: 로컬 계산 (서버 share 없을 때)
     expenses.forEach((e) => {
-      // 저장된 participants가 없다면 기본: '전체 멤버 - 지출자'
       const rawTargets =
         e.participants ??
         members.map((m) => m.id).filter((id) => id !== e.memberId);
-
-      // 분배 인원 = (참여자 ∪ 지출자)
       const allForSplit = new Set<string>([...rawTargets, e.memberId]);
-      const n = allForSplit.size; // ← 분모에 지출자 포함
+      const n = allForSplit.size;
       if (n === 0) return;
-
       const share = e.amount / n;
-
-      // 실제 납부 대상 = 참여자 중에서 지출자 제외
+      // 참가자(지출자 제외)는 owe, 지출자는 receive
       rawTargets
         .filter((id) => id !== e.memberId)
         .forEach((id) => {
-          map[id] += share;
+          oweMap[id] = (oweMap[id] || 0) + share;
+          if (e.memberId) recvMap[e.memberId] = (recvMap[e.memberId] || 0) + share;
         });
     });
 
-    return map; // { memberId: 내야 할 총액 }
-  }, [members, expenses]);
+    return { owe: oweMap, receive: recvMap };
+  }, [members, expenses, shares]);
 
   return (
     <div className="space-y-3">
       {members.map((m) => {
-        const due = dues[m.id] ?? 0;
+        const toPay = owe[m.id] ?? 0;
+        const toReceive = receive[m.id] ?? 0;
         return (
           <div
             key={m.id}
@@ -55,8 +73,9 @@ export default function SettlementPanel() {
               </div>
               <div className="text-sm">{m.name}</div>
             </div>
-            <div className="text-right text-sm">
-              <div className="font-semibold">{fmt(due)}</div>
+            <div className="text-right text-xs leading-tight">
+              <div>받을 돈: <span className="font-semibold">{fmt(toReceive)}</span></div>
+              <div>낼 돈: <span className="font-semibold">{fmt(toPay)}</span></div>
             </div>
           </div>
         );

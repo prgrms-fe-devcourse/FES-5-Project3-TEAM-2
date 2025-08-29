@@ -2,12 +2,25 @@ import AddExpenseButton from "@/pages/Budget/components/AddExpenseButton";
 import ExpenseList from "@/pages/Budget/components/ExpenseList";
 import SettlementPanel from "@/pages/Budget/components/SettlementPanel";
 import BudgetStatsCard from "@/pages/Budget/components/BudgetStatsCard";
-import { useBudgetStore } from "@/store/budgetStore";
-import { useMemo } from "react";
+import { useBudgetStore, type Category } from "@/store/budgetStore";
+import { useEffect } from "react";
+import { useParams } from "react-router";
+import { fetchGroupMembers, fetchExpensesAndShares } from "@/pages/Budget/api/expenses";
+import { useMemo, useState } from "react";
 import Button from "@/components/common/Button";
 
 export default function BudgetPage() {
   const expenses = useBudgetStore((s) => s.expenses);
+  const setMembers = useBudgetStore((s) => s.setMembers);
+  const setExpensesStore = useBudgetStore((s) => s.setExpenses);
+  const setSharesStore = useBudgetStore((s) => s.setShares);
+  const { groupId } = useParams<{ groupId: string }>();
+  const [selected, setSelected] = useState<Category | "전체">("전체");
+
+  const filteredExpenses = useMemo(
+    () => (selected === "전체" ? expenses : expenses.filter((e) => e.category === selected)),
+    [expenses, selected],
+  );
 
   const dataForChart = useMemo(() => {
     const acc: Record<string, number> = {
@@ -29,17 +42,46 @@ export default function BudgetPage() {
     ];
   }, [expenses]);
 
+  useEffect(() => {
+    (async () => {
+      if (!groupId) return;
+      try {
+        const ms = await fetchGroupMembers(groupId);
+        setMembers(ms);
+      } catch (e) {
+        console.error("그룹 멤버 불러오기 실패", e);
+      }
+    })();
+  }, [groupId, setMembers]);
+
+  // Load existing expenses and shares for this group
+  useEffect(() => {
+    (async () => {
+      if (!groupId) return;
+      try {
+        const { expenses: es, shares: ss } = await fetchExpensesAndShares(groupId);
+        setExpensesStore(es);
+        setSharesStore(ss);
+      } catch (e) {
+        console.error("경비 불러오기 실패", e);
+      }
+    })();
+  }, [groupId, setExpensesStore, setSharesStore]);
+
   return (
     <div className="h-full overflow-hidden grid grid-rows-[auto_1fr] gap-y-4 px-6 py-4">
       {/* 상단바 */}
       <div className="flex flex-wrap items-center justify-between gap-2 md:gap-3">
         <div className="flex gap-2">
-          <Button variant="secondary">전체</Button>
-          <Button variant="secondary">식비</Button>
-          <Button variant="secondary">교통비</Button>
-          <Button variant="secondary">숙박비</Button>
-          <Button variant="secondary">활동비</Button>
-          <Button variant="secondary">기타</Button>
+          {(["전체", "식비", "교통비", "숙박비", "활동비", "기타"] as const).map((c) => (
+            <Button
+              key={c}
+              variant={selected === c ? "primary" : "secondary"}
+              onClick={() => setSelected(c)}
+            >
+              {c}
+            </Button>
+          ))}
         </div>
         <div className="ml-auto">
           <AddExpenseButton />
@@ -54,7 +96,7 @@ export default function BudgetPage() {
             <h3 className="text-xl font-extrabold">전체 지출 내역 📄</h3>
           </header>
           <div className="flex-1 min-h-0 overflow-auto px-5">
-            <ExpenseList />
+            <ExpenseList items={filteredExpenses} />
           </div>
         </section>
 

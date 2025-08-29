@@ -30,18 +30,19 @@ export default function AuthCallback() {
         if (session) {
           const { user } = session;
 
-          await supabase.from("profile").upsert(
-            {
-              id: user.id,
-              email: user.email,
-              name:
-                user.user_metadata.full_name ??
-                user.email?.split("@")[0] ??
-                "user",
-              avatar_url: user.user_metadata.avatar_url ?? null,
-            },
-            { onConflict: "id" }
-          );
+          // 프로필 upsert: 타입 정확히 맞추기 (email은 string 필요)
+          const profileValues: import("@/types/supabase").TablesInsert<"profile"> = {
+            id: user.id,
+            email: user.email ?? `${user.id}@local`,
+            name:
+              (user.user_metadata?.full_name as string | undefined) ??
+              (user.email ? user.email.split("@")[0] : "user"),
+            avatar_url: (user.user_metadata?.avatar_url as string | null | undefined) ?? null,
+          };
+
+          await supabase
+            .from("profile")
+            .upsert(profileValues, { onConflict: "id" });
 
           setMsg("로그인 성공! 이동중...");
           navigate(`/groups/${user.id}`, { replace: true });
