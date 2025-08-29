@@ -1,9 +1,12 @@
 import { useBudgetStore, type Category } from "@/store/budgetStore";
 import { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router";
+import { insertExpenseWithShares, koToEnumCategory } from "@/pages/Budget/api/expenses";
 
 export default function AddExpenseModal({ onClose }: { onClose: () => void }) {
   const members = useBudgetStore((s) => s.members);
   const addExpense = useBudgetStore((s) => s.addExpense);
+  const { groupId } = useParams<{ groupId: string }>();
 
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState<Category>("식비");
@@ -26,21 +29,39 @@ export default function AddExpenseModal({ onClose }: { onClose: () => void }) {
   const toggleAll = () =>
     setParticipants(allChecked ? [] : others.map((m) => m.id));
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const a = Number(amount.replace(/[^0-9]/g, ""));
     if (!a) return alert("금액을 입력해 주세요.");
     if (!memberId) return alert("지출자를 선택해 주세요.");
     if ((participants?.length ?? 0) === 0) return alert("참여자를 한 명 이상 선택해 주세요.");
+    if (!groupId) return alert("그룹 정보가 없습니다.");
 
-    addExpense({
-      amount: a,
-      category,
-      memberId,
-      participants, // ✅ 저장
-      memo,
-    });
-    onClose();
+    try {
+      // 1) Supabase 저장
+      await insertExpenseWithShares({
+        groupId,
+        description: memo || `${category} 지출`,
+        totalAmount: a,
+        expenseTime: new Date().toISOString().slice(0, 10),
+        category: koToEnumCategory[category],
+        payerId: memberId,
+        participantIds: participants,
+      });
+
+      // 2) 로컬 스토어 업데이트 (UI 즉시 반영)
+      addExpense({
+        amount: a,
+        category,
+        memberId,
+        participants,
+        memo,
+      });
+      onClose();
+    } catch (err) {
+      console.error(err);
+      alert("저장 중 오류가 발생했습니다. 다시 시도해 주세요.");
+    }
   };
 
   return (

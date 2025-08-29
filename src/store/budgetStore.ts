@@ -4,8 +4,8 @@ import { nanoid } from "nanoid";
 export type Category = "식비" | "교통비" | "숙박비" | "활동비" | "기타";
 
 export interface Member {
-  id: string
-  name: string;
+  id: string; // profile.id
+  name: string; // profile.name
 }
 
 export interface Expense {
@@ -21,17 +21,15 @@ export interface Expense {
   interface BudgetState {
     members: Member[];
     expenses: Expense[];
+    setMembers: (ms: Member[]) => void;
     addExpense: (e: Omit<Expense, "id" | "createdAt">) => void;
     removeExpense: (id: string) => void;
   }
   
   export const useBudgetStore = create<BudgetState>((set) => ({
-    members: [
-      { id: "u1", name: "user" },
-      { id: "u2", name: "user2" },
-      { id: "u3", name: "user3" },
-    ],
+    members: [],
     expenses: [],
+    setMembers: (ms) => set({ members: ms }),
     addExpense: (e) =>
       set((s) => ({
         expenses: [{ id: nanoid(), createdAt: new Date().toISOString(), ...e }, ...s.expenses],

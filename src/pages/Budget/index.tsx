@@ -3,11 +3,16 @@ import ExpenseList from "@/pages/Budget/components/ExpenseList";
 import SettlementPanel from "@/pages/Budget/components/SettlementPanel";
 import BudgetStatsCard from "@/pages/Budget/components/BudgetStatsCard";
 import { useBudgetStore, type Category } from "@/store/budgetStore";
+import { useEffect } from "react";
+import { useParams } from "react-router";
+import { fetchGroupMembers } from "@/pages/Budget/api/expenses";
 import { useMemo, useState } from "react";
 import Button from "@/components/common/Button";
 
 export default function BudgetPage() {
   const expenses = useBudgetStore((s) => s.expenses);
+  const setMembers = useBudgetStore((s) => s.setMembers);
+  const { groupId } = useParams<{ groupId: string }>();
   const [selected, setSelected] = useState<Category | "전체">("전체");
 
   const filteredExpenses = useMemo(
@@ -34,6 +39,18 @@ export default function BudgetPage() {
       { name: "기타", value: acc["기타"], color: "#7EC8E3" },
     ];
   }, [expenses]);
+
+  useEffect(() => {
+    (async () => {
+      if (!groupId) return;
+      try {
+        const ms = await fetchGroupMembers(groupId);
+        setMembers(ms);
+      } catch (e) {
+        console.error("그룹 멤버 불러오기 실패", e);
+      }
+    })();
+  }, [groupId, setMembers]);
 
   return (
     <div className="h-full overflow-hidden grid grid-rows-[auto_1fr] gap-y-4 px-6 py-4">
