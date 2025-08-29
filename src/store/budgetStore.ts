@@ -18,10 +18,20 @@ export interface Expense {
     createdAt: string;
   }
   
+  export interface ExpenseShare {
+    expenseId: string;
+    userId: string;
+    amount: number;
+  }
+  
   interface BudgetState {
     members: Member[];
     expenses: Expense[];
+    shares: ExpenseShare[];
     setMembers: (ms: Member[]) => void;
+    setExpenses: (es: Expense[]) => void;
+    setShares: (ss: ExpenseShare[]) => void;
+    addShares: (ss: ExpenseShare[]) => void;
     addExpense: (e: Omit<Expense, "id" | "createdAt">) => void;
     removeExpense: (id: string) => void;
   }
@@ -29,7 +39,11 @@ export interface Expense {
   export const useBudgetStore = create<BudgetState>((set) => ({
     members: [],
     expenses: [],
+    shares: [],
     setMembers: (ms) => set({ members: ms }),
+    setExpenses: (es) => set({ expenses: es }),
+    setShares: (ss) => set({ shares: ss }),
+    addShares: (ss) => set((s) => ({ shares: [...s.shares, ...ss] })),
     addExpense: (e) =>
       set((s) => ({
         expenses: [{ id: nanoid(), createdAt: new Date().toISOString(), ...e }, ...s.expenses],

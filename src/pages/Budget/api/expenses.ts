@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
-import type { TablesInsert, Enums } from "@/types/supabase";
+import type { Tables, TablesInsert, Enums } from "@/types/supabase";
+import type { Expense, ExpenseShare } from "@/store/budgetStore";
 
 export type ExpenseCategoryEnum = Enums<"expense_category">; // "food" | "transport" | ...
 
@@ -9,6 +10,14 @@ export const koToEnumCategory: Record<string, ExpenseCategoryEnum> = {
   "숙박비": "hotel",
   "활동비": "activity",
   "기타": "other",
+};
+
+export const enumToKoCategory: Record<ExpenseCategoryEnum, import("@/store/budgetStore").Category> = {
+  food: "식비",
+  transport: "교통비",
+  hotel: "숙박비",
+  activity: "활동비",
+  other: "기타",
 };
 
 export async function fetchGroupMembers(groupId: string) {
@@ -68,3 +77,46 @@ export async function insertExpenseWithShares(p: InsertExpenseParams) {
   return created;
 }
 
+export async function fetchExpensesAndShares(groupId: string): Promise<{
+  expenses: Expense[];
+  shares: ExpenseShare[];
+}> {
+  const { data: exps, error: eErr } = await supabase
+    .from("expenses")
+    .select("id, description, total_amount, expense_time, category")
+    .eq("group_id", groupId)
+    .order("expense_time", { ascending: false });
+
+  if (eErr) throw eErr;
+
+  const expenseIds = (exps ?? []).map((e) => e.id);
+  let shrs: Tables<"expenseshares">[] = [];
+  if (expenseIds.length > 0) {
+    const { data: shares, error: sErr } = await supabase
+      .from("expenseshares")
+      .select("expense_id, user_id, amount")
+      .in("expense_id", expenseIds);
+    if (sErr) throw sErr;
+    shrs = shares ?? [];
+  }
+
+  const sharesMapped: ExpenseShare[] = shrs.map((s) => ({
+    expenseId: s.expense_id,
+    userId: s.user_id,
+    amount: s.amount,
+  }));
+
+  const expensesMapped: Expense[] = (exps ?? []).map((e) => ({
+    id: e.id,
+    amount: e.total_amount,
+    category: enumToKoCategory[e.category],
+    memberId: "", // 서버 스키마에 payer 정보가 없어 비움
+    participants: sharesMapped
+      .filter((s) => s.expenseId === e.id)
+      .map((s) => s.userId),
+    memo: e.description,
+    createdAt: e.expense_time, // YYYY-MM-DD
+  }));
+
+  return { expenses: expensesMapped, shares: sharesMapped };
+}

@@ -5,13 +5,15 @@ import BudgetStatsCard from "@/pages/Budget/components/BudgetStatsCard";
 import { useBudgetStore, type Category } from "@/store/budgetStore";
 import { useEffect } from "react";
 import { useParams } from "react-router";
-import { fetchGroupMembers } from "@/pages/Budget/api/expenses";
+import { fetchGroupMembers, fetchExpensesAndShares } from "@/pages/Budget/api/expenses";
 import { useMemo, useState } from "react";
 import Button from "@/components/common/Button";
 
 export default function BudgetPage() {
   const expenses = useBudgetStore((s) => s.expenses);
   const setMembers = useBudgetStore((s) => s.setMembers);
+  const setExpensesStore = useBudgetStore((s) => s.setExpenses);
+  const setSharesStore = useBudgetStore((s) => s.setShares);
   const { groupId } = useParams<{ groupId: string }>();
   const [selected, setSelected] = useState<Category | "전체">("전체");
 
@@ -51,6 +53,20 @@ export default function BudgetPage() {
       }
     })();
   }, [groupId, setMembers]);
+
+  // Load existing expenses and shares for this group
+  useEffect(() => {
+    (async () => {
+      if (!groupId) return;
+      try {
+        const { expenses: es, shares: ss } = await fetchExpensesAndShares(groupId);
+        setExpensesStore(es);
+        setSharesStore(ss);
+      } catch (e) {
+        console.error("경비 불러오기 실패", e);
+      }
+    })();
+  }, [groupId, setExpensesStore, setSharesStore]);
 
   return (
     <div className="h-full overflow-hidden grid grid-rows-[auto_1fr] gap-y-4 px-6 py-4">

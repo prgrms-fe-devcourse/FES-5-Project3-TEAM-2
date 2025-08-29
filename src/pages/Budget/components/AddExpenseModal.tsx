@@ -6,6 +6,7 @@ import { insertExpenseWithShares, koToEnumCategory } from "@/pages/Budget/api/ex
 export default function AddExpenseModal({ onClose }: { onClose: () => void }) {
   const members = useBudgetStore((s) => s.members);
   const addExpense = useBudgetStore((s) => s.addExpense);
+  const addShares = useBudgetStore((s) => s.addShares);
   const { groupId } = useParams<{ groupId: string }>();
 
   const [amount, setAmount] = useState("");
@@ -39,7 +40,7 @@ export default function AddExpenseModal({ onClose }: { onClose: () => void }) {
 
     try {
       // 1) Supabase 저장
-      await insertExpenseWithShares({
+      const created = await insertExpenseWithShares({
         groupId,
         description: memo || `${category} 지출`,
         totalAmount: a,
@@ -57,6 +58,17 @@ export default function AddExpenseModal({ onClose }: { onClose: () => void }) {
         participants,
         memo,
       });
+      // shares도 로컬에 반영 (정산 패널 동기화)
+      {
+        const allForSplit = new Set<string>([...participants, memberId]);
+        const n = allForSplit.size || 1;
+        const share = a / n;
+        addShares(
+          participants
+            .filter((id) => id !== memberId)
+            .map((uid) => ({ expenseId: created.id, userId: uid, amount: share }))
+        );
+      }
       onClose();
     } catch (err) {
       console.error(err);

@@ -8,6 +8,7 @@ const fmt = (n: number) => n.toLocaleString() + "원";
 export default function SettlementPanel() {
   const members = useBudgetStore((s) => s.members);
   const expenses = useBudgetStore((s) => s.expenses);
+  const shares = useBudgetStore((s) => s.shares);
 
   // 참여자 + 지출자 = 분배 인원
   // 각 share = amount / (참여자 ∪ 지출자)의 인원수
@@ -16,20 +17,23 @@ export default function SettlementPanel() {
     const map: Record<string, number> = {};
     members.forEach((m) => (map[m.id] = 0));
 
+    if (shares.length > 0) {
+      // 서버에서 계산된 share 총합을 사용
+      shares.forEach((s) => {
+        map[s.userId] = (map[s.userId] || 0) + s.amount;
+      });
+      return map;
+    }
+
+    // Fallback: 로컬 계산 (서버 share 없을 때)
     expenses.forEach((e) => {
-      // 저장된 participants가 없다면 기본: '전체 멤버 - 지출자'
       const rawTargets =
         e.participants ??
         members.map((m) => m.id).filter((id) => id !== e.memberId);
-
-      // 분배 인원 = (참여자 ∪ 지출자)
       const allForSplit = new Set<string>([...rawTargets, e.memberId]);
-      const n = allForSplit.size; // ← 분모에 지출자 포함
+      const n = allForSplit.size;
       if (n === 0) return;
-
       const share = e.amount / n;
-
-      // 실제 납부 대상 = 참여자 중에서 지출자 제외
       rawTargets
         .filter((id) => id !== e.memberId)
         .forEach((id) => {
@@ -37,8 +41,8 @@ export default function SettlementPanel() {
         });
     });
 
-    return map; // { memberId: 내야 할 총액 }
-  }, [members, expenses]);
+    return map;
+  }, [members, expenses, shares]);
 
   return (
     <div className="space-y-3">
