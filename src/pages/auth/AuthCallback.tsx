@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { LoginAlert } from "@/components/Sweetalert";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
 
 export default function AuthCallback() {
   const navigate = useNavigate();
-  const [msg, setMsg] = useState("로그인 처리중...");
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -44,15 +44,15 @@ export default function AuthCallback() {
             .from("profile")
             .upsert(profileValues, { onConflict: "id" });
 
-          setMsg("로그인 성공! 이동중...");
+          LoginAlert('로그인 성공! 환영합니다🎉', 'success');
           navigate(`/groups/${user.id}`, { replace: true });
         } else {
-          setMsg("로그인에 실패했습니다. 다시 시도해주세요.");
+          LoginAlert("로그인에 실패했습니다. 다시 시도해주세요.", 'error');
           navigate("/", { replace: true });
         }
       } catch (error) {
         console.error("AuthCallback error:", error);
-        setMsg("로그인 처리 중 오류가 발생했습니다.");
+        LoginAlert("로그인 처리 중 오류가 발생했습니다.", 'error');
         navigate("/", { replace: true });
       }
     };
@@ -60,5 +60,5 @@ export default function AuthCallback() {
     handleAuth();
   }, [navigate]);
 
-  return <p>{msg}</p>;
+  return null;
 }
