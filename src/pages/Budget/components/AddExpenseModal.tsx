@@ -32,51 +32,6 @@ export default function AddExpenseModal({ onClose }: { onClose: () => void }) {
   const toggleAll = () =>
     setParticipants(allChecked ? [] : others.map((m) => m.id));
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const a = Number(amount.replace(/[^0-9]/g, ""));
-    if (!a) return alert("금액을 입력해 주세요.");
-    if (!memberId) return alert("지출자를 선택해 주세요.");
-    if ((participants?.length ?? 0) === 0) return alert("참여자를 한 명 이상 선택해 주세요.");
-    if (!groupId) return alert("그룹 정보가 없습니다.");
-
-    try {
-      // 1) Supabase 저장
-      const created = await insertExpenseWithShares({
-        groupId,
-        description: memo || `${category} 지출`,
-        totalAmount: a,
-        expenseTime: new Date().toISOString().slice(0, 10),
-        category: koToEnumCategory[category],
-        payerId: memberId,
-        participantIds: participants,
-      });
-
-      // 2) 로컬 스토어 업데이트 (UI 즉시 반영)
-      addExpense({
-        amount: a,
-        category,
-        memberId,
-        participants,
-        memo,
-      });
-      // shares도 로컬에 반영 (정산 패널 동기화)
-      {
-        const allForSplit = new Set<string>([...participants, memberId]);
-        const n = allForSplit.size || 1;
-        const share = a / n;
-        addShares(
-          participants
-            .filter((id) => id !== memberId)
-            .map((uid) => ({ expenseId: created.id, userId: uid, amount: share }))
-        );
-      }
-      onClose();
-    } catch (err) {
-      console.error(err);
-      alert("저장 중 오류가 발생했습니다. 다시 시도해 주세요.");
-    }
-  };
 
   // Optimistic onSubmit: add locally first, rollback if server fails
   const submitOptimistic = async (e: React.FormEvent) => {
