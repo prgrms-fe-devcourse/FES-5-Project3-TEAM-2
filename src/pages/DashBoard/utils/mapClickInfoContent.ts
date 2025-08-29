@@ -1,7 +1,6 @@
 interface ClickedLocation {
   lat: number;
   lng: number;
-  address: string;
 }
 
 export function createMapClickInfoContent(
@@ -10,33 +9,36 @@ export function createMapClickInfoContent(
 ): HTMLElement {
   const container = document.createElement("div");
   container.style.padding = "0 16px";
-  container.style.maxWidth = "280px";
+  container.style.width = "280px";
 
   container.innerHTML = `
-    <h3 style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: #333;">
-      ${escapeHtml(location.address)}
-    </h3>
-    
-    <button
-      class="add-schedule-btn"
-      style="width: 100%; padding: 8px; margin-bottom: 8px; background: #F9B5D0; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;"
-    >
-      일정 추가
-    </button>
+    <div style="text-align: center;">
+      <p style="margin-bottom: 12px; font-size: 16px; color: #333;">
+        이 위치에 일정을 추가하시겠습니까?
+      </p>
+      
+      <button
+        class="add-schedule-btn"
+        style="width: 100%; padding: 8px; background: #F9B5D0; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;"
+      >
+        일정 추가
+      </button>
+    </div>
   `;
 
   const addButton = container.querySelector(
     ".add-schedule-btn",
   ) as HTMLButtonElement;
-  addButton.addEventListener("click", () => {
-    onAddSchedule(location);
+
+  addButton.addEventListener("click", async () => {
+    // 로딩 상태
+    addButton.disabled = true;
+    addButton.textContent = "주소 확인 중";
+    addButton.style.background = "#BFBFBF";
+    addButton.style.cursor = "not-allowed";
+
+    await onAddSchedule(location);
   });
 
   return container;
-}
-
-function escapeHtml(text: string): string {
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
 }
