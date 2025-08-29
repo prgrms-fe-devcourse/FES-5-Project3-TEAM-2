@@ -7,8 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
   }
@@ -21,6 +20,7 @@ export type Database = {
           expense_time: string
           group_id: string
           id: string
+          payer_id: string | null
           total_amount: number
         }
         Insert: {
@@ -29,6 +29,7 @@ export type Database = {
           expense_time: string
           group_id: string
           id?: string
+          payer_id?: string | null
           total_amount: number
         }
         Update: {
@@ -37,6 +38,7 @@ export type Database = {
           expense_time?: string
           group_id?: string
           id?: string
+          payer_id?: string | null
           total_amount?: number
         }
         Relationships: [
@@ -45,6 +47,13 @@ export type Database = {
             columns: ["group_id"]
             isOneToOne: false
             referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_payer_id_fkey"
+            columns: ["payer_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
             referencedColumns: ["id"]
           },
         ]
@@ -186,9 +195,10 @@ export type Database = {
           duration: number
           group_id: string
           id: string
+          jitter: string 
           latitude: number | null
           longitude: number | null
-          sort_order: number
+          sort_order: string
           title: string
         }
         Insert: {
@@ -197,9 +207,10 @@ export type Database = {
           duration?: number
           group_id: string
           id?: string
+          jitter?: string 
           latitude?: number | null
           longitude?: number | null
-          sort_order: number
+          sort_order: string
           title: string
         }
         Update: {
@@ -208,9 +219,10 @@ export type Database = {
           duration?: number
           group_id?: string
           id?: string
+          jitter?: string 
           latitude?: number | null
           longitude?: number | null
-          sort_order?: number
+          sort_order?: string
           title?: string
         }
         Relationships: [
@@ -249,7 +261,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      same_group: {
+        Args: { u: string; v: string }
+        Returns: boolean
+      }
     }
     Enums: {
       expense_category: "food" | "transport" | "hotel" | "activity" | "other"

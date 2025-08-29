@@ -1,18 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
+import type { Database } from "@/types/supabase";
 
-// 기존 PlanItem 타입 재사용
-export interface PlanItem {
-  id: string;
-  group_id: string;
-  title: string;
-  address: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  sort_order: string;
-  duration: number;
-  day: string;
-  jitter:string;
-}
+export type PlanItem = Database["public"]["Tables"]["planitems"]["Row"];
 
 // 편집 업데이트용 파라미터
 export interface UpdatePlanItemParams {
