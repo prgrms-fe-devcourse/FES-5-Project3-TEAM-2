@@ -49,6 +49,7 @@ export async function insertExpenseWithShares(p: InsertExpenseParams) {
     total_amount: p.totalAmount,
     expense_time: p.expenseTime,
     category: p.category,
+    payer_id: p.payerId,
   };
 
   const { data: created, error: eErr } = await supabase
@@ -60,12 +61,11 @@ export async function insertExpenseWithShares(p: InsertExpenseParams) {
   if (eErr) throw eErr;
   if (!created) throw new Error("Failed to insert expense");
 
-  // 2) Compute shares (participants ∪ payer) then assign share to participants excluding payer
   const allForSplit = new Set<string>([...p.participantIds, p.payerId]);
   const n = allForSplit.size || 1;
   const share = p.totalAmount / n;
 
-  const rows = p.participantIds
+  const rows: TablesInsert<"expenseshares">[] = p.participantIds
     .filter((id) => id !== p.payerId)
     .map((uid) => ({ expense_id: created.id, user_id: uid, amount: share }));
 
@@ -83,7 +83,7 @@ export async function fetchExpensesAndShares(groupId: string): Promise<{
 }> {
   const { data: exps, error: eErr } = await supabase
     .from("expenses")
-    .select("id, description, total_amount, expense_time, category")
+    .select("id, description, total_amount, expense_time, category, payer_id")
     .eq("group_id", groupId)
     .order("expense_time", { ascending: false });
 
@@ -110,7 +110,7 @@ export async function fetchExpensesAndShares(groupId: string): Promise<{
     id: e.id,
     amount: e.total_amount,
     category: enumToKoCategory[e.category],
-    memberId: "", // 서버 스키마에 payer 정보가 없어 비움
+    memberId: e.payer_id ?? "",
     participants: sharesMapped
       .filter((s) => s.expenseId === e.id)
       .map((s) => s.userId),

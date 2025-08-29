@@ -68,7 +68,7 @@ export default function BudgetStatsCard({
   const rows = Array.isArray(data) ? data : [];
   const normalized = rows.map((d) => ({
     name: d?.name ?? "",
-    value: Number((d as any)?.value ?? 0),
+    value: Number(d?.value ?? 0),
     color: d?.color,
   }));
 
