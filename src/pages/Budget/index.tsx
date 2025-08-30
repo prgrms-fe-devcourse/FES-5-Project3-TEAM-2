@@ -5,7 +5,10 @@ import BudgetStatsCard from "@/pages/Budget/components/BudgetStatsCard";
 import { useBudgetStore, type Category } from "@/store/budgetStore";
 import { useEffect } from "react";
 import { useParams } from "react-router";
-import { fetchGroupMembers, fetchExpensesAndShares } from "@/pages/Budget/api/expenses";
+import {
+  fetchGroupMembers,
+  fetchExpensesAndShares,
+} from "@/pages/Budget/api/expenses";
 import { useMemo, useState } from "react";
 import Button from "@/components/common/Button";
 
@@ -18,7 +21,10 @@ export default function BudgetPage() {
   const [selected, setSelected] = useState<Category | "전체">("전체");
 
   const filteredExpenses = useMemo(
-    () => (selected === "전체" ? expenses : expenses.filter((e) => e.category === selected)),
+    () =>
+      selected === "전체"
+        ? expenses
+        : expenses.filter((e) => e.category === selected),
     [expenses, selected],
   );
 
@@ -59,7 +65,8 @@ export default function BudgetPage() {
     (async () => {
       if (!groupId) return;
       try {
-        const { expenses: es, shares: ss } = await fetchExpensesAndShares(groupId);
+        const { expenses: es, shares: ss } =
+          await fetchExpensesAndShares(groupId);
         setExpensesStore(es);
         setSharesStore(ss);
       } catch (e) {
@@ -73,7 +80,9 @@ export default function BudgetPage() {
       {/* 상단바 */}
       <div className="flex flex-wrap items-center justify-between gap-2 md:gap-3">
         <div className="flex gap-2">
-          {(["전체", "식비", "교통비", "숙박비", "활동비", "기타"] as const).map((c) => (
+          {(
+            ["전체", "식비", "교통비", "숙박비", "활동비", "기타"] as const
+          ).map((c) => (
             <Button
               key={c}
               variant={selected === c ? "primary" : "secondary"}
@@ -113,7 +122,7 @@ export default function BudgetPage() {
         {/* 통계 */}
         <BudgetStatsCard
           title="통계 📊"
-          totalLabel="카테고리별 예산"
+          totalLabel="총 지출 내역"
           data={dataForChart}
         />
       </div>
