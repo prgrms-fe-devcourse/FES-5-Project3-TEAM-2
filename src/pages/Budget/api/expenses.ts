@@ -42,7 +42,6 @@ export interface InsertExpenseParams {
 }
 
 export async function insertExpenseWithShares(p: InsertExpenseParams) {
-  // 1) Insert into expenses
   const expense: TablesInsert<"expenses"> = {
     group_id: p.groupId,
     description: p.description,
@@ -119,4 +118,59 @@ export async function fetchExpensesAndShares(groupId: string): Promise<{
   }));
 
   return { expenses: expensesMapped, shares: sharesMapped };
+}
+
+export interface UpdateExpenseParams {
+  expenseId: string;
+  description: string;
+  totalAmount: number;
+  expenseTime: string;
+  category: ExpenseCategoryEnum;
+  payerId: string;
+  participantIds: string[];
+}
+
+export async function updateExpenseWithShares(p: UpdateExpenseParams) {
+  const { error: uErr } = await supabase
+    .from("expenses")
+    .update({
+      description: p.description,
+      total_amount: p.totalAmount,
+      expense_time: p.expenseTime,
+      category: p.category,
+      payer_id: p.payerId,
+    })
+    .eq("id", p.expenseId);
+  if (uErr) throw uErr;
+
+  const { error: dErr } = await supabase
+    .from("expenseshares")
+    .delete()
+    .eq("expense_id", p.expenseId);
+  if (dErr) throw dErr;
+
+  const allForSplit = new Set<string>([...p.participantIds, p.payerId]);
+  const n = allForSplit.size || 1;
+  const share = p.totalAmount / n;
+  const rows = p.participantIds
+    .filter((id) => id !== p.payerId)
+    .map((uid) => ({ expense_id: p.expenseId, user_id: uid, amount: share }));
+  if (rows.length > 0) {
+    const { error: iErr } = await supabase.from("expenseshares").insert(rows);
+    if (iErr) throw iErr;
+  }
+}
+
+export async function deleteExpense(expenseId: string) {
+  const { error: sErr } = await supabase
+    .from("expenseshares")
+    .delete()
+    .eq("expense_id", expenseId);
+  if (sErr) throw sErr;
+
+  const { error: eErr } = await supabase
+    .from("expenses")
+    .delete()
+    .eq("id", expenseId);
+  if (eErr) throw eErr;
 }

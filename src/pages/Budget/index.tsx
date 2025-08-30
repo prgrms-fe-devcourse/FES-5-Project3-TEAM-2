@@ -60,7 +60,6 @@ export default function BudgetPage() {
     })();
   }, [groupId, setMembers]);
 
-  // Load existing expenses and shares for this group
   useEffect(() => {
     (async () => {
       if (!groupId) return;
