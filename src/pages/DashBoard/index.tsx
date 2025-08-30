@@ -17,6 +17,8 @@ function DashBoard() {
   useEffect(() => {
     if (!group) return;
 
+    usePlanStore.getState().clearEditingItems();
+
     const myProfile = usePresenceStore.getState().myProfile;
     const myUserId = myProfile?.id ?? "guest";
 
@@ -98,6 +100,22 @@ function DashBoard() {
     });
 
     return () => {
+      const myProfile = usePresenceStore.getState().myProfile;
+      const editingItems = usePlanStore.getState().editingItemIds;
+      
+      if (myProfile && editingItems.length > 0) {
+        editingItems.forEach((item) => {
+          if (item.userId === myProfile.id) {
+            channel.send({
+              type: "broadcast",
+              event: "edit-end",
+              payload: { itemId: item.itemId, userId: myProfile.id },
+            });
+          }
+        });
+      }
+      
+      usePlanStore.getState().clearEditingItems();
       supabase.removeChannel(channel);
     };
   }, [group, navigate]);

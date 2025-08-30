@@ -34,7 +34,11 @@ type PlanStore = {
   clearEditingItems: () => void;
 
   // 원격 Broadcast 수신 처리
-  addEditingItemRemote: (itemId: string, userId: string, userName: string) => void;
+  addEditingItemRemote: (
+    itemId: string,
+    userId: string,
+    userName: string,
+  ) => void;
   removeEditingItemRemote: (itemId: string, userId: string) => void;
 
   confirmEditItem: (
@@ -97,32 +101,34 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
 
   // ✅ 편집 시작
   addEditingItem: (itemId) => {
-  const myProfile = usePresenceStore.getState().myProfile;
-  const group = useGroupStore.getState().group;
-  if (!myProfile || !group) return;
+    const myProfile = usePresenceStore.getState().myProfile;
+    const group = useGroupStore.getState().group;
+    if (!myProfile || !group) return;
 
-  const { id: userId, name: userName } = myProfile;
+    const { id: userId, name: userName } = myProfile;
 
-  set((state) => {
-    // 이미 내가 수정 중인 아이템이 있다면 추가 금지
-    const alreadyEditing = state.editingItemIds.some((e) => e.userId === userId);
-    if (alreadyEditing) {
-      console.warn("⚠️ 이미 다른 아이템을 수정 중입니다.");
-      return state;
-    }
+    set((state) => {
+      // 이미 내가 수정 중인 아이템이 있다면 추가 금지
+      const alreadyEditing = state.editingItemIds.some(
+        (e) => e.userId === userId,
+      );
+      if (alreadyEditing) {
+        console.warn("⚠️ 이미 다른 아이템을 수정 중입니다.");
+        return state;
+      }
 
-    return {
-      editingItemIds: [...state.editingItemIds, { itemId, userId, userName }],
-    };
-  });
+      return {
+        editingItemIds: [...state.editingItemIds, { itemId, userId, userName }],
+      };
+    });
 
-  // Broadcast 전송
-  supabase.channel(group.id).send({
-    type: "broadcast",
-    event: "edit-start",
-    payload: { itemId, userId, userName },
-  });
-},
+    // Broadcast 전송
+    supabase.channel(group.id).send({
+      type: "broadcast",
+      event: "edit-start",
+      payload: { itemId, userId, userName },
+    });
+  },
 
   // ✅ 편집 종료
   removeEditingItem: (itemId) => {
@@ -151,7 +157,11 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
   // ✅ 다른 팀원 Broadcast 수신
   addEditingItemRemote: (itemId, userId, userName) =>
     set((state) => {
-      if (state.editingItemIds.some((e) => e.itemId === itemId && e.userId === userId)) {
+      if (
+        state.editingItemIds.some(
+          (e) => e.itemId === itemId && e.userId === userId,
+        )
+      ) {
         return state; // 이미 있음 → 중복 방지
       }
       return {
@@ -171,6 +181,12 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
     const item = allPlanItems.find((i) => i.id === itemId);
     if (!item) return;
 
+    const myProfile = usePresenceStore.getState().myProfile;
+    const group = useGroupStore.getState().group;
+    if (!myProfile || !group) return;
+
+    const { id: userId } = myProfile;
+
     try {
       const updated = await editUpdate({
         itemId,
@@ -185,6 +201,13 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
           i.id === updated.id ? updated : i,
         ),
         editingItemIds: get().editingItemIds.filter((e) => e.itemId !== itemId),
+      });
+
+      // ✅ 수정 완료 브로드캐스트 전송
+      supabase.channel(group.id).send({
+        type: "broadcast",
+        event: "edit-end",
+        payload: { itemId, userId },
       });
     } catch (err) {
       console.error("❌ 수정 실패:", err);

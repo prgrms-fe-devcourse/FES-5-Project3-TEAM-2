@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import dragIcon from "@/assets/icons/drag_indicator_icon.png";
@@ -42,8 +42,23 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
   const [tempTitle, setTempTitle] = useState(title);
   const [tempDuration, setTempDuration] = useState(duration);
 
+  useEffect(() => {
+    setTempTitle(title);
+    setTempDuration(duration);
+  }, [title, duration]);
+
+  const handleCancel = () => {
+    // 원래 값으로 초기화
+    setTempTitle(title);
+    setTempDuration(duration);
+    // 편집 상태 제거
+    removeEditingItem(id);
+  };
+
   const hours = Math.floor(duration / 60);
   const minutes = duration % 60;
+
+
 
   return (
     <li ref={setNodeRef} style={style}>
@@ -92,7 +107,7 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
             />
             <button
               className="text-xs text-red-500 ml-2"
-              onClick={() => removeEditingItem(id)}
+              onClick={handleCancel}
             >
               취소
             </button>
