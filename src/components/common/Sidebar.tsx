@@ -8,14 +8,16 @@ import logoutIcon from "@/assets/icons/logout.svg";
 import money from "@/assets/icons/money.svg";
 import photo from "@/assets/icons/photo.svg";
 import logo from "@/assets/logo.png";
-import { supabase } from "@/lib/supabaseClient";
 import useCurrentGroup from "@/pages/Group/hooks/useCurrentGroup";
 import useCurrentProfile from "@/pages/Group/hooks/useCurrentProfile";
 import { useProfileStore } from "@/store/profileStore";
+
 import { useState } from "react";
 import GroupMemberList from "@/pages/Group/components/GroupMemberList";
 import { useGroupMembers } from "@/pages/Group/hooks/useGroupMembers";
 import { usePresenceStore } from "@/pages/DashBoard/store/presenceStore";
+import { LogoutAlert } from "../Sweetalert";
+
 
 const link = ({ isActive }: { isActive: boolean }) =>
   [
@@ -30,7 +32,6 @@ export default function Sidebar() {
   useCurrentGroup(); // 현재 참여한 그룹
 
   const navigate = useNavigate();
-  const [signingOut, setSigningOut] = useState(false);
 
   const {profile} = useProfileStore();
   const currentGroup = useGroupStore((s) => s.currentGroup);
@@ -46,20 +47,6 @@ export default function Sidebar() {
   // groups/:userId/g/:groupId
   const groupBase = currentGroup ? `${userBase}/g/${currentGroup.id}` : null;
 
-  const handleLogout = async() => {
-    if(signingOut) return;
-    setSigningOut(true);
-
-    try{
-      const {error} = await supabase.auth.signOut();
-      if(error) throw error;
-      // replace로 뒤로가기 방지
-      navigate('/', {replace: true});
-    } catch(e){
-      alert('로그아웃 중 문제가 발생했습니다.');
-      setSigningOut(false);
-    }
-  }
 
   return (
     <aside className="w-[248px] min-h-screen shadow-[0_4px_12px_rgba(0,0,0,0.15)] bg-white flex flex-col px-5 pt-6 pb-4">
@@ -128,8 +115,7 @@ export default function Sidebar() {
 
       <button
       type="button"
-      onClick={handleLogout}
-      disabled={signingOut}
+      onClick={() => LogoutAlert(navigate)}
       className="flex items-center justify-center gap-2 mb-2 text-gray-200 hover:text-gray-400 transition cursor-pointer
                   disabled:opacity-60 disabled:cursor-default">
         <img src={logoutIcon} alt="로그아웃 아이콘" className="w-5 h-5" />

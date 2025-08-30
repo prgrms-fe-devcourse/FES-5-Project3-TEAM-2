@@ -49,7 +49,7 @@ export default function GroupCard({ g }: Props) {
     className="w-full max-w-[480px] aspect-[20/9] bg-white rounded-2xl cursor-pointer drop-shadow-[4px_4px_4px_rgba(0,0,0,0.25)]">
       <div className="relative aspect-[20/9]">
           <img src={cardbg} alt="배경이미지" className="h-full w-full object-cover rounded-t-2xl" />
-          <h3 className="absolute left-5 top-5 text-7 font-extrabold text-white drop-shadow-[4px_4px_4px_rgba(0,0,0,0.25)]">
+          <h3 className="absolute left-5 top-5 text-7 font-extrabold text-white shadow-[4px_4px_4px_rgba(0,0,0,0.25)]">
             {g.name}
           </h3>
           <button

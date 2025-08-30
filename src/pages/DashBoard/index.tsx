@@ -12,11 +12,11 @@ import { usePresenceStore } from "./store/presenceStore";
 
 function DashBoard() {
   const group = useGroupStore((state) => state.group); 
+
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!group) return;
-
     
     const myProfile = usePresenceStore.getState().myProfile;
     const editingItems = usePlanStore.getState().editingItemIds;
@@ -73,7 +73,6 @@ function DashBoard() {
         table: "planitems",
       },
       (payload) => {
-        console.log("🔔 DB 변경 감지:", payload);
         switch (payload.eventType) {
           case "INSERT":
             usePlanStore.getState().addPlanItem(payload.new as PlanItem);
@@ -129,6 +128,7 @@ function DashBoard() {
         });
       }
       
+
       supabase.removeChannel(channel);
     };
   }, [group, navigate]);

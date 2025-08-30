@@ -1,4 +1,3 @@
-// store/planStore.ts
 import { create } from "zustand";
 import type { PlanItem } from "@/pages/DashBoard/api/loadPlanItem";
 import type { TripDay } from "../utils/generateTripDays";
@@ -21,6 +20,7 @@ type PlanStore = {
   allPlanItems: PlanItem[];
   editingItemIds: EditingUser[];
 
+
   setTripDays: (days: TripDay[]) => void;
   setSelectedDay: (day: string) => void;
   setAllPlanItems: (items: PlanItem[]) => void;
@@ -40,6 +40,7 @@ type PlanStore = {
     userName: string,
   ) => void;
   removeEditingItemRemote: (itemId: string, userId: string) => void;
+
 
   confirmEditItem: (
     itemId: string,
@@ -80,6 +81,7 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
     });
   },
 
+
   removePlanItem: (itemId: string) => {
     const { allPlanItems } = get();
     set({
@@ -87,7 +89,7 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
     });
   },
 
-  deletePlanItem: async (itemId) => {
+  deletePlanItem: async (itemId) => { // 내 UI 위한 목적.
     try {
       await deletePlanItem(itemId);
       const { allPlanItems } = get();
@@ -187,6 +189,7 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
 
     const { id: userId } = myProfile;
 
+
     try {
       const updated = await editUpdate({
         itemId,
@@ -208,6 +211,7 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
         type: "broadcast",
         event: "edit-end",
         payload: { itemId, userId },
+
       });
     } catch (err) {
       console.error("❌ 수정 실패:", err);

@@ -1,11 +1,12 @@
 import { Wrapper } from "@googlemaps/react-wrapper";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 // 컴포넌트
 import GoogleMap from "./GoogleMap";
 import MapZoom from "./MapZoom";
 import SearchBox from "./SearchBox";
 import SearchResults from "./SearchResults";
+import AddScheduleModal from "./AddScheduleModal";
 
 // 훅
 import { useSearchPlace } from "../hooks/useSearchPlace";
@@ -13,7 +14,7 @@ import { useMapHandlers } from "../hooks/useMapHandler";
 import { useSearchMarkers } from "../hooks/useSearchMarkers";
 import { useScheduleMarkers } from "../hooks/useScheduleMarkers";
 import { useInfoWindow } from "../hooks/useInfoWindow";
-import { useMapClick } from "../hooks/useMapClick";
+import { useMapClick, reverseGeocode } from "../hooks/useMapClick";
 
 // 유틸리티
 import { createSearchInfoContent } from "../utils/searchInfoContent";
@@ -30,10 +31,33 @@ type ScheduleItem =
   | { lat: number; lng: number; address: string }
   | SearchResult;
 
+type MapClickLocation = {
+  lat: number;
+  lng: number;
+  address?: string;
+  clickEvent: google.maps.MapMouseEvent;
+};
+
+type ScheduleModalData = {
+  location: {
+    lat: number;
+    lng: number;
+    address?: string;
+    name?: string;
+  };
+  day: string;
+  groupId: string;
+};
+
 function Map() {
-  const day = usePlanStore((state) => state.selectedDay);
+  const selectedDay = usePlanStore((state) => state.selectedDay);
   const group = useGroupStore((state) => state.group);
   const groupId = group?.id;
+
+  const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
+  const [scheduleModalData, setScheduleModalData] = useState<
+    ScheduleModalData | undefined
+  >(undefined);
 
   // === 기본 훅 ===
   const { map, handleMapLoad, handleZoom, handleResultClick } =
@@ -61,12 +85,38 @@ function Map() {
 
   // === 핸들러 ===
   const handleAddSchedule = useCallback(
-    (item: ScheduleItem) => {
-      console.log("일정 추가:", item);
-      console.log(day);
+    async (item: ScheduleItem | MapClickLocation) => {
+      let scheduleItem: ScheduleModalData["location"];
+
+      if ("clickEvent" in item) {
+        // 지도 클릭 시
+        const address = await reverseGeocode(item.lat, item.lng);
+        scheduleItem = { lat: item.lat, lng: item.lng, address };
+      } else if ("location" in item && "name" in item) {
+        // 검색 시
+        scheduleItem = {
+          lat: item.location.lat,
+          lng: item.location.lng,
+          address: item.address,
+          name: item.name,
+        };
+      } else {
+        // 중복 일정
+        scheduleItem = { lat: item.lat, lng: item.lng, address: item.address };
+      }
+
+      setScheduleModalData({
+        location: scheduleItem,
+        day:
+          typeof selectedDay === "string"
+            ? selectedDay
+            : new Date().toISOString().split("T")[0],
+        groupId: groupId || "",
+      });
+      setIsScheduleModalOpen(true);
       hideInfo();
     },
-    [hideInfo],
+    [hideInfo, selectedDay, groupId],
   );
 
   const handleSearch = useCallback(
@@ -86,24 +136,26 @@ function Map() {
   );
 
   const handleMapClick = useCallback(
-    (location: {
-      lat: number;
-      lng: number;
-      address: string;
-      clickEvent: google.maps.MapMouseEvent;
-    }) => {
+    (location: MapClickLocation) => {
       if (!map) return;
-      const content = createMapClickInfoContent(location, handleAddSchedule);
+
+      const content = createMapClickInfoContent(
+        { lat: location.lat, lng: location.lng },
+        () => handleAddSchedule(location),
+      );
+
       const position =
         location.clickEvent.latLng ||
         new google.maps.LatLng(location.lat, location.lng);
-      showInfo(
-        map,
-        position,
-        content,
-        "map-click",
-        location,
-        handleAddSchedule,
+
+      const locationData = {
+        lat: location.lat,
+        lng: location.lng,
+        address: "",
+      };
+
+      showInfo(map, position, content, "map-click", locationData, () =>
+        handleAddSchedule(location),
       );
     },
     [map, showInfo, handleAddSchedule],
@@ -182,6 +234,12 @@ function Map() {
           onResultClick={handleResultClick}
           onHide={hideResults}
           onAddSchedule={handleAddSchedule}
+        />
+
+        <AddScheduleModal
+          isOpen={isScheduleModalOpen}
+          onClose={() => setIsScheduleModalOpen(false)}
+          scheduleData={scheduleModalData}
         />
       </Wrapper>
     </div>
