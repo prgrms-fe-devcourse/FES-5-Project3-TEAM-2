@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import dragIcon from "@/assets/icons/drag_indicator_icon.png";
@@ -42,30 +42,15 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
   const [tempTitle, setTempTitle] = useState(title);
   const [tempDuration, setTempDuration] = useState(duration);
 
-  useEffect(() => {
-    setTempTitle(title);
-    setTempDuration(duration);
-  }, [title, duration]);
-
-  const handleCancel = () => {
-    // 원래 값으로 초기화
-    setTempTitle(title);
-    setTempDuration(duration);
-    // 편집 상태 제거
-    removeEditingItem(id);
-  };
-
   const hours = Math.floor(duration / 60);
   const minutes = duration % 60;
-
-
 
   return (
     <li ref={setNodeRef} style={style}>
       <article
         className={`h-[60px] pr-2 flex items-center gap-2 rounded-[10px] border-2 font-extrabold ${
           isEditingByMe
-            ? "bg-gray-200 opacity-80 border-gray-400"
+            ? "bg-white opacity-80 border-primary"
             : isEditingByOther
               ? "bg-gray-100 opacity-60 border-gray-300"
               : "bg-white border-secondary"
@@ -107,14 +92,14 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
             />
             <button
               className="text-xs text-red-500 ml-2"
-              onClick={handleCancel}
+              onClick={() => removeEditingItem(id)}
             >
               취소
             </button>
           </>
         ) : isEditingByOther ? (
           // ✅ 다른 사람이 수정 중일 때
-          <p className="text-sm text-red-500 ml-4">
+          <p className="text-1 text-red-500">
             지금 {editor.userName}님이 수정 중...
           </p>
         ) : (
@@ -137,7 +122,7 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
                 onClick={() => {
                   // 내가 이미 다른 아이템을 수정 중이면 막기
                   if (editingItemIds.some((e) => e.userId === myProfile?.id)) {
-                    alert("이미 다른 아이템을 수정 중입니다.");
+                    alert("이미 수정 중인 일정이 존재합니다.");
                     return;
                   }
                   addEditingItem(id);

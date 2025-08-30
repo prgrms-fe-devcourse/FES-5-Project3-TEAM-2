@@ -17,14 +17,22 @@ function DashBoard() {
   useEffect(() => {
     if (!group) return;
 
-    usePlanStore.getState().clearEditingItems();
-
+    
     const myProfile = usePresenceStore.getState().myProfile;
+    const editingItems = usePlanStore.getState().editingItemIds;
+    
+    if (myProfile) {
+      const myEditingItems = editingItems.filter(item => item.userId === myProfile.id);
+      myEditingItems.forEach(item => {
+        usePlanStore.getState().removeEditingItem(item.itemId);
+      });
+    }
+
     const myUserId = myProfile?.id ?? "guest";
 
     const channel = supabase.channel(group.id, {
       config: {
-        presence: { key: myUserId }, //presence 키를 내 userId로 설정
+        presence: { key: myUserId },
       },
     });
 
@@ -82,13 +90,11 @@ function DashBoard() {
       },
     );
 
-
     channel.on("presence", { event: "sync" }, () => {
       const state = channel.presenceState() as RealtimePresenceState;
       const onlineIds = Object.keys(state);
       usePresenceStore.getState().setOnlineUserIds(onlineIds);
     });
-
 
     channel.subscribe((status) => {
       if (status === "SUBSCRIBED") {
@@ -115,7 +121,14 @@ function DashBoard() {
         });
       }
       
-      usePlanStore.getState().clearEditingItems();
+      
+      if (myProfile) {
+        const myEditingItems = editingItems.filter(item => item.userId === myProfile.id);
+        myEditingItems.forEach(item => {
+          usePlanStore.getState().removeEditingItem(item.itemId);
+        });
+      }
+      
       supabase.removeChannel(channel);
     };
   }, [group, navigate]);
