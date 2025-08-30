@@ -13,6 +13,8 @@ import useCurrentGroup from "@/pages/Group/hooks/useCurrentGroup";
 import useCurrentProfile from "@/pages/Group/hooks/useCurrentProfile";
 import { useProfileStore } from "@/store/profileStore";
 import { useState } from "react";
+import GroupMemberList from "@/pages/Group/components/GroupMemberList";
+import { useGroupMembers } from "@/pages/Group/hooks/useGroupMembers";
 
 const link = ({ isActive }: { isActive: boolean }) =>
   [
@@ -31,6 +33,7 @@ export default function Sidebar() {
 
   const {profile} = useProfileStore();
   const currentGroup = useGroupStore((s) => s.currentGroup);
+  const { members, onlineUserIds, loading } = useGroupMembers(currentGroup?.id);
 
 
   const {userId} = useParams<{userId:string}>();
@@ -103,6 +106,19 @@ export default function Sidebar() {
           </>
         )}
       </nav>
+
+      <hr className="my-4 border-slate-200" />
+
+      {currentGroup && (
+        <div>
+          <h3 className="mb-3 font-bold">그룹 멤버</h3>
+          {loading ? (
+            <p className="text-gray-400 text-sm">불러오는 중...</p>
+          ) : (
+            <GroupMemberList members={members} onlineUserIds={onlineUserIds} />
+          )}
+        </div>
+      )}
 
       <div className="flex-1" />
 
