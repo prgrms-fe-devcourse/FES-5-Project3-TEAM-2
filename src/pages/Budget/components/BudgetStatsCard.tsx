@@ -41,7 +41,7 @@ const renderLabel = ({
   const y = Number(cy ?? 0) + r * Math.sin(-Number(midAngle ?? 0) * RADIAN);
   const p = Math.round(percent * 100);
 
-  if (p < 5) return null;
+  if (p < 5) return null; // 5% 미만은 숨김
 
   return (
     <text

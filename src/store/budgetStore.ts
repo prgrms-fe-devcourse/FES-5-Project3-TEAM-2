@@ -35,6 +35,9 @@ export interface Expense {
     removeSharesByExpense: (expenseId: string) => void;
     addExpense: (e: Omit<Expense, "id" | "createdAt">) => string; // returns id for optimistic updates
     removeExpense: (id: string) => void;
+    updateExpense: (id: string, updates: Partial<Omit<Expense, "id">>) => void;
+    replaceSharesForExpense: (expenseId: string, ss: ExpenseShare[]) => void;
+    relinkExpenseId: (tempId: string, newId: string, createdAt?: string) => void;
   }
   
   export const useBudgetStore = create<BudgetState>((set) => ({
@@ -56,5 +59,22 @@ export interface Expense {
     },
     removeExpense: (id) =>
       set((s) => ({ expenses: s.expenses.filter((x) => x.id !== id) })),
+    updateExpense: (id, updates) =>
+      set((s) => ({
+        expenses: s.expenses.map((x) => (x.id === id ? { ...x, ...updates } as Expense : x)),
+      })),
+    replaceSharesForExpense: (expenseId, ss) =>
+      set((s) => ({
+        shares: [...s.shares.filter((sh) => sh.expenseId !== expenseId), ...ss],
+      })),
+    relinkExpenseId: (tempId, newId, createdAt) =>
+      set((s) => ({
+        expenses: s.expenses.map((x) =>
+          x.id === tempId ? { ...x, id: newId, createdAt: createdAt ?? x.createdAt } : x
+        ),
+        shares: s.shares.map((sh) =>
+          sh.expenseId === tempId ? { ...sh, expenseId: newId } : sh
+        ),
+      })),
   }));
   
