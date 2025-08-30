@@ -1,15 +1,25 @@
+// store/planStore.ts
 import { create } from "zustand";
 import type { PlanItem } from "@/pages/DashBoard/api/loadPlanItem";
 import type { TripDay } from "../utils/generateTripDays";
 import { dragUpdate, type DraggedPlanItem } from "../api/dragUpdate";
 import { deletePlanItem } from "../api/deletePlanItem";
 import { editUpdate } from "../api/editUpdate";
+import { supabase } from "@/lib/supabaseClient";
+import { useGroupStore } from "./groupStore";
+import { usePresenceStore } from "./presenceStore";
+
+type EditingUser = {
+  itemId: string;
+  userId: string;
+  userName: string;
+};
 
 type PlanStore = {
   tripDays: TripDay[];
   selectedDay: string;
   allPlanItems: PlanItem[];
-  editingItemIds: string[];
+  editingItemIds: EditingUser[];
 
   setTripDays: (days: TripDay[]) => void;
   setSelectedDay: (day: string) => void;
@@ -22,6 +32,11 @@ type PlanStore = {
   addEditingItem: (itemId: string) => void;
   removeEditingItem: (itemId: string) => void;
   clearEditingItems: () => void;
+
+  // 원격 Broadcast 수신 처리
+  addEditingItemRemote: (itemId: string, userId: string, userName: string) => void;
+  removeEditingItemRemote: (itemId: string, userId: string) => void;
+
   confirmEditItem: (
     itemId: string,
     updates: { title: string; duration: number },
@@ -61,35 +76,95 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
     });
   },
 
-  removePlanItem: (itemId: string) => { // postgres_changes로 받아온 내용을 반영하기 위한 목적.
+  removePlanItem: (itemId: string) => {
     const { allPlanItems } = get();
     set({
       allPlanItems: allPlanItems.filter((item) => item.id !== itemId),
     });
   },
 
-  deletePlanItem: async (itemId) => { // 내 UI 위한 목적.
+  deletePlanItem: async (itemId) => {
     try {
       await deletePlanItem(itemId);
       const { allPlanItems } = get();
       set({
         allPlanItems: allPlanItems.filter((item) => item.id !== itemId),
       });
-      console.log("✅ 일정 삭제 성공:", itemId);
     } catch (err) {
       console.error("❌ 일정 삭제 실패:", err);
     }
   },
 
-  addEditingItem: (itemId) =>
+  // ✅ 편집 시작
+  addEditingItem: (itemId) => {
+  const myProfile = usePresenceStore.getState().myProfile;
+  const group = useGroupStore.getState().group;
+  if (!myProfile || !group) return;
+
+  const { id: userId, name: userName } = myProfile;
+
+  set((state) => {
+    // 이미 내가 수정 중인 아이템이 있다면 추가 금지
+    const alreadyEditing = state.editingItemIds.some((e) => e.userId === userId);
+    if (alreadyEditing) {
+      console.warn("⚠️ 이미 다른 아이템을 수정 중입니다.");
+      return state;
+    }
+
+    return {
+      editingItemIds: [...state.editingItemIds, { itemId, userId, userName }],
+    };
+  });
+
+  // Broadcast 전송
+  supabase.channel(group.id).send({
+    type: "broadcast",
+    event: "edit-start",
+    payload: { itemId, userId, userName },
+  });
+},
+
+  // ✅ 편집 종료
+  removeEditingItem: (itemId) => {
+    const myProfile = usePresenceStore.getState().myProfile;
+    const group = useGroupStore.getState().group;
+    if (!myProfile || !group) return;
+
+    const { id: userId } = myProfile;
+
     set((state) => ({
-      editingItemIds: [...state.editingItemIds, itemId],
-    })),
-  removeEditingItem: (itemId) =>
-    set((state) => ({
-      editingItemIds: state.editingItemIds.filter((id) => id !== itemId),
-    })),
+      editingItemIds: state.editingItemIds.filter(
+        (e) => !(e.itemId === itemId && e.userId === userId),
+      ),
+    }));
+
+    // Broadcast 전송
+    supabase.channel(group.id).send({
+      type: "broadcast",
+      event: "edit-end",
+      payload: { itemId, userId },
+    });
+  },
+
   clearEditingItems: () => set({ editingItemIds: [] }),
+
+  // ✅ 다른 팀원 Broadcast 수신
+  addEditingItemRemote: (itemId, userId, userName) =>
+    set((state) => {
+      if (state.editingItemIds.some((e) => e.itemId === itemId && e.userId === userId)) {
+        return state; // 이미 있음 → 중복 방지
+      }
+      return {
+        editingItemIds: [...state.editingItemIds, { itemId, userId, userName }],
+      };
+    }),
+
+  removeEditingItemRemote: (itemId, userId) =>
+    set((state) => ({
+      editingItemIds: state.editingItemIds.filter(
+        (e) => !(e.itemId === itemId && e.userId === userId),
+      ),
+    })),
 
   confirmEditItem: async (itemId, updates) => {
     const { selectedDay, allPlanItems } = get();
@@ -109,7 +184,7 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
         allPlanItems: allPlanItems.map((i) =>
           i.id === updated.id ? updated : i,
         ),
-        editingItemIds: get().editingItemIds.filter((id) => id !== itemId),
+        editingItemIds: get().editingItemIds.filter((e) => e.itemId !== itemId),
       });
     } catch (err) {
       console.error("❌ 수정 실패:", err);

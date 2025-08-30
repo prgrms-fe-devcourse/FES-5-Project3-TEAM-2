@@ -11,16 +11,29 @@ import type { RealtimePresenceState } from "@supabase/supabase-js";
 import { usePresenceStore } from "./store/presenceStore";
 
 function DashBoard() {
-  const group = useGroupStore((state) => state.group); // 참가하고자 하는 그룹을 가져옴.
+  const group = useGroupStore((state) => state.group); 
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!group) return;
 
+    const myProfile = usePresenceStore.getState().myProfile;
+    const myUserId = myProfile?.id ?? "guest";
+
     const channel = supabase.channel(group.id, {
       config: {
-        presence: { key: usePresenceStore.getState().myUserId ?? "guest" },
+        presence: { key: myUserId }, //presence 키를 내 userId로 설정
       },
+    });
+
+    channel.on("broadcast", { event: "edit-start" }, ({ payload }) => {
+      const { itemId, userId, userName } = payload;
+      usePlanStore.getState().addEditingItemRemote(itemId, userId, userName);
+    });
+
+    channel.on("broadcast", { event: "edit-end" }, ({ payload }) => {
+      const { itemId, userId } = payload;
+      usePlanStore.getState().removeEditingItemRemote(itemId, userId);
     });
 
     channel.on(
@@ -67,17 +80,18 @@ function DashBoard() {
       },
     );
 
+
     channel.on("presence", { event: "sync" }, () => {
       const state = channel.presenceState() as RealtimePresenceState;
       const onlineIds = Object.keys(state);
       usePresenceStore.getState().setOnlineUserIds(onlineIds);
     });
 
+
     channel.subscribe((status) => {
       if (status === "SUBSCRIBED") {
-        const myId = usePresenceStore.getState().myUserId;
         channel.track({
-          user_id: myId ?? "guest",
+          user_id: myUserId,
           online_at: new Date().toISOString(),
         });
       }
@@ -95,4 +109,5 @@ function DashBoard() {
     </div>
   );
 }
+
 export default DashBoard;

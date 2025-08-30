@@ -1,16 +1,18 @@
-// src/store/presenceStore.ts
+
 import { create } from "zustand";
+import type { MyProfile } from "../api/getMyProfile";
+
 
 type PresenceState = {
-  myUserId: string | null;
+  myProfile: MyProfile | null;  
   onlineUserIds: string[];
-  setMyUserId: (id: string | null) => void;
+  setMyProfile: (p: MyProfile | null) => void;
   setOnlineUserIds: (ids: string[]) => void;
 };
 
 export const usePresenceStore = create<PresenceState>((set) => ({
-  myUserId: null,
+  myProfile: null,
   onlineUserIds: [],
-  setMyUserId: (id) => set({ myUserId: id }),
+  setMyProfile: (p) => set({ myProfile: p }),
   setOnlineUserIds: (ids) => set({ onlineUserIds: ids }),
 }));

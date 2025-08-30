@@ -5,9 +5,8 @@ import { loadPlanItems, type PlanItem } from "@/pages/DashBoard/api/loadPlanItem
 import { useGroupStore } from "@/pages/DashBoard/store/groupStore"
 import { generateTripDays } from "@/pages/DashBoard/utils/generateTripDays"
 import { usePlanStore } from "@/pages/DashBoard/store/planStore"
-import { getMyUserId } from "@/pages/DashBoard/api/getMyUserId"
+import { getMyProfile } from "@/pages/DashBoard/api/getMyProfile" 
 import { usePresenceStore } from "@/pages/DashBoard/store/presenceStore"
-
 
 export type DashboardLoaderData = {
   groupData: Group
@@ -35,8 +34,8 @@ export async function dashboardLoader(
   usePlanStore.getState().setSelectedDay(groupData.start_day)
   usePlanStore.getState().setAllPlanItems(allPlanItems || [])
 
-  const myId = await getMyUserId()
-  usePresenceStore.getState().setMyUserId(myId)
+  const myProfile = await getMyProfile()
+  usePresenceStore.getState().setMyProfile(myProfile)
 
-  return null;
+  return null
 }
