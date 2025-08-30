@@ -11,7 +11,6 @@ type GroupMember = {
 
 export function useGroupMembers(groupId: string | undefined) {
   const [members, setMembers] = useState<GroupMember[]>([]);
-  const [onlineUserIds, setOnlineUserIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -20,14 +19,10 @@ export function useGroupMembers(groupId: string | undefined) {
 
     getGroupMembers(groupId)
       .then((data) => {
-        if (data) setMembers(data as GroupMember[]); 
+        if (data) setMembers(data as GroupMember[]);
       })
       .finally(() => setLoading(false));
   }, [groupId]);
 
-  // TODO: Presence 구독 추가 예정
-  // 예: supabase.channel(`group:${groupId}`).on("presence", ...)
-  // 여기서 setOnlineUserIds([...]) 업데이트
-
-  return { members, onlineUserIds, loading };
+  return { members, loading };
 }

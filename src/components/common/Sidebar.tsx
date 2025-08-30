@@ -15,6 +15,7 @@ import { useProfileStore } from "@/store/profileStore";
 import { useState } from "react";
 import GroupMemberList from "@/pages/Group/components/GroupMemberList";
 import { useGroupMembers } from "@/pages/Group/hooks/useGroupMembers";
+import { usePresenceStore } from "@/pages/DashBoard/store/presenceStore";
 
 const link = ({ isActive }: { isActive: boolean }) =>
   [
@@ -33,7 +34,10 @@ export default function Sidebar() {
 
   const {profile} = useProfileStore();
   const currentGroup = useGroupStore((s) => s.currentGroup);
-  const { members, onlineUserIds, loading } = useGroupMembers(currentGroup?.id);
+   // 그룹 멤버 (DB에서 불러오기)
+  const { members, loading } = useGroupMembers(currentGroup?.id);
+  // Presence (온라인 목록)
+  const onlineUserIds = usePresenceStore((s) => s.onlineUserIds);
 
 
   const {userId} = useParams<{userId:string}>();
