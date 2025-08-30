@@ -1,17 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
+import type { Database } from "@/types/supabase";
 
-export interface PlanItem {
-  id: string;
-  group_id: string;
-  title: string;
-  address: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  sort_order: string;   // fractional_index
-  duration: number;
-  day: string;          // 'YYYY-MM-DD' format
-  jitter: string;       // 화면에는 안 쓰이고 정렬/충돌 방지용
-}
+export type PlanItem = Database["public"]["Tables"]["planitems"]["Row"];
 
 export async function loadPlanItems(groupId: string): Promise<PlanItem[] | null> {
   const { data, error } = await supabase

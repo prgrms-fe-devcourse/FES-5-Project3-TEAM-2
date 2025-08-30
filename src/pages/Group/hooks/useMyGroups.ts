@@ -1,5 +1,6 @@
 
 
+import { GroupAddAlert } from "@/components/Sweetalert";
 import { supabase } from "@/lib/supabaseClient";
 import { useCallback, useEffect, useState } from "react";
 import { createGroupAndJoin, fetchMyGroups } from "../api/groups";
@@ -53,6 +54,7 @@ export function useMyGroups(enabled = true) {
       });
 
       setGroups((prev) => [...prev, newGroup]); // 새카드 추가 -> 뒤에서 생기게
+      GroupAddAlert();
     } catch (e) {
       alert("그룹 생성에 실패했습니다.");
       console.error(e);

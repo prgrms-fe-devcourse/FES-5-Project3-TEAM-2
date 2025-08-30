@@ -1,12 +1,7 @@
 import {supabase} from "@/lib/supabaseClient"
+import type { Database } from "@/types/supabase";
 
-export interface Group {
-id: string;
-name: string;
-owner_id: string;
-start_day: string; // 'YYYY-MM-DD' format
-end_day: string;   // 'YYYY-MM-DD' format
-}
+export type Group = Database["public"]["Tables"]["groups"]["Row"];
 
 export async function loadGroupData(groupId: string): Promise<Group | null> {
  const { data, error } = await supabase

@@ -50,3 +50,32 @@
   /* 폰트 종류 */
   --font-sans: "Pretendard", sans-serif;
 }
+
+/***************************/
+
+/* SweetAlert */
+/* 팝업창 */
+.swal2-popup {
+  border-radius: 20px !important;
+  background: #EEEEEE !important;
+}
+
+/* 버튼 스타일 */
+.swal2-confirm {
+  background-color: #FF8E9E !important;
+  color: white !important;
+  border-radius: 32px !important;
+  padding: 8px 16px !important;
+}
+.swal2-cancel {
+  background-color: #8ACCD5 !important;
+  color: white !important;
+  border-radius: 32px !important;
+  padding: 8px 16px !important;
+}
+
+/* 진행바 색상 */
+.swal2-timer-progress-bar {
+  background: #8ACCD5 !important;
+}
+

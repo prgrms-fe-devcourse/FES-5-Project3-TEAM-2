@@ -9,7 +9,12 @@ interface SearchBoxProps {
   onFocus: () => void;
 }
 
-function SearchBox({ onSearch, isSearching, onClear, onFocus }: SearchBoxProps) {
+function SearchBox({
+  onSearch,
+  isSearching,
+  onClear,
+  onFocus,
+}: SearchBoxProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = () => {
@@ -19,8 +24,12 @@ function SearchBox({ onSearch, isSearching, onClear, onFocus }: SearchBoxProps) 
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // 맥의 한글 IME 중복 처리 방지
+    if (e.nativeEvent.isComposing) return;
+
     if (e.key === "Enter") {
+      e.preventDefault();
       handleSearch();
     }
   };
@@ -45,7 +54,7 @@ function SearchBox({ onSearch, isSearching, onClear, onFocus }: SearchBoxProps) 
           type="text"
           placeholder="가고 싶은 장소를 입력하세요"
           className="flex-1 h-full outline-none placeholder-gray-400"
-          onKeyDown={handleKeyPress}
+          onKeyDown={handleKeyDown}
           onFocus={handleFocus}
           disabled={isSearching}
         />
