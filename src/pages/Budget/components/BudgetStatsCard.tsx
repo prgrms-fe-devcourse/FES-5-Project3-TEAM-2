@@ -60,7 +60,7 @@ const renderLabel = ({
 
 export default function BudgetStatsCard({
   title = "통계 📊",
-  totalLabel = "카테고리별 예산",
+  totalLabel = "총 지출 금액",
   data,
   colors = defaultColors,
   height = 280,
@@ -110,8 +110,11 @@ export default function BudgetStatsCard({
 
               <Tooltip
                 formatter={(v: string | number, name: string | number) => {
-                  const value = Array.isArray(v as any) ? Number((v as any)[0]) : Number(v);
-                  const percent = total > 0 ? Math.round((value / total) * 100) : 0;
+                  const value = Array.isArray(v as any)
+                    ? Number((v as any)[0])
+                    : Number(v);
+                  const percent =
+                    total > 0 ? Math.round((value / total) * 100) : 0;
                   return [`${formatWon(value)} (${percent}%)`, String(name)];
                 }}
               />
