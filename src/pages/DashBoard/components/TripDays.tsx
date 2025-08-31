@@ -46,13 +46,13 @@ function TripDays() {
         <BsFillCaretLeftFill className="size-8" />
       </button>
 
-      <div className="flex w-full max-w-3xl justify-between transition-all duration-300 ease-in-out px-4">
+      <div className="flex w-full max-w-3xl justify-between transition-all duration-300 ease-in-out px-4 ">
         {visibleDays.map(({ dayOfTheWeek, date, fullDate }, idx) => {
           const isCenter = idx === 3;
           return (
             <div
               key={fullDate}
-              className={`flex flex-col items-center justify-center pt-1 rounded-[20px] 
+              className={`flex flex-col items-center justify-center pt-1 rounded-[20px] space-y-[-7px]
                 ${isCenter ? "bg-primary w-14" : "w-14"}`}
             >
               <p
@@ -63,7 +63,7 @@ function TripDays() {
                 {dayOfTheWeek}
               </p>
               <p
-                className={`text-4 font-bold select-none ${
+                className={`text-3 font-bold select-none ${
                   isCenter ? "text-white" : "text-gray-200"
                 }`}
               >
