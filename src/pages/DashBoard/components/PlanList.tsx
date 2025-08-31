@@ -112,7 +112,7 @@ function PlanList() {
         onDragCancel={handleDragCancel}
       >
         <ul
-          className="flex flex-col gap-2 h-[500px] overflow-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2"
+          className="flex flex-col gap-2 max-h-[60vh] min-h-[300px] overflow-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2"
           role="list"
         >
           <SortableContext items={items} strategy={verticalListSortingStrategy}>
