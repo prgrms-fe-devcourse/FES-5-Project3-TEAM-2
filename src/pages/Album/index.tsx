@@ -39,7 +39,6 @@ function Album() {
       : "그룹 정보 없음";
 
   const { handleFiles, isUploading } = useFileUpload({
-    userId,
     groupId,
     onUploadComplete: (photo) => {
       setPhotos((prev) => [photo, ...prev]);

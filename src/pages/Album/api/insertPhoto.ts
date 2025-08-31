@@ -22,14 +22,12 @@ export async function uploadFileToStorage(
 export async function insertPhotoToDatabase(
   url: string,
   groupId: string,
-  uploader: string,
 ): Promise<Photo> {
   const { data: dbData, error: dbError } = await supabase
     .from("photos")
     .insert({
       url,
       group_id: groupId,
-      uploader,
     })
     .select()
     .single();
