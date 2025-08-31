@@ -6,14 +6,12 @@ import { generateId } from "../utils/generateId";
 import { compressImages } from "../utils/compressImages";
 
 interface UseFileUploadProps {
-  userId: string;
   groupId: string;
   onUploadComplete?: (photo: Photo) => void;
   onUploadError?: (error: string) => void;
 }
 
 export function useFileUpload({
-  userId,
   groupId,
   onUploadComplete,
   onUploadError,
@@ -33,7 +31,7 @@ export function useFileUpload({
       const publicUrl = await uploadFileToStorage(file, fileName);
 
       // DB에 insert
-      const photo = await insertPhotoToDatabase(publicUrl, groupId, userId);
+      const photo = await insertPhotoToDatabase(publicUrl, groupId);
 
       return photo;
     } catch (error) {
