@@ -1,21 +1,98 @@
 
 
 import { supabase } from "@/lib/supabaseClient";
-import Swal from "sweetalert2";
+import Swal, { type SweetAlertIcon, type SweetAlertPosition } from "sweetalert2";
 
-// 로그인 성공
-export function LoginAlert(message:string, icon:'success' | 'error') {
-  Swal.fire({
+// 기본 토스트
+export function toast({
+  title,
+  icon = 'success',
+  position = 'center',
+  timer = 1500,
+  showConfirmButton = false,
+} : {
+  title:string;
+  icon?: SweetAlertIcon;
+  position?: SweetAlertPosition;
+  timer?: number;
+  showConfirmButton?: boolean;
+}) {
+  return Swal.fire({
     toast:true,
-    position:'top-end',
-    title:message,
+    position,
+    title,
     icon,
-    iconColor: "#8ACCD5",
-    showConfirmButton:false,
-    timer:1800,
+    iconColor:"#8ACCD5",
+    timer,
+    showConfirmButton,
     timerProgressBar:true,
   });
 }
+
+// 일반 알림(모달)
+export function notify({
+  title,
+  text,
+  icon = 'info',
+  confirmButtonText = '확인',
+}: {
+  title:string;
+  text?:string;
+  icon?:SweetAlertIcon;
+  confirmButtonText?:string;
+}) {
+  return Swal.fire({
+    title,
+    text,
+    icon,
+    iconColor:"#8ACCD5",
+    confirmButtonText,
+  });
+}
+
+// 에러 알림(모달)
+export function errorAlert({
+  title = '오류',
+  text = '다시 시도해주세요.',
+}: {
+  title?: string;
+  text?: string;
+}) {
+  return Swal.fire({
+    icon:'error',
+    iconColor:"#8ACCD5",
+    title,
+    text,
+  });
+}
+
+// 확인(confirm) 모달
+export async function confirmDialog({
+  title = '정말 진행하시겠습니까?',
+  text,
+  confirmButtonText = '확인',
+  cancelButtonText = '취소',
+  icon = 'warning',
+}: {
+  title?:string;
+  text?:string;
+  confirmButtonText?:string;
+  cancelButtonText?:string;
+  icon?:SweetAlertIcon;
+}): Promise<boolean> {
+  const result = await Swal.fire({
+    title,
+    text,
+    icon,
+    iconColor:"#8ACCD5",
+    showCancelButton:true,
+    confirmButtonText,
+    cancelButtonText,
+  });
+  return result.isConfirmed;
+}
+
+
 
 // 로그아웃 성공
 export async function LogoutAlert(navigate:any) {
@@ -58,16 +135,4 @@ export async function LogoutAlert(navigate:any) {
 
 }
 
-// 그룹카드 생성
-export function GroupAddAlert() {
-  Swal.fire({
-    toast:true,
-    position:'top',
-    icon:'success',
-    iconColor: "#8ACCD5",
-    title:'새 그룹 추가 완료!🌟',
-    showConfirmButton:false,
-    timer:1500,
-    timerProgressBar:true,
-  });
-}
+
