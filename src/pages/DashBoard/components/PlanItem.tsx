@@ -57,7 +57,7 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
         }`}
       >
         <MdOutlineDragIndicator 
-          className="size-10 cursor-grab active:cursor-grabbing text-gray-300 focus:outline-none"
+          className="size-10 shrink-0 cursor-grab active:cursor-grabbing text-gray-300 focus:outline-none"
           {...attributes}
           {...listeners}
         />
@@ -80,7 +80,7 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
             />
             
             <FaRegCircleCheck 
-              className="size-8 cursor-pointer text-primary"
+              className=" shrink-0 size-6 cursor-pointer text-primary"
               onClick={() =>
                 confirmEditItem(id, {
                   title: tempTitle,
@@ -89,7 +89,7 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
               }
             />
             <FaRegCircleXmark 
-              className="size-8 text-primary  cursor-pointer"
+              className="shrink-0 size-6 text-primary  cursor-pointer"
               onClick={() => removeEditingItem(id)}
             />
           </>
