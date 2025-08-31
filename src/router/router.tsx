@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
-import Album from "@/pages/AlbumPage";
+import Album from "@/pages/Album";
 import AuthCallback from "@/pages/auth/AuthCallback";
 import Budget from "@/pages/BudgetPage";
 import GroupJoinPage from "@/pages/Group/pages/GroupJoinPage";
