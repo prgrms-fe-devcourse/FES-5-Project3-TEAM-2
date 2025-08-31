@@ -45,7 +45,7 @@ export default function Sidebar() {
 
 
   return (
-    <aside className="w-[248px] min-h-screen shadow-[0_4px_12px_rgba(0,0,0,0.15)] bg-white flex flex-col px-5 pt-6 pb-4">
+    <aside className="w-[240px] min-h-screen shadow-[0_4px_12px_rgba(0,0,0,0.15)] bg-white flex flex-col px-5 pt-6 pb-4">
       {/* 로고 */}
       <img src={logo} alt="로고" className="w-[208px] pb-[50px]" />
 
