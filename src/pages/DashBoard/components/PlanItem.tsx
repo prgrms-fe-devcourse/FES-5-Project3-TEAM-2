@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import dragIcon from "@/assets/icons/drag_indicator_icon.png";
-import deleteIcon from "@/assets/icons/delete_icon.png";
-import editIcon from "@/assets/icons/edit_icon.png";
-import confirmIcon from "@/assets/icons/confirm_icon.png";
+import { MdOutlineDragIndicator } from "react-icons/md";
+import { FaRegCircleCheck, FaRegCircleXmark  } from "react-icons/fa6";
+import { MdEdit } from "react-icons/md";
+import { RiDeleteBin5Line } from "react-icons/ri";
 import { usePlanStore } from "../store/planStore";
 import { usePresenceStore } from "../store/presenceStore";
 
@@ -34,7 +34,7 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
 
   const myProfile = usePresenceStore((s) => s.myProfile);
 
-  // ✅ 현재 아이템 수정자 찾기
+  // 현재 아이템 수정자 찾기
   const editor = editingItemIds.find((e) => e.itemId === id);
   const isEditingByMe = editor?.userId === myProfile?.id;
   const isEditingByOther = editor && editor.userId !== myProfile?.id;
@@ -48,18 +48,16 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
   return (
     <li ref={setNodeRef} style={style}>
       <article
-        className={`h-[60px] pr-2 flex items-center gap-2 rounded-[10px] border-2 font-extrabold ${
+        className={`h-[50px] pr-2 flex items-center gap-2 rounded-[10px] border-2 font-extrabold shadow-md ${
           isEditingByMe
-            ? "bg-white opacity-80 border-primary"
+            ? "bg-white border-primary"
             : isEditingByOther
               ? "bg-gray-100 opacity-60 border-gray-300"
               : "bg-white border-secondary"
         }`}
       >
-        <img
-          src={dragIcon}
-          className="size-10 cursor-grab active:cursor-grabbing"
-          draggable={false}
+        <MdOutlineDragIndicator 
+          className="size-10 cursor-grab active:cursor-grabbing text-gray-300 focus:outline-none"
           {...attributes}
           {...listeners}
         />
@@ -67,22 +65,22 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
         <span className="shrink-0 text-2xl text-primary">{displayIndex}</span>
 
         {isEditingByMe ? (
-          // ✅ 내가 수정 중일 때
+          // 내가 수정 중일 때
           <>
             <input
-              className="border px-2 py-1 rounded text-sm"
+              className="border border-gray-300 focus:border-primary focus:outline-none focus:border-2 px-2 py-1 rounded text-sm w-full"
               value={tempTitle}
               onChange={(e) => setTempTitle(e.target.value)}
             />
             <input
               type="number"
-              className="border px-2 py-1 rounded text-sm w-20"
+              className="border border-gray-300 focus:border-primary focus:outline-none focus:border-2 px-2 py-1 rounded text-sm w-18"
               value={tempDuration}
               onChange={(e) => setTempDuration(Number(e.target.value))}
             />
-            <img
-              src={confirmIcon}
-              className="size-6 cursor-pointer"
+            
+            <FaRegCircleCheck 
+              className="size-8 cursor-pointer text-primary"
               onClick={() =>
                 confirmEditItem(id, {
                   title: tempTitle,
@@ -90,20 +88,18 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
                 })
               }
             />
-            <button
-              className="text-xs text-red-500 ml-2"
+            <FaRegCircleXmark 
+              className="size-8 text-primary  cursor-pointer"
               onClick={() => removeEditingItem(id)}
-            >
-              취소
-            </button>
+            />
           </>
         ) : isEditingByOther ? (
-          // ✅ 다른 사람이 수정 중일 때
+          // 다른 사람이 수정 중일 때
           <p className="text-1 text-red-500">
             지금 {editor.userName}님이 수정 중...
           </p>
         ) : (
-          // ✅ 아무도 수정 안 할 때
+          // 아무도 수정 안 할 때
           <>
             <p className="font-extrabold">{title}</p>
             <div className="ml-auto flex items-center gap-2">
@@ -112,11 +108,11 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
                 {minutes > 0 && `${minutes}분`}
                 {hours === 0 && minutes === 0 && "0분"}
               </p>
-              <img
-                src={editIcon}
-                className={`size-6 cursor-pointer ${
+              
+              <MdEdit 
+                className={`size-6 cursor-pointer text-gray-300${
                   editingItemIds.some((e) => e.userId === myProfile?.id)
-                    ? "opacity-50 cursor-not-allowed"
+                    ? "opacity-50 cursor-not-allowed text-gray-300"
                     : ""
                 }`}
                 onClick={() => {
@@ -128,9 +124,8 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
                   addEditingItem(id);
                 }}
               />
-              <img
-                src={deleteIcon}
-                className="size-6 cursor-pointer"
+              <RiDeleteBin5Line 
+                className="size-6 cursor-pointer text-gray-300"
                 onClick={() => deletePlan(id)}
               />
             </div>

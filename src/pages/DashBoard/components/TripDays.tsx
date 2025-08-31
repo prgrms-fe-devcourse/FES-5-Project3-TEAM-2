@@ -1,74 +1,93 @@
-import { useState } from "react"
-import slideIcon from "@/assets/icons/slide_icon.png"
-import { usePlanStore } from "../store/planStore"
+import { useState, useEffect } from "react";
+import { BsFillCaretLeftFill, BsFillCaretRightFill } from "react-icons/bs";
+import { usePlanStore } from "../store/planStore";
 
 function TripDays() {
-  const [startIndex, setStartIndex] = useState(0)
+  const tripDaysData = usePlanStore((state) => state.tripDays);
+  const setSelectedDay = usePlanStore((state) => state.setSelectedDay);
 
-  const tripDaysData = usePlanStore((state) => state.tripDays)
-  const selectedDay = usePlanStore((state) => state.selectedDay)
-  const setSelectedDay = usePlanStore((state) => state.setSelectedDay)
+  // 처음엔 인덱스 3(=4번째)을 중앙으로 시작
+  const [centerIndex, setCenterIndex] = useState(3);
 
-  // 현재 보여줄 7일 데이터
-  const visibleDays = tripDaysData.slice(startIndex, startIndex + 7)
+  // 항상 7일만 slice
+  const visibleDays = tripDaysData.slice(centerIndex - 3, centerIndex + 4);
 
-  // 이전 버튼
+  // 항상 가운데 날짜 선택
+  useEffect(() => {
+    if (visibleDays[3]) {
+      setSelectedDay(visibleDays[3].fullDate);
+    }
+  }, [visibleDays, setSelectedDay]);
+
   const handlePrevious = () => {
-    if (startIndex > 0) {
-      setStartIndex(startIndex - 1)
+    if (centerIndex > 3) {
+      setCenterIndex((prev) => prev - 1);
     }
-  }
+  };
 
-  // 다음 버튼
   const handleNext = () => {
-    if (startIndex < tripDaysData.length - 7) {
-      setStartIndex(startIndex + 1)
+    if (centerIndex < tripDaysData.length - 4) {
+      setCenterIndex((prev) => prev + 1);
     }
-  }
+  };
 
   return (
-    <div className="flex flex-row justify-between -mx-3">
+    <div className="flex flex-row justify-between items-center w-full">
       <button
         type="button"
         onClick={handlePrevious}
-        disabled={startIndex === 0}
-        className={startIndex === 0 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+        disabled={centerIndex <= 3}
+        className={
+          centerIndex <= 3
+            ? "text-gray-200 cursor-not-allowed"
+            : "text-primary cursor-pointer"
+        }
       >
-        <img src={slideIcon} className="scale-x-[-1]" />
+        <BsFillCaretLeftFill className="size-8" />
       </button>
 
-      {visibleDays.map(({ dayOfTheWeek, date, fullDate }) => {
-        const isSelected = selectedDay === fullDate // YYYY-MM-DD 비교
-
-        return (
-          <div
-            key={fullDate}
-            onClick={() => setSelectedDay(fullDate)}
-            className={`flex flex-col items-center space-y-[-4px] px-2 py-1.5 rounded-[20px] cursor-pointer
-              ${isSelected ? "bg-primary" : ""}`}
-          >
-            <p className={`text-[10px] font-bold ${isSelected ? "text-white" : "text-gray-400"}`}>
-              {dayOfTheWeek}
-            </p>
-            <p className={`text-[28px] font-bold ${isSelected ? "text-white" : "text-gray-200"}`}>
-              {date}
-            </p>
-          </div>
-        )
-      })}
+      <div className="flex w-full max-w-3xl justify-between transition-all duration-300 ease-in-out px-4">
+        {visibleDays.map(({ dayOfTheWeek, date, fullDate }, idx) => {
+          const isCenter = idx === 3;
+          return (
+            <div
+              key={fullDate}
+              className={`flex flex-col items-center justify-center pt-1 rounded-[20px] 
+                ${isCenter ? "bg-primary w-14" : "w-14"}`}
+            >
+              <p
+                className={`text-1 font-bold select-none ${
+                  isCenter ? "text-white" : "text-gray-400"
+                }`}
+              >
+                {dayOfTheWeek}
+              </p>
+              <p
+                className={`text-4 font-bold select-none ${
+                  isCenter ? "text-white" : "text-gray-200"
+                }`}
+              >
+                {date}
+              </p>
+            </div>
+          );
+        })}
+      </div>
 
       <button
         type="button"
         onClick={handleNext}
-        disabled={startIndex >= tripDaysData.length - 7}
+        disabled={centerIndex >= tripDaysData.length - 4}
         className={
-          startIndex >= tripDaysData.length - 7 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+          centerIndex >= tripDaysData.length - 4
+            ? "text-gray-200 cursor-not-allowed"
+            : "text-primary cursor-pointer"
         }
       >
-        <img src={slideIcon} />
+        <BsFillCaretRightFill className="size-8" />
       </button>
     </div>
-  )
+  );
 }
 
-export default TripDays
+export default TripDays;

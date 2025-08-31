@@ -5,7 +5,7 @@ export default function Root() {
   return (
     <div className="grid grid-cols-[240px_1fr] h-dvh overflow-hidden bg-slate-50">
       <Sidebar />
-      <main className="p-6 overflow-hidden">
+      <main className="overflow-hidden">
         <Outlet />
       </main>
     </div>
