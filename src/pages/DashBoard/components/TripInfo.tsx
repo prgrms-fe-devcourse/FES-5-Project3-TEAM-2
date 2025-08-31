@@ -15,7 +15,7 @@ function TripInfo() {
         </h2>
       </header>
 
-      <div className="flex rounded-2xl bg-[#FAECF2] shadow-md">
+      <div className="flex rounded-2xl bg-[#FAECF2] shadow-md px-2">
 
         <div className="flex w-full divide-x-2 divide-gray-200 di py-5">
           <div className="flex flex-1 flex-col items-center gap-1">
