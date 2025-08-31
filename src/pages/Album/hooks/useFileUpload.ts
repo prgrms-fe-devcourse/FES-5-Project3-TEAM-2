@@ -29,7 +29,7 @@ export function useFileUpload({
     const fileName = `${groupId}/${fileId}_${cleanFileName}`;
 
     try {
-      // Storag에 업로드
+      // Storage에 업로드
       const publicUrl = await uploadFileToStorage(file, fileName);
 
       // DB에 insert
