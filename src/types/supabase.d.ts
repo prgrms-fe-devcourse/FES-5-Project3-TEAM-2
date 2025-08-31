@@ -1,4 +1,4 @@
-﻿export type Json =
+﻿﻿export type Json =
   | string
   | number
   | boolean
@@ -7,7 +7,8 @@
   | Json[]
 
 export type Database = {
-
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "13.0.4"
   }
@@ -195,7 +196,7 @@ export type Database = {
           duration: number
           group_id: string
           id: string
-          jitter: string 
+          jitter: string | null
           latitude: number | null
           longitude: number | null
           sort_order: string
@@ -207,7 +208,7 @@ export type Database = {
           duration?: number
           group_id: string
           id?: string
-          jitter?: string 
+          jitter?: string | null
           latitude?: number | null
           longitude?: number | null
           sort_order: string
@@ -219,7 +220,7 @@ export type Database = {
           duration?: number
           group_id?: string
           id?: string
-          jitter?: string 
+          jitter?: string | null
           latitude?: number | null
           longitude?: number | null
           sort_order?: string
@@ -258,7 +259,32 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      group_members_with_profile: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          group_id: string | null
+          name: string | null
+          role: Database["public"]["Enums"]["member_role"] | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "groupmembers_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "groupmembers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       same_group: {

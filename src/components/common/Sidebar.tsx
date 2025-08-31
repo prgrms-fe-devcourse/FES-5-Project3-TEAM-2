@@ -12,6 +12,9 @@ import useCurrentGroup from "@/pages/Group/hooks/useCurrentGroup";
 import useCurrentProfile from "@/pages/Group/hooks/useCurrentProfile";
 import { useProfileStore } from "@/store/profileStore";
 import { LogoutAlert } from "../Sweetalert";
+import { useGroupMembers } from "@/pages/Group/hooks/useGroupMembers";
+import { usePresenceStore } from "@/pages/DashBoard/store/presenceStore";
+import GroupMemberList from "@/pages/Group/components/GroupMemberList";
 
 const link = ({ isActive }: { isActive: boolean }) =>
   [
@@ -29,6 +32,9 @@ export default function Sidebar() {
 
   const {profile} = useProfileStore();
   const currentGroup = useGroupStore((s) => s.currentGroup);
+
+  const { members, loading } = useGroupMembers(currentGroup?.id);
+  const onlineUserIds = usePresenceStore((s) => s.onlineUserIds);
 
 
   const {userId} = useParams<{userId:string}>();
@@ -87,6 +93,19 @@ export default function Sidebar() {
           </>
         )}
       </nav>
+
+      <hr className="my-4 border-slate-200" />
+
+      {currentGroup && (
+        <div>
+          <h3 className="mb-3 font-bold">그룹 멤버</h3>
+          {loading ? (
+            <p className="text-gray-400 text-sm">불러오는 중...</p>
+          ) : (
+            <GroupMemberList members={members} onlineUserIds={onlineUserIds} />
+          )}
+        </div>
+      )}
 
       <div className="flex-1" />
 
