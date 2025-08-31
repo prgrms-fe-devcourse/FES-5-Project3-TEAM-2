@@ -1,4 +1,5 @@
-import { LoginAlert } from "@/components/Sweetalert";
+
+import { toast } from "@/components/Sweetalert";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../../lib/supabaseClient";
@@ -44,15 +45,30 @@ export default function AuthCallback() {
             .from("profile")
             .upsert(profileValues, { onConflict: "id" });
 
-          LoginAlert('로그인 성공! 환영합니다🎉', 'success');
+          toast({
+            title: "로그인 성공! 환영합니다🎉",
+            icon: "success",
+            position: "top-end",
+          });
+
           navigate(`/groups/${user.id}`, { replace: true });
         } else {
-          LoginAlert("로그인에 실패했습니다. 다시 시도해주세요.", 'error');
+          toast({
+            title: "로그인에 실패했습니다. 다시 시도해주세요.",
+            icon: "error",
+            position: "top-end",
+          });
+
           navigate("/", { replace: true });
         }
       } catch (error) {
         console.error("AuthCallback error:", error);
-        LoginAlert("로그인 처리 중 오류가 발생했습니다.", 'error');
+        toast({
+          title: "로그인 처리 중 오류가 발생했습니다.",
+          icon: "error",
+          position: "top-end",
+        });
+
         navigate("/", { replace: true });
       }
     };
