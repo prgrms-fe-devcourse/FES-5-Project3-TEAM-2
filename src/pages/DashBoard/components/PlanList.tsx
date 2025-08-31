@@ -15,7 +15,6 @@ import { insertPlanItem } from "../api/insertPlanItem";
 function PlanList() {
   const selectedDay = usePlanStore((state) => state.selectedDay);
   const allPlanItems = usePlanStore((state) => state.allPlanItems);
-  const addPlanItem = usePlanStore((state) => state.addPlanItem);
   const reorderPlanItems = usePlanStore((state) => state.reorderPlanItems);
 
   const group = useGroupStore((state) => state.group);
@@ -68,7 +67,7 @@ function PlanList() {
     }
 
     try {
-      const newItem = await insertPlanItem(
+      await insertPlanItem(
         {
           group_id: group.id,
           title,
@@ -77,7 +76,6 @@ function PlanList() {
         planItems,
       );
 
-      addPlanItem(newItem);
     } catch (err) {
       console.error("❌ 일정 추가 실패:", err);
     }
