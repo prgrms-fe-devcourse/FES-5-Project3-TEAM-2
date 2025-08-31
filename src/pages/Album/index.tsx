@@ -167,7 +167,7 @@ function Album() {
           <Button
             variant="primary"
             onClick={handleAddPhoto}
-            startIcon={<FaPlus />}
+            startIcon={isUploading ? undefined : <FaPlus />}
             isLoading={isUploading}
           >
             {isUploading ? "업로드 중" : "사진 추가"}
