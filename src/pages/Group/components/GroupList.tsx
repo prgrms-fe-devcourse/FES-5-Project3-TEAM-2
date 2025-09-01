@@ -42,7 +42,7 @@ export default function GroupList({
           onAdd();
         }}
         disabled={creating}
-        className="w-full max-w-[480px] aspect-[20/9] bg-secondary rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.25)] cursor-pointer"
+        className="w-full max-w-[480px] aspect-[20/9] bg-primary rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.25)] cursor-pointer"
       >
         <div className="flex flex-col items-center justify-center gap-4">
           <img src={cardAdd} alt="그룹 카드 추가" />
