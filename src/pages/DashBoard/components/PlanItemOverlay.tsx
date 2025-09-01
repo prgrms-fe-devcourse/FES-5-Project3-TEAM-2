@@ -16,7 +16,7 @@ function PlanItemOverlay({ title, duration, displayIndex }: Props) {
 
   return (
     <div className="h-[50px] pr-2 flex items-center gap-2 rounded-[10px] border-2 border-secondary font-extrabold bg-white shadow-lg">
-      <MdOutlineDragIndicator className="size-10 text-gray-300"/>
+      <MdOutlineDragIndicator className="size-8 text-gray-300"/>
       <span className="shrink-0 text-2xl text-primary">{displayIndex}</span>
       <p className="font-extrabold">{title}</p>
       <div className="ml-auto flex items-center gap-2">

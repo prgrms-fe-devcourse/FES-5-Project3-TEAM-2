@@ -75,7 +75,6 @@ function PlanList() {
         },
         planItems,
       );
-
     } catch (err) {
       console.error("❌ 일정 추가 실패:", err);
     }
@@ -110,7 +109,7 @@ function PlanList() {
         onDragCancel={handleDragCancel}
       >
         <ul
-          className="flex flex-col gap-2 max-h-[60vh] min-h-[300px] overflow-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2"
+          className="flex flex-col gap-2 w-full max-h-[60vh] min-h-[300px] overflow-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2"
           role="list"
         >
           <SortableContext items={items} strategy={verticalListSortingStrategy}>
@@ -122,17 +121,15 @@ function PlanList() {
               );
             })}
           </SortableContext>
-
-          <li>
-            <button
-              type="button"
-              className="h-[50px] flex w-full items-center justify-center rounded-[10px] bg-primary font-extrabold text-white hover:brightness-95 active:brightness-90 shadow-lg cursor-pointer focus:outline-none"
-              onClick={() => setIsModalOpen(true)}
-            >
-              + 커스텀 일정 추가하기
-            </button>
-          </li>
         </ul>
+
+        <button
+          type="button"
+          className="h-[50px] flex w-[calc(100%-8px)] min-w-[300px] items-center justify-center rounded-[10px] bg-primary font-extrabold text-white hover:brightness-95 active:brightness-90 shadow-lg cursor-pointer focus:outline-none flex-shrink-0"
+          onClick={() => setIsModalOpen(true)}
+        >
+          + 커스텀 일정 추가하기
+        </button>
 
         <DragOverlay>
           {activePlan ? (
