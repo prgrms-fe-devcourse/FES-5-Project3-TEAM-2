@@ -111,6 +111,7 @@ function Photos({
       )}
       <VirtuosoGrid
         ref={virtuosoRef}
+        className="scrollbar scrollbar-thumb-primary scrollbar-track-transparent pr-2"
         style={{ height: "100%" }}
         totalCount={photos.length}
         components={gridComponents}
@@ -137,7 +138,7 @@ function Photos({
           }
         }}
       />
-      {isLoadingMore && <LoadingMore />}
+      {!isLoading && isLoadingMore && <LoadingMore />}
       {!hasMore && photos.length > 0 && !isLoadingMore && showEndMessage && (
         <EndMessage
           showEndMessage={showEndMessage}
