@@ -10,19 +10,17 @@ export default function GroupsPage() {
   const { userId } = useParams<{ userId: string }>();
   const sessionReady = useSessionReady();
 
-  const { groups, loading, creating, addGroup } = useMyGroups(sessionReady);
-  const { profile, loading: profileLoading, fetchProfile } = useProfileStore();
+  const { groups, loading, creating, addGroup, removeGroup } = useMyGroups(sessionReady);
+  const { profile, fetchProfile } = useProfileStore();
 
   // userId가 있으면 프로필 불러오기
   useEffect(() => {
-    if (sessionReady && userId) {
-      fetchProfile(userId);
-    }
-  }, [sessionReady, userId, fetchProfile]);
+    if(!sessionReady || !userId) return;
+    if(profile?.id === userId) return;
+    fetchProfile(userId);
+  }, [sessionReady, userId, fetchProfile, profile?.id]);
 
-  // if (!sessionReady) return <p>세션 확인 중...</p>;
-  if (profileLoading) return <p>프로필 불러오는 중...</p>;
-  // if (!profile) return <p>프로필이 없습니다.</p>;
+  const isInitialLoading = loading && groups.length === 0;
 
   return (
     <div className="flex h-full min-h-0 flex-col px-25 py-20">
@@ -33,12 +31,10 @@ export default function GroupsPage() {
         <p className="text-2 mb-20">오늘은 어떤 여행을 계획해 볼까요?</p>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2">
         <h2 className="text-4 font-extrabold mb-10">나의 그룹 👯‍♀️</h2>
-        {loading ? (
-          <p>불러오는 중…</p>
-        ) : (
-          <GroupList groups={groups} onAdd={addGroup} creating={creating} />
+        {isInitialLoading ? null : (
+          <GroupList groups={groups} onAdd={addGroup} creating={creating} onDelete={removeGroup} />
         )}
       </div>
     </div>

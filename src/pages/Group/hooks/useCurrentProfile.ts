@@ -7,8 +7,9 @@ import { useParams } from "react-router";
 export default function useCurrentProfile() {
   const {userId} = useParams<{userId:string}>();
 
-  const profile = useProfileStore((s) => s.profile);
-  const setProfile = useProfileStore((s) => s.setProfile);
+  const currentId = useProfileStore((s) => s.profile?.id);
+  const fetchProfile  = useProfileStore((s) => s.fetchProfile);
+  const clearProfile  = useProfileStore((s) => s.clearProfile);
 
   useEffect(() => {
     let cancelled = false;
@@ -21,28 +22,24 @@ export default function useCurrentProfile() {
         uid = session?.user.id;
       }
 
-      if(!uid) return; // 비로그인 경우
+      // 비로그인 경우
+      if (!uid) {
+        clearProfile();
+        return;
+      }
 
-      if(profile?.id === uid) return;
+      if(currentId === uid) return;
 
-
-      const {data, error} = await supabase
-      .from('profile')
-      .select('id, name, avatar_url')
-      .eq('id', uid)
-      .single();
 
       if(cancelled) return;
 
-      if(!error && data) {
-        setProfile(data);
-      }
+      await fetchProfile(uid);
     })();
 
     return () => {
       cancelled = true;
     }
-  }, [userId, setProfile]);
+  }, [userId, currentId, fetchProfile, clearProfile]);
 
 
 

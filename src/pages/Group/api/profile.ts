@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 export async function fetchProfileById(userId:string) {
     const { data, error } = await supabase
           .from("profile")
-          .select("id, name, avatar_url")
+          .select("*")
           .eq("id", userId)
           .single();
 

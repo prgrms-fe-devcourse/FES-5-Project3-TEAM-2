@@ -1,11 +1,12 @@
 import { supabase } from "@/lib/supabaseClient";
-import type { Group } from "../types/groups";
+import type { Tables } from "@/types/supabase";
+
 
 
 export async function fetchMyGroups(userId:string) {
   const { data, error } = await supabase
     .from("groups")
-    .select("id, name, start_day, end_day, groupmembers!inner(user_id)")
+    .select("id, name, owner_id, start_day, end_day, groupmembers!inner(user_id)")
     .eq("groupmembers.user_id", userId)
     .order("start_day", { ascending: true }); // 여행시작일 빠른게 앞에 보이게
 
@@ -15,9 +16,10 @@ export async function fetchMyGroups(userId:string) {
       (g) => ({
             id: g.id,
             name: g.name,
+            owner_id: g.owner_id,
             start_day: g.start_day,
             end_day: g.end_day,
-          }) as Group)
+          })) as Tables<'groups'>[]
 }
 
 
@@ -37,8 +39,8 @@ export async function createGroupAndJoin(
   const { data: created, error: cErr } = await supabase
     .from("groups")
     .insert([payload])
-    .select("id, name, start_day, end_day")
-    .single<Group>();
+    .select("id, name, owner_id, start_day, end_day")
+    .single<Tables<'groups'>>();
 
   if (cErr) throw cErr;
 
@@ -50,4 +52,13 @@ export async function createGroupAndJoin(
   if (mErr) console.error("groupmembers 추가 실패:", mErr);
 
   return created;
+}
+
+// 그룹카드 삭제
+export async function deleteGroup(group_id:string){
+  const {error} = await supabase
+  .from('groups')
+  .delete()
+  .eq('id', group_id);
+  if(error) throw error;
 }
