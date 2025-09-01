@@ -21,50 +21,50 @@ export default function Home() {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: reduce)", () => {
-        gsap.set([leftRef.current, cardRef.current], { autoAlpha : 1, y: 0, x: 0});
+        gsap.set([leftRef.current, cardRef.current], { autoAlpha: 1, y: 0, x: 0 });
       });
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // 1) 첫 진입 : 타임라인으로 순차 등장
-        const tl = gsap.timeline({defaults: {ease: "power3.out", duration : 0.7}});
-        tl.from(leftRef.current, {y: 16, autoAlpha : 0})
-          .from(cardRef.current, {x: 24, autoAlpha : 0}, "-=0.45"); // 약간 겹치게
+        // 1) 첫 진입: 더 강한 등장감
+        const tl = gsap.timeline({ defaults: { ease: "power4.out", duration: 0.9 } });
+        tl.from(leftRef.current, { y: 40, autoAlpha: 0 })
+          .from(cardRef.current, { x: 48, autoAlpha: 0, scale: 0.98 }, "-=0.4");
 
-        // 2) 히어로 약한 패럴랙스(스크럽)
-        if(heroRef.current) {
+        // 2) 히어로 패럴랙스 강도 증가
+        if (heroRef.current) {
           gsap.to(heroRef.current, {
-            y: -12,
+            y: -40,
             ease: "none",
             scrollTrigger: {
               trigger: leftRef.current,
               start: "top top",
               end: "bottom top",
-              scrub: 0.35,
+              scrub: 0.6,
             },
           });
         }
 
-        // 3) 섹션 카드들 : 한 장씩 자연스럽게
+        // 3) 섹션 카드: 더 큰 이동/페이드로 등장
         gsap.utils.toArray<HTMLElement>(".feature-card").forEach((el) => {
           gsap.fromTo(
             el,
-            {y: 18, autoAlpa: 0},
+            { y: 36, autoAlpha: 0 },
             {
               y: 0,
               autoAlpha: 1,
-              duration: 0.55,
-              ease: "power2.out",
+              duration: 0.7,
+              ease: "power3.out",
               force3D: true,
               scrollTrigger: {
                 trigger: el,
-                start: "top 82%",
+                start: "top 90%",
                 toggleActions: "play none none reverse",
                 once: true,
-              }
+              },
             }
-          )
-    })
-  });
-  })
+          );
+        });
+      });
+    });
     return () => ctx.revert();
   }, []);
 
