@@ -126,8 +126,12 @@ function DashBoard() {
         myEditingItems.forEach(item => {
           usePlanStore.getState().removeEditingItem(item.itemId);
         });
+        const currentOnline = usePresenceStore.getState().onlineUserIds;
+        const nextOnline = currentOnline.filter((id) => id !== myProfile.id);
+        usePresenceStore.getState().setOnlineUserIds(nextOnline);
       }
-      
+
+      void channel.untrack();
 
       supabase.removeChannel(channel);
     };

@@ -46,8 +46,6 @@ export async function dragUpdate({
     const prevSortOrder = prevItem?.sort_order || null;
     const nextSortOrder = nextItem?.sort_order || null;
 
-    console.log("prevSortOrder : ", prevSortOrder);
-    console.log("nextSortOrder : ", nextSortOrder);
 
     const newFractionalKey = generateKeyBetween(prevSortOrder, nextSortOrder);
     const newJitter = createJitter(); 
@@ -56,7 +54,6 @@ export async function dragUpdate({
       throw new Error("sort_order 생성에 실패했습니다.");
     }
 
-    console.log(`새로운 sort_order: ${newFractionalKey}, jitter: ${newJitter}`);
 
     // Supabase 업데이트 
     const { data, error } = await supabase
@@ -79,7 +76,6 @@ export async function dragUpdate({
       throw new Error("업데이트할 아이템을 찾을 수 없습니다. (권한 또는 존재하지 않는 아이템)");
     }
 
-    console.log("✅ 드래그 수정이 정상적으로 수행되었습니다.");
     return data;
   } catch (error) {
     console.error("❌ Error updating plan item order:", error);
