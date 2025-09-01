@@ -6,8 +6,7 @@ import type { Tables } from "@/types/supabase";
 import { useCallback, useEffect, useState } from "react";
 import { createGroupAndJoin, deleteGroup, fetchMyGroups } from "../api/groups";
 
-const toISO = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
 
 export function useMyGroups(enabled = true) {
   const [groups, setGroups] = useState<Tables<'groups'>[]>([]);
@@ -35,37 +34,36 @@ export function useMyGroups(enabled = true) {
     load();
   }, [load]);
 
-  const addGroup = useCallback(async () => {
-    if (creating) return;
-    setCreating(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const uid = session?.user?.id;
-      if (!uid) throw new Error("로그인이 필요합니다.");
+  const addGroup = useCallback(
+    async ({ name, startISO, endISO }: { name: string; startISO: string; endISO: string }) => {
+      if (creating) return;
+      setCreating(true);
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        const uid = session?.user?.id;
+        if (!uid) throw new Error("로그인이 필요합니다.");
 
-      const today = new Date();
-      const end = new Date(today);
-      end.setDate(today.getDate() + 2);
+        const newGroup = await createGroupAndJoin(uid, { name, startISO, endISO });
 
-      const newGroup = await createGroupAndJoin(uid, {
-        name: "새 여행",
-        startISO: toISO(today),
-        endISO: toISO(end),
-      });
+        // 새 카드 뒤쪽에 추가
+        setGroups((prev) => [...prev, newGroup]);
 
-      setGroups((prev) => [...prev, newGroup]); // 새카드 추가 -> 뒤에서 생기게
-      toast({
-        title: "새 그룹 추가 완료!🌟",
-        icon: "success",
-        position: "top",
-      });
-    } catch (e) {
-      console.error(e);
-      await errorAlert({ title: "그룹 생성 실패", text: "다시 시도해주세요." });
-    } finally {
-      setCreating(false);
-    }
-  }, [creating]);
+        toast({
+          title: "새 그룹 추가 완료!🌟",
+          icon: "success",
+          position: "top",
+        });
+      } catch (e) {
+        await errorAlert({ title: "그룹 생성 실패", text: "다시 시도해주세요." });
+        throw e; // 모달에서 에러 처리할 수 있게
+      } finally {
+        setCreating(false);
+      }
+    },
+    [creating]
+  );
 
   const removeGroup = async(id:string) => {
     try{
