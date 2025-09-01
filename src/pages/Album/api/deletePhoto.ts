@@ -6,12 +6,3 @@ export async function deletePhotoFromDatabase(photoId: string): Promise<void> {
 
   if (error) throw error;
 }
-
-// Storage에서 파일 삭제
-export async function deleteFileFromStorage(fileName: string): Promise<void> {
-  const { error } = await supabase.storage
-    .from("album-photos")
-    .remove([fileName]);
-
-  if (error) throw error;
-}
