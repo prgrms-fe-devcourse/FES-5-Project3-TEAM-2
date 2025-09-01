@@ -1,16 +1,16 @@
 
 
-import { GroupAddAlert } from "@/components/Sweetalert";
+import { errorAlert, toast } from "@/components/Sweetalert";
 import { supabase } from "@/lib/supabaseClient";
+import type { Tables } from "@/types/supabase";
 import { useCallback, useEffect, useState } from "react";
-import { createGroupAndJoin, fetchMyGroups } from "../api/groups";
-import type { Group } from "../types/groups";
+import { createGroupAndJoin, deleteGroup, fetchMyGroups } from "../api/groups";
 
 const toISO = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
 export function useMyGroups(enabled = true) {
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [groups, setGroups] = useState<Tables<'groups'>[]>([]);
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
 
@@ -54,14 +54,28 @@ export function useMyGroups(enabled = true) {
       });
 
       setGroups((prev) => [...prev, newGroup]); // 새카드 추가 -> 뒤에서 생기게
-      GroupAddAlert();
+      toast({
+        title: "새 그룹 추가 완료!🌟",
+        icon: "success",
+        position: "top",
+      });
     } catch (e) {
-      alert("그룹 생성에 실패했습니다.");
       console.error(e);
+      await errorAlert({ title: "그룹 생성 실패", text: "다시 시도해주세요." });
     } finally {
       setCreating(false);
     }
   }, [creating]);
 
-  return { groups, loading, creating, addGroup, reload: load };
+  const removeGroup = async(id:string) => {
+    try{
+      setLoading(true);
+      await deleteGroup(id);
+      setGroups((prev)=>prev.filter((g) => g.id !== id));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return { groups, loading, creating, addGroup, reload: load, removeGroup };
 }

@@ -1,40 +1,31 @@
-import { supabase } from "@/lib/supabaseClient";
+
 import { useGroupStore } from "@/store/groupStore";
 import { useEffect } from "react";
 import { useParams } from "react-router";
 
-
 export default function useCurrentGroup() {
-  const {groupId} = useParams<{groupId?:string}>();
+  const { groupId } = useParams<{ groupId?: string }>();
 
-  const currentGroup = useGroupStore((s) => s.currentGroup);
-  const setCurrentGroup = useGroupStore((s) => s.setCurrentGroup);
+  const currentId = useGroupStore((s) => s.currentGroup?.id);
+  const fetchGroup = useGroupStore((s) => s.fetchGroup);
   const clearGroup = useGroupStore((s) => s.clearGroup);
 
-
   useEffect(() => {
-    if(!groupId) {
+    if (!groupId) {
+      // URL에 그룹이 없으면만 초기화
       clearGroup();
       return;
     }
+    if (currentId === groupId) return;
 
-    if(currentGroup?.id === groupId) return;
-
+    let cancelled = false;
     (async () => {
-      const {data, error} = await supabase
-      .from('groups')
-      .select('id, name')
-      .eq('id', groupId)
-      .single();
-
-      if(error) {
-        console.error('그룹 불러오기 실패:', error.message);
-        clearGroup();
-      } else {
-        setCurrentGroup(data);
-      }
+      await fetchGroup(groupId);
+      if (cancelled) return;
     })();
-  },[groupId, setCurrentGroup, clearGroup]);
 
-
+    return () => {
+      cancelled = true;
+    };
+  }, [groupId, currentId, fetchGroup, clearGroup]);
 }
