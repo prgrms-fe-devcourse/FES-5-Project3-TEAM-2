@@ -1,9 +1,7 @@
 import { useState } from "react";
-import {
-  deleteFileFromStorage,
-  deletePhotoFromDatabase,
-} from "../api/deletePhoto";
+import { deletePhotoFromDatabase } from "../api/deletePhoto";
 import { extractFileNameFromUrl } from "../utils/extractFileFromUrl";
+import { deleteFileFromStorage } from "@/api/deleteStorage";
 
 interface UsePhotoDeleteProps {
   onDeleteComplete?: (photoId: string) => void;
@@ -25,7 +23,7 @@ export function usePhotoDelete({
 
       // Storage에서 파일 삭제
       if (fileName) {
-        await deleteFileFromStorage(fileName);
+        await deleteFileFromStorage("album-photos", fileName);
       }
 
       // DB에서 삭제

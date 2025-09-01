@@ -1,9 +1,10 @@
 // hooks/useFileUpload.ts
 import { useState } from "react";
 import type { Photo } from "../types/photo";
-import { insertPhotoToDatabase, uploadFileToStorage } from "../api/insertPhoto";
+import { insertPhotoToDatabase } from "../api/insertPhoto";
 import { generateId } from "../utils/generateId";
 import { compressImages } from "../utils/compressImages";
+import { uploadFileToStorage } from "@/api/uploadStorage";
 
 interface UseFileUploadProps {
   groupId: string;
@@ -28,7 +29,11 @@ export function useFileUpload({
 
     try {
       // Storage에 업로드
-      const publicUrl = await uploadFileToStorage(file, fileName);
+      const publicUrl = await uploadFileToStorage(
+        "album-photos",
+        file,
+        fileName,
+      );
 
       // DB에 insert
       const photo = await insertPhotoToDatabase(publicUrl, groupId);
