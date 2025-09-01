@@ -57,7 +57,7 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
         }`}
       >
         <MdOutlineDragIndicator 
-          className="size-10 shrink-0 cursor-grab active:cursor-grabbing text-gray-300 focus:outline-none"
+          className="size-8 shrink-0 cursor-grab active:cursor-grabbing text-gray-300 focus:outline-none"
           {...attributes}
           {...listeners}
         />
