@@ -99,21 +99,21 @@ export default function BudgetPage() {
       {/* 콘텐츠: 남은 높이 100% 사용, 내부 스크롤만 허용 */}
       <div className="min-h-0 overflow-hidden grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_420px] gap-6">
         {/* 전체 지출 내역 */}
-        <section className="flex min-h-0 flex-col rounded-2xl border border-secondary bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+        <section className="flex min-h-0 flex-col rounded-2xl border border-secondary bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] pr-2">
           <header className="shrink-0 sticky top-0 z-10 bg-white px-5 py-4 rounded-t-2xl">
             <h3 className="text-xl font-extrabold">전체 지출 내역 📄</h3>
           </header>
-          <div className="flex-1 min-h-0 overflow-auto px-5">
+          <div className="flex-1 min-h-0 overflow-auto px-5 scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2">
             <ExpenseList items={filteredExpenses} />
           </div>
         </section>
 
         {/* 개인 정산 */}
-        <section className="flex min-h-0 flex-col rounded-2xl border border-secondary bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+        <section className="flex min-h-0 flex-col rounded-2xl border border-secondary bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] pr-2">
           <header className="shrink-0 sticky top-0 z-10 bg-white px-5 py-4 rounded-t-2xl">
             <h3 className="text-xl font-extrabold">개인 정산 💵</h3>
           </header>
-          <div className="flex-1 min-h-0 overflow-auto px-5 py-4">
+          <div className="flex-1 min-h-0 overflow-auto px-5 py-4 scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2">
             <SettlementPanel />
           </div>
         </section>

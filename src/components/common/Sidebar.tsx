@@ -2,11 +2,11 @@ import { useGroupStore } from "@/store/groupStore";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 
 import defaultProfile from "@/assets/defaultprofile.svg";
-import calendar from "@/assets/icons/calendar.svg";
+import CalendarIcon from "@/assets/icons/calendar.svg?react";
 import GroupIcon from "@/assets/icons/group.svg?react";
 import logoutIcon from "@/assets/icons/logout.svg";
-import money from "@/assets/icons/money.svg";
-import photo from "@/assets/icons/photo.svg";
+import MoneyIcon from "@/assets/icons/money.svg?react";
+import PhotoIcon from "@/assets/icons/photo.svg?react";
 import logo from "@/assets/logo.png";
 import useCurrentGroup from "@/pages/Group/hooks/useCurrentGroup";
 import useCurrentProfile from "@/pages/Group/hooks/useCurrentProfile";
@@ -18,7 +18,7 @@ import GroupMemberList from "@/pages/Group/components/GroupMemberList";
 
 const link = ({ isActive }: { isActive: boolean }) =>
   [
-    "flex flex-row items-center gap-5  w-full px-3 py-2 rounded-lg text-sm font-semibold transition",
+    "group flex flex-row items-center gap-5  w-full px-3 py-2 rounded-lg text-sm font-semibold transition",
     isActive
       ? "bg-primary text-white shadow-sm"
       : "text-black hover:bg-primary hover:text-white",
@@ -30,19 +30,17 @@ export default function Sidebar() {
 
   const navigate = useNavigate();
 
-  const {profile} = useProfileStore();
+  const { profile } = useProfileStore();
   const currentGroup = useGroupStore((s) => s.currentGroup);
 
   const { members, loading } = useGroupMembers(currentGroup?.id);
   const onlineUserIds = usePresenceStore((s) => s.onlineUserIds);
 
-
-  const {userId} = useParams<{userId:string}>();
+  const { userId } = useParams<{ userId: string }>();
   // groups/:userId
   const userBase = userId ? `/groups/${userId}` : null;
   // groups/:userId/g/:groupId
   const groupBase = currentGroup ? `${userBase}/g/${currentGroup.id}` : null;
-
 
   return (
     <aside className="w-[240px] min-h-screen shadow-[0_4px_12px_rgba(0,0,0,0.15)] bg-white flex flex-col px-5 pt-6 pb-4">
@@ -61,9 +59,18 @@ export default function Sidebar() {
             }}
           />
         </div>
-        <div className="mt-2 text-black text-2 font-sans font-semibold">{profile?.name ?? "Guest"}</div>
+        <div className="mt-2 text-black text-2 font-sans font-semibold">
+          {profile?.name ?? "Guest"}
+        </div>
         <div className="mt-2 text-1 text-gray-400 font-sans font-medium">
-          {currentGroup ? <>현재 그룹 : <span className="font-semibold">{currentGroup.name}</span></> : "현재 그룹 없음"}
+          {currentGroup ? (
+            <>
+              현재 그룹 :{" "}
+              <span className="font-semibold">{currentGroup.name}</span>
+            </>
+          ) : (
+            "현재 그룹 없음"
+          )}
         </div>
       </div>
 
@@ -72,23 +79,51 @@ export default function Sidebar() {
       {/* 메뉴 */}
       <nav className="space-y-1">
         <NavLink end to={userBase ?? "/groups"} className={link}>
-          <GroupIcon className="w-5 h-5" />
-          <span className="text-1 font-sans font-semibold">그룹 관리</span>
+          {({ isActive }) => (
+            <>
+              <GroupIcon
+                className={`w-5 h-5 ${isActive ? "text-white" : "text-primary"} group-hover:text-white`}
+              />
+              <span className="text-1 font-sans font-semibold">그룹 관리</span>
+            </>
+          )}
         </NavLink>
 
         {groupBase && (
           <>
             <NavLink end to={groupBase} className={link}>
-              <img src={calendar} alt="달력 아이콘" className="w-5 h-5" />
-              <span className="text-1 font-sans font-semibold">대시보드</span>
+              {({ isActive }) => (
+                <>
+                  <CalendarIcon
+                    className={`w-5 h-5 ${isActive ? "text-white" : "text-primary"} group-hover:text-white`}
+                  />
+                  <span className="text-1 font-sans font-semibold">
+                    대시보드
+                  </span>
+                </>
+              )}
             </NavLink>
             <NavLink to={`${groupBase}/budget`} className={link}>
-              <img src={money} alt="예산 아이콘" className="w-5 h-5" />
-              <span className="text-1 font-sans font-semibold">예산 관리</span>
+              {({ isActive }) => (
+                <>
+                  <MoneyIcon
+                    className={`w-5 h-5 ${isActive ? "text-white" : "text-primary"} group-hover:text-white`}
+                  />
+                  <span className="text-1 font-sans font-semibold">
+                    예산 관리
+                  </span>
+                </>
+              )}
             </NavLink>
             <NavLink to={`${groupBase}/album`} className={link}>
-              <img src={photo} alt="앨범 아이콘" className="w-5 h-5" />
-              <span className="text-1 font-sans font-semibold">앨범</span>
+              {({ isActive }) => (
+                <>
+                  <PhotoIcon
+                    className={`w-5 h-5 ${isActive ? "text-white" : "text-primary"} group-hover:text-white`}
+                  />
+                  <span className="text-1 font-sans font-semibold">앨범</span>
+                </>
+              )}
             </NavLink>
           </>
         )}
@@ -110,10 +145,11 @@ export default function Sidebar() {
       <div className="flex-1" />
 
       <button
-      type="button"
-      onClick={() => LogoutAlert(navigate)}
-      className="flex items-center justify-center gap-2 mb-2 text-gray-200 hover:text-gray-400 transition cursor-pointer
-                  disabled:opacity-60 disabled:cursor-default">
+        type="button"
+        onClick={() => LogoutAlert(navigate)}
+        className="flex items-center justify-center gap-2 mb-2 text-gray-200 hover:text-gray-400 transition cursor-pointer
+                  disabled:opacity-60 disabled:cursor-default"
+      >
         <img src={logoutIcon} alt="로그아웃 아이콘" className="w-5 h-5" />
         <span className="font-medium">로그아웃</span>
       </button>
