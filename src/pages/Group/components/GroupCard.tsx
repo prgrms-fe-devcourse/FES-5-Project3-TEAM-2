@@ -3,6 +3,7 @@ import edit from "@/assets/icons/cardedit.svg";
 import { confirmDialog, errorAlert, toast } from "@/components/Sweetalert";
 import { supabase } from "@/lib/supabaseClient";
 import type { Tables } from "@/types/supabase";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import Swal from "sweetalert2";
 
@@ -11,6 +12,7 @@ type Props = {
   openMenuId?: string | null;
   setOpenMenuId?: (id:string | null) => void;
   onDelete: (id:string) => Promise<void> | void;
+  onUpdated?: (patch: { id: string; name?: string; start_day?: string; end_day?: string }) => void;
 }
 
 const formatDate = (iso?: string) => {
@@ -19,10 +21,21 @@ const formatDate = (iso?: string) => {
   return `${y.slice(2)}.${m}.${d}`;
 };
 
-export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete }: Props) {
+const toISO = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUpdated }: Props) {
 
   const navigate = useNavigate();
   const {userId} = useParams<{userId:string}>();
+
+  const [editError, setEditError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [name, setName] = useState(g.name);
+  const [startISO, setStartISO] = useState(g.start_day ?? toISO(new Date()));
+  const [endISO, setEndISO] = useState(g.end_day ?? toISO(new Date()));
 
   const menuOpen = openMenuId === g.id;
 
@@ -30,8 +43,15 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete }: Pr
     navigate(`/groups/${userId}/g/${g.id}`);
   }
 
+  const validateEdit = () => {
+  if (!name.trim()) return "그룹명을 입력해주세요.";
+  if (!startISO || !endISO) return "시작일과 종료일을 모두 선택해 주세요.";
+  if (startISO > endISO) return "종료일은 시작일 이후여야 합니다.";
+  return null;
+};
+
   const handleCardClick = (e:React.MouseEvent) => {
-    if(menuOpen){
+    if(editOpen || menuOpen){
       e.stopPropagation();
       setOpenMenuId?.(null);
       return;
@@ -87,14 +107,50 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete }: Pr
     }
   }
 
+  const openEditInfo = async (e:React.MouseEvent) => {
+    e.stopPropagation();
+
+    // 기존값 초기화 후 모달 열기
+    setName(g.name);
+    setStartISO(g.start_day ?? toISO(new Date()));
+    setEndISO(g.end_day ?? toISO(new Date()));
+    setEditError(null);
+    setSaving(false);
+    setEditOpen(true);
+    setOpenMenuId?.(null);
+  }
+
+  const saveEditInfo = async () => {
+  const msg = validateEdit();
+  if (msg) { setEditError(msg); return; }
+
+  try {
+    setSaving(true);
+    const { error } = await supabase
+      .from("groups")
+      .update({ name, start_day: startISO, end_day: endISO })
+      .eq("id", g.id);
+    if (error) throw error;
+
+    await toast({ title: "그룹 정보가 수정되었습니다.", icon: "success", position: "top" });
+    onUpdated?.({ id: g.id, name, start_day: startISO, end_day: endISO });
+
+
+    setEditOpen(false);
+  } catch {
+    await errorAlert({ title: "수정 실패", text: "다시 시도해주세요." });
+  } finally {
+    setSaving(false);
+  }
+};
 
   return (
     <div
     onClick={handleCardClick}
-    className="w-full max-w-[480px] aspect-[20/9] bg-white rounded-2xl cursor-pointer drop-shadow-[4px_4px_4px_rgba(0,0,0,0.25)]">
-      <div className="relative aspect-[20/9]">
+    className="w-full max-w-[480px] bg-white rounded-2xl cursor-pointer shadow-[4px_4px_4px_rgba(0,0,0,0.25)]">
+      <div className="relative aspect-[20/9] w-full">
           <img src={cardbg} alt="배경이미지" className="h-full w-full object-cover rounded-t-2xl" />
-          <h3 className="absolute left-5 top-5 text-7 font-extrabold text-white shadow-[4px_4px_4px_rgba(0,0,0,0.25)]">
+          <h3 className="absolute px-2 mr-20 left-5 top-5 text-7 font-extrabold text-white">
             {g.name}
           </h3>
 
@@ -114,7 +170,16 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete }: Pr
             >
               <button
               type="button"
-              className="w-full px-4 py-3 text-left text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer"
+              className="w-full px-4 py-3 text-center text-sm hover:bg-fourth  hover:text-tertiary transition cursor-pointer"
+              onClick={openEditInfo}
+              >
+                그룹 정보 수정
+              </button>
+
+
+              <button
+              type="button"
+              className="w-full px-4 py-3 text-center text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer"
               onClick={(e)=>{
                 e.stopPropagation();
                 setOpenMenuId?.(null);
@@ -122,10 +187,10 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete }: Pr
               >
                 배경 이미지 수정
               </button>
-              <div />
+
               <button
               type="button"
-              className="w-full px-4 py-3 text-left text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer"
+              className="w-full px-4 py-3 text-center text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer"
               onClick={handleDelete}
               >
                 그룹 삭제
@@ -133,9 +198,9 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete }: Pr
             </div>
           )}
           </div>
+        </div>
 
-
-      <div className="flex items-center justify-between px-6 py-3 rounded-b-2xl">
+      <div className="flex items-center justify-between px-6 h-14 py-3 rounded-b-2xl">
         <p className="text-1">
           {formatDate(g.start_day)} ~ {formatDate(g.end_day)}
         </p>
@@ -148,7 +213,88 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete }: Pr
         </button>
       </div>
 
+      {/* 그룹 정보 수정 모달 */}
+{editOpen && (
+  <div
+    className="fixed inset-0 z-50 grid place-items-center"
+    onClick={() => setEditOpen(false)}
+  >
+    <div className="absolute inset-0 bg-black/30" aria-hidden />
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        saveEditInfo();
+      }}
+      onClick={(e) => e.stopPropagation()}
+      className="relative w-[460px] rounded-xl bg-white p-5 shadow-xl"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="edit-group-title"
+    >
+      <h3 id="edit-group-title" className="mb-4 text-lg font-bold">
+        그룹 정보 수정
+      </h3>
+
+      {/* 그룹명 */}
+      <label className="mb-3 block text-sm font-medium">
+        그룹명
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-300"
+          placeholder="그룹명을 입력해주세요."
+        />
+      </label>
+
+      {/* 시작일, 종료일 */}
+      <div className="mb-4 grid grid-cols-2 gap-3">
+        <label className="block text-sm font-medium">
+          시작일
+          <input
+            type="date"
+            value={startISO}
+            min={startISO}
+            onChange={(e) => setStartISO(e.target.value)}
+            className="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-300 cursor-pointer"
+          />
+        </label>
+
+        <label className="block text-sm font-medium">
+          종료일
+          <input
+            type="date"
+            value={endISO}
+            min={startISO}
+            onChange={(e) => setEndISO(e.target.value)}
+            className="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-300 cursor-pointer"
+          />
+        </label>
       </div>
-    </div>
+
+      {editError && <div className="mb-3 text-sm text-rose-500">{editError}</div>}
+
+      {/* 취소, 저장 버튼 */}
+      <div className="flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => setEditOpen(false)}
+          className="rounded-lg border px-4 py-2 cursor-pointer"
+        >
+          취소
+        </button>
+        <button
+          type="submit"
+          disabled={saving}
+          className="rounded-lg bg-primary px-4 py-2 font-semibold text-white disabled:opacity-60 cursor-pointer"
+        >
+          {saving ? "저장 중..." : "저장"}
+        </button>
+      </div>
+    </form>
+  </div>
+)}
+
+</div>
   );
 }
