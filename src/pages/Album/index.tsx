@@ -12,11 +12,13 @@ import { broadcastPhotoChange, subscribePhotoUpdates } from "./api/updatePhoto";
 import { formatTravelDays } from "./utils/formatTravelDays";
 import type { Photo } from "./types/photo";
 import { useFileDownload } from "./hooks/useFileDownload";
+import type { VirtuosoGridHandle } from "react-virtuoso";
 
 function Album() {
   const { userId, groupId } = useParams();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const virtuosoRef = useRef<VirtuosoGridHandle>(null);
 
   const [group, setGroup] = useState<{
     start_day: string;
@@ -27,6 +29,10 @@ function Album() {
   const [isLoadingPhotos, setIsLoadingPhotos] = useState(true);
   const [hasUpdates, setHasUpdates] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   if (!groupId || !userId) {
     return;
@@ -78,13 +84,45 @@ function Album() {
   const fetchPhotos = async () => {
     try {
       setIsLoadingPhotos(true);
+      const initialPhotos = await loadPhotos(groupId, { limit: 30 });
 
-      const data = await loadPhotos(groupId);
-      setPhotos(data);
+      setPhotos(initialPhotos);
+
+      if (initialPhotos.length > 0) {
+        const lastPhoto = initialPhotos[initialPhotos.length - 1];
+        setCursor(lastPhoto.created_at);
+        setHasMore(initialPhotos.length === 30);
+      } else {
+        setCursor(null);
+        setHasMore(false);
+      }
     } catch (err) {
       console.error("사진 로드 에러:", err);
     } finally {
       setIsLoadingPhotos(false);
+    }
+  };
+
+  // 추가 사진 로드 (무한스크롤)
+  const loadMorePhotos = async () => {
+    if (!hasMore || isLoadingMore) return;
+
+    setIsLoadingMore(true);
+    try {
+      const newPhotos = await loadPhotos(groupId, { cursor, limit: 30 });
+
+      if (newPhotos.length === 0) {
+        setHasMore(false);
+      } else {
+        setPhotos((prev) => [...prev, ...newPhotos]);
+        const lastPhoto = newPhotos[newPhotos.length - 1];
+        setCursor(lastPhoto.created_at);
+        setHasMore(newPhotos.length === 30);
+      }
+    } catch (err) {
+      console.error("추가 로딩 실패:", err);
+    } finally {
+      setIsLoadingMore(false);
     }
   };
 
@@ -122,8 +160,20 @@ function Album() {
     try {
       setIsRefreshing(true);
       setHasUpdates(false);
-      const data = await loadPhotos(groupId);
-      setPhotos(data);
+
+      const freshPhotos = await loadPhotos(groupId, { limit: 30 });
+
+      // 모든 상태 초기화
+      setPhotos(freshPhotos);
+      if (freshPhotos.length > 0) {
+        const lastPhoto = freshPhotos[freshPhotos.length - 1];
+        setCursor(lastPhoto.created_at);
+        setHasMore(freshPhotos.length === 30);
+      } else {
+        setCursor(null);
+        setHasMore(false);
+      }
+      virtuosoRef.current?.scrollToIndex({ index: 0, behavior: "auto" });
     } catch (err) {
       console.error("새로고침 에러:", err);
     } finally {
@@ -145,8 +195,11 @@ function Album() {
     return unsubscribe;
   }, [groupId, userId]);
 
+  const isLoading =
+    isLoadingPhotos || isUploading || isDeleting || isDownloading;
+
   return (
-    <main className="h-full overflow-hidden grid grid-rows-[auto_1fr] gap-y-4 px-6 py-4">
+    <main className="h-full overflow-hidden grid grid-rows-[auto_1fr] gap-y-4 px-6 pt-4 pb-0">
       <header className="flex flex-wrap justify-between items-center gap-2 md:gap-3">
         <h1 className="text-2xl font-semibold">{travelDays}</h1>
         <div className="flex items-center gap-2">
@@ -185,13 +238,15 @@ function Album() {
       />
 
       <Photos
+        virtuosoRef={virtuosoRef}
         photos={photos}
-        isLoading={
-          isLoadingPhotos || isUploading || isDeleting || isDownloading
-        }
+        isLoading={isLoading}
+        hasMore={hasMore}
+        isLoadingMore={isLoadingMore}
         onFilesDropped={handleFiles}
         onDeletePhoto={handleDeletePhoto}
         onDownloadPhoto={handleDownloadPhoto}
+        onLoadMore={loadMorePhotos}
       />
     </main>
   );
