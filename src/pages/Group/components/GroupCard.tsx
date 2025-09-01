@@ -124,6 +124,10 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
   const msg = validateEdit();
   if (msg) { setEditError(msg); return; }
 
+  // 모달창 먼저 닫기
+  setEditOpen(false);
+  setSaving(true);
+
   try {
     setSaving(true);
     const { error } = await supabase
@@ -132,8 +136,9 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
       .eq("id", g.id);
     if (error) throw error;
 
-    await toast({ title: "그룹 정보가 수정되었습니다.", icon: "success", position: "top" });
     onUpdated?.({ id: g.id, name, start_day: startISO, end_day: endISO });
+    await toast({ title: "그룹 정보가 수정되었습니다.", icon: "success", position: "top" });
+
 
 
     setEditOpen(false);
@@ -214,26 +219,26 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
       </div>
 
       {/* 그룹 정보 수정 모달 */}
-{editOpen && (
-  <div
-    className="fixed inset-0 z-50 grid place-items-center"
-    onClick={() => setEditOpen(false)}
-  >
-    <div className="absolute inset-0 bg-black/30" aria-hidden />
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        saveEditInfo();
-      }}
+      {editOpen && (
+      <div
+      className="fixed inset-0 z-50 grid place-items-center"
+      onClick={() => setEditOpen(false)}
+      >
+        <div className="absolute inset-0 bg-black/30" aria-hidden />
+          <form
+          onSubmit={(e) => {
+          e.preventDefault();
+          saveEditInfo();
+        }}
       onClick={(e) => e.stopPropagation()}
       className="relative w-[460px] rounded-xl bg-white p-5 shadow-xl"
       role="dialog"
       aria-modal="true"
       aria-labelledby="edit-group-title"
-    >
-      <h3 id="edit-group-title" className="mb-4 text-lg font-bold">
-        그룹 정보 수정
-      </h3>
+      >
+        <h3 id="edit-group-title" className="mb-4 text-lg font-bold">
+          그룹 정보 수정
+        </h3>
 
       {/* 그룹명 */}
       <label className="mb-3 block text-sm font-medium">
