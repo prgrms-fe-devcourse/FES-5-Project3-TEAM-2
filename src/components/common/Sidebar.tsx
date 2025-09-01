@@ -97,7 +97,7 @@ export default function Sidebar() {
       <hr className="my-4 border-slate-200" />
 
       {currentGroup && (
-        <div className="max-h-[310px] overflow-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent">
+        <div className="max-h-[310px] overflow-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent mb-3">
           <h3 className="mb-3 font-bold">그룹 멤버</h3>
           {loading ? (
             <p className="text-gray-400 text-sm">불러오는 중...</p>
