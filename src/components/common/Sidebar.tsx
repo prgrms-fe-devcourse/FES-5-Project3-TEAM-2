@@ -45,7 +45,7 @@ export default function Sidebar() {
 
 
   return (
-    <aside className="w-[248px] min-h-screen shadow-[0_4px_12px_rgba(0,0,0,0.15)] bg-white flex flex-col px-5 pt-6 pb-4">
+    <aside className="w-[240px] min-h-screen shadow-[0_4px_12px_rgba(0,0,0,0.15)] bg-white flex flex-col px-5 pt-6 pb-4">
       {/* 로고 */}
       <img src={logo} alt="로고" className="w-[208px] pb-[50px]" />
 
@@ -97,7 +97,7 @@ export default function Sidebar() {
       <hr className="my-4 border-slate-200" />
 
       {currentGroup && (
-        <div>
+        <div className="max-h-[310px] overflow-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent">
           <h3 className="mb-3 font-bold">그룹 멤버</h3>
           {loading ? (
             <p className="text-gray-400 text-sm">불러오는 중...</p>

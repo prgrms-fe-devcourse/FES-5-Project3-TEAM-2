@@ -9,16 +9,15 @@ import PlanItem from "./PlanItem";
 import PlanItemOverlay from "./PlanItemOverlay";
 import AddPlanItemModal from "./AddPlanItemModal";
 import { usePlanStore } from "../store/planStore";
-import { useGroupStore } from "../store/groupStore"; 
+import { useGroupStore } from "../store/groupStore";
 import { insertPlanItem } from "../api/insertPlanItem";
 
 function PlanList() {
   const selectedDay = usePlanStore((state) => state.selectedDay);
   const allPlanItems = usePlanStore((state) => state.allPlanItems);
-  const addPlanItem = usePlanStore((state) => state.addPlanItem);
   const reorderPlanItems = usePlanStore((state) => state.reorderPlanItems);
 
-  const group = useGroupStore((state) => state.group); // ✅ 현재 그룹 정보 가져오기
+  const group = useGroupStore((state) => state.group);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const planItems = useMemo(() => {
@@ -68,16 +67,15 @@ function PlanList() {
     }
 
     try {
-      const newItem = await insertPlanItem(
+      await insertPlanItem(
         {
-          group_id: group.id, 
+          group_id: group.id,
           title,
           day: selectedDay,
         },
         planItems,
       );
 
-      addPlanItem(newItem); 
     } catch (err) {
       console.error("❌ 일정 추가 실패:", err);
     }
@@ -111,7 +109,10 @@ function PlanList() {
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <ul className="flex flex-col gap-2 h-[350px] overflow-auto" role="list">
+        <ul
+          className="flex flex-col gap-2 max-h-[60vh] min-h-[300px] overflow-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2"
+          role="list"
+        >
           <SortableContext items={items} strategy={verticalListSortingStrategy}>
             {items.map((id, idx) => {
               const plan = planItems.find((p) => p.id === id);
@@ -125,7 +126,7 @@ function PlanList() {
           <li>
             <button
               type="button"
-              className="h-[60px] flex w-full items-center justify-center rounded-[10px] bg-secondary font-extrabold text-white hover:brightness-95 active:brightness-90"
+              className="h-[50px] flex w-full items-center justify-center rounded-[10px] bg-primary font-extrabold text-white hover:brightness-95 active:brightness-90 shadow-lg cursor-pointer focus:outline-none"
               onClick={() => setIsModalOpen(true)}
             >
               + 커스텀 일정 추가하기

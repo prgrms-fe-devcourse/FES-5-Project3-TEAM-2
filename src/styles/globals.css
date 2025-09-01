@@ -1,4 +1,7 @@
 @import "tailwindcss";
+
+@plugin "tailwind-scrollbar";
+
 @layer base {
   html, body, #root, #react-app { height: 100%; }
 }
@@ -9,7 +12,6 @@
   font-weight: 100 900;
   font-style : normal;
 }
-
 
 @theme {
   /* 테마 컬러 */
@@ -78,4 +80,3 @@
 .swal2-timer-progress-bar {
   background: #8ACCD5 !important;
 }
-

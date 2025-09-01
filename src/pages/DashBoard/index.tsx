@@ -134,7 +134,7 @@ function DashBoard() {
   }, [group, navigate]);
 
   return (
-    <div className="bg-[#FAFAFA] w-full h-full border-2 border-black flex flex-row">
+    <div className="h-full flex flex-row min-h-0">
       <Schedule />
       <Map />
     </div>
