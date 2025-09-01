@@ -134,7 +134,7 @@ function DashBoard() {
   }, [group, navigate]);
 
   return (
-    <div className="h-full flex flex-row min-h-0">
+    <div className="h-full flex flex-row min-w-[1200px]">
       <Schedule />
       <Map />
     </div>

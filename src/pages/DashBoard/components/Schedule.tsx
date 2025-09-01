@@ -5,7 +5,7 @@ import TripInfo from './TripInfo';
 
 function Schedule() {
   return (
-    <section className="flex-1 px-[80px] py-[30px] flex flex-col gap-8 min-h-0">
+    <section className="w-[50%] px-[50px] py-[30px] flex flex-col gap-8 min-h-0 box-border">
       <TripInfo />
       <PlanContainer />
     </section>
