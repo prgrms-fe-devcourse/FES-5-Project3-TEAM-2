@@ -1,11 +1,10 @@
-import { useGroupStore } from "../store/groupStore"
+import { useGroupStore } from "../store/groupStore";
 
 function TripInfo() {
-
-  const group = useGroupStore((state) => state.group)
-  const name = group?.name ?? "로딩 중..."
-  const start_day = group?.start_day ?? ""
-  const end_day = group?.end_day ?? ""
+  const group = useGroupStore((state) => state.group);
+  const name = group?.name ?? "로딩 중...";
+  const start_day = group?.start_day ?? "";
+  const end_day = group?.end_day ?? "";
 
   return (
     <section className="flex flex-col gap-4">
@@ -16,7 +15,6 @@ function TripInfo() {
       </header>
 
       <div className="flex rounded-2xl bg-[#FAECF2] shadow-md px-2">
-
         <div className="flex w-full divide-x-2 divide-gray-200 di py-4">
           <div className="flex flex-1 flex-col items-center gap-1">
             <p className="font-bold">장소</p>
@@ -25,8 +23,9 @@ function TripInfo() {
 
           <div className="flex flex-1 flex-col items-center gap-1">
             <p className="font-bold">여행 날짜</p>
-            <p className="text-2 font-bold leading-tight whitespace-nowrap pl-1">
-              {start_day} ~ {end_day}
+            <p className="text-2 font-bold leading-tight pl-1 text-center">
+              <span className="inline-block">{start_day}</span>
+              <span className="inline-block"> ~ {end_day}</span>
             </p>
           </div>
         </div>
