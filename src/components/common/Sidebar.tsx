@@ -30,19 +30,17 @@ export default function Sidebar() {
 
   const navigate = useNavigate();
 
-  const {profile} = useProfileStore();
+  const { profile } = useProfileStore();
   const currentGroup = useGroupStore((s) => s.currentGroup);
 
   const { members, loading } = useGroupMembers(currentGroup?.id);
   const onlineUserIds = usePresenceStore((s) => s.onlineUserIds);
 
-
-  const {userId} = useParams<{userId:string}>();
+  const { userId } = useParams<{ userId: string }>();
   // groups/:userId
   const userBase = userId ? `/groups/${userId}` : null;
   // groups/:userId/g/:groupId
   const groupBase = currentGroup ? `${userBase}/g/${currentGroup.id}` : null;
-
 
   return (
     <aside className="w-[240px] min-h-screen shadow-[0_4px_12px_rgba(0,0,0,0.15)] bg-white flex flex-col px-5 pt-6 pb-4">
@@ -61,9 +59,18 @@ export default function Sidebar() {
             }}
           />
         </div>
-        <div className="mt-2 text-black text-2 font-sans font-semibold">{profile?.name ?? "Guest"}</div>
+        <div className="mt-2 text-black text-2 font-sans font-semibold">
+          {profile?.name ?? "Guest"}
+        </div>
         <div className="mt-2 text-1 text-gray-400 font-sans font-medium">
-          {currentGroup ? <>현재 그룹 : <span className="font-semibold">{currentGroup.name}</span></> : "현재 그룹 없음"}
+          {currentGroup ? (
+            <>
+              현재 그룹 :{" "}
+              <span className="font-semibold">{currentGroup.name}</span>
+            </>
+          ) : (
+            "현재 그룹 없음"
+          )}
         </div>
       </div>
 
@@ -94,26 +101,31 @@ export default function Sidebar() {
         )}
       </nav>
 
-      <hr className="my-4 border-slate-200" />
-
       {currentGroup && (
-        <div className="max-h-[310px] overflow-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent mb-3">
-          <h3 className="mb-3 font-bold">그룹 멤버</h3>
-          {loading ? (
-            <p className="text-gray-400 text-sm">불러오는 중...</p>
-          ) : (
-            <GroupMemberList members={members} onlineUserIds={onlineUserIds} />
-          )}
-        </div>
+        <>
+          <hr className="my-4 border-slate-200" />
+          <div className="max-h-[310px] overflow-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent mb-3">
+            <h3 className="mb-3 font-bold">그룹 멤버</h3>
+            {loading ? (
+              <p className="text-gray-400 text-sm">불러오는 중...</p>
+            ) : (
+              <GroupMemberList
+                members={members}
+                onlineUserIds={onlineUserIds}
+              />
+            )}
+          </div>
+        </>
       )}
 
       <div className="flex-1" />
 
       <button
-      type="button"
-      onClick={() => LogoutAlert(navigate)}
-      className="flex items-center justify-center gap-2 mb-2 text-gray-200 hover:text-gray-400 transition cursor-pointer
-                  disabled:opacity-60 disabled:cursor-default">
+        type="button"
+        onClick={() => LogoutAlert(navigate)}
+        className="flex items-center justify-center gap-2 mb-2 text-gray-200 hover:text-gray-400 transition cursor-pointer
+                  disabled:opacity-60 disabled:cursor-default"
+      >
         <img src={logoutIcon} alt="로그아웃 아이콘" className="w-5 h-5" />
         <span className="font-medium">로그아웃</span>
       </button>

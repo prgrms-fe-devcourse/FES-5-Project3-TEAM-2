@@ -1,23 +1,59 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { BsFillCaretLeftFill, BsFillCaretRightFill } from "react-icons/bs";
 import { usePlanStore } from "../store/planStore";
+import { usePresenceStore } from "../store/presenceStore";
+import { useGroupStore } from "../store/groupStore";
+import { supabase } from "@/lib/supabaseClient";
 
 function TripDays() {
   const tripDaysData = usePlanStore((state) => state.tripDays);
   const setSelectedDay = usePlanStore((state) => state.setSelectedDay);
-
+  const editingItemIds = usePlanStore((state) => state.editingItemIds);
+  const removeEditingItem = usePlanStore((state) => state.removeEditingItem);
+  
   // 처음엔 인덱스 3(=4번째)을 중앙으로 시작
   const [centerIndex, setCenterIndex] = useState(3);
 
   // 항상 7일만 slice
   const visibleDays = tripDaysData.slice(centerIndex - 3, centerIndex + 4);
 
+  // 선택된 날짜가 바뀔 때 수정 중인 아이템 정리
+  const clearMyEditingItems = useCallback(() => {
+    const myProfile = usePresenceStore.getState().myProfile;
+    const group = useGroupStore.getState().group;
+    if (!myProfile || !group) return;
+
+    const myEditingItems = editingItemIds.filter(item => item.userId === myProfile.id);
+    
+    if (myEditingItems.length > 0) {
+      // 각 수정 중인 아이템에 대해 브로드캐스트 전송
+      myEditingItems.forEach(item => {
+        supabase.channel(group.id).send({
+          type: "broadcast",
+          event: "edit-end",
+          payload: { itemId: item.itemId, userId: myProfile.id },
+        });
+        
+        // 로컬 상태에서 제거
+        removeEditingItem(item.itemId);
+      });
+    }
+  }, [editingItemIds, removeEditingItem]);
+
   // 항상 가운데 날짜 선택
   useEffect(() => {
     if (visibleDays[3]) {
-      setSelectedDay(visibleDays[3].fullDate);
+      // 날짜가 실제로 바뀔 때만 수정 중인 아이템 정리
+      const newSelectedDay = visibleDays[3].fullDate;
+      const currentSelectedDay = usePlanStore.getState().selectedDay;
+      
+      if (newSelectedDay !== currentSelectedDay) {
+        clearMyEditingItems();
+      }
+      
+      setSelectedDay(newSelectedDay);
     }
-  }, [visibleDays, setSelectedDay]);
+  }, [visibleDays, setSelectedDay, clearMyEditingItems]);
 
   const handlePrevious = () => {
     if (centerIndex > 3) {
@@ -31,7 +67,7 @@ function TripDays() {
     }
   };
 
-  const handleDayClick = (clickedIndex:number) => {
+  const handleDayClick = (clickedIndex: number) => {
     // 가운데(인덱스 3)는 이미 선택된 상태이므로 무시
     if (clickedIndex === 3) return;
     
@@ -45,7 +81,7 @@ function TripDays() {
   };
 
   // 실제 여행 기간인지 확인 (앞뒤 3개 제외)
-  const isTravelDay = (globalIndex:number) => {
+  const isTravelDay = (globalIndex: number) => {
     return globalIndex >= 3 && globalIndex < tripDaysData.length - 3;
   };
 
