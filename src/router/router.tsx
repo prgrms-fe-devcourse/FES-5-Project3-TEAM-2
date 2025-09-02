@@ -3,6 +3,7 @@ import Album from "@/pages/Album";
 import AuthCallback from "@/pages/auth/AuthCallback";
 import Budget from "@/pages/BudgetPage";
 import GroupJoinPage from "@/pages/Group/pages/GroupJoinPage";
+import GroupLayout from "@/pages/Group/components/GroupLayout";
 import GroupsPage from "@/pages/Group/pages/GroupsPage";
 import { createBrowserRouter, Outlet, redirect, type LoaderFunctionArgs } from "react-router-dom";
 import HomeLayout from "../HomeLayout";
@@ -83,6 +84,7 @@ const router = createBrowserRouter([
           id: "group-layout",
           path:'g/:groupId',
           loader: loadGroup,
+          element: <GroupLayout />,
           children: [
             {index:true, element: <DashBoard />, loader: dashboardLoader},
             {path: "budget", element: <Budget />},
