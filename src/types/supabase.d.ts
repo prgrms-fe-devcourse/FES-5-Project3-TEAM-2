@@ -1,4 +1,4 @@
-﻿﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -130,6 +130,7 @@ export type Database = {
       }
       groups: {
         Row: {
+          bg_url: string | null
           end_day: string
           id: string
           name: string
@@ -137,6 +138,7 @@ export type Database = {
           start_day: string
         }
         Insert: {
+          bg_url?: string | null
           end_day: string
           id?: string
           name: string
@@ -144,6 +146,7 @@ export type Database = {
           start_day: string
         }
         Update: {
+          bg_url?: string | null
           end_day?: string
           id?: string
           name?: string

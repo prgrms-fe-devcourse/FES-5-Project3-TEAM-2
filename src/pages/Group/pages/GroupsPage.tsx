@@ -28,7 +28,7 @@ export default function GroupsPage() {
   const isInitialLoading = loading && groups.length === 0;
 
   return (
-    <div className="flex h-full min-h-0 flex-col px-[50px] py-[50px]">
+    <div className="flex h-full min-h-0 flex-col px-[50px] py-[40px]">
       <div>
         <h1 className="text-3 font-extrabold mb-3">
           안녕하세요 {profile?.name ?? "사용자"}님!🤗
