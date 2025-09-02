@@ -6,7 +6,7 @@ export function createSearchInfoContent(
 ): HTMLElement {
   const container = document.createElement("div");
   container.style.padding = "0 16px";
-  container.style.width = "280px";
+  container.style.maxWidth = "280px";
 
   container.innerHTML = `
     <h3 style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: #333;">

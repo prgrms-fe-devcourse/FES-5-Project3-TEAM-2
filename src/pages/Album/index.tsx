@@ -207,7 +207,7 @@ function Album() {
     isLoadingPhotos || isUploading || isDeleting || isDownloading;
 
   return (
-    <main className="h-full overflow-hidden grid grid-rows-[auto_1fr] gap-y-3 sm:gap-y-4 px-[50px] pt-[50px] pb-0">
+    <main className="h-full overflow-hidden grid grid-rows-[auto_1fr] gap-y-3 sm:gap-y-4 px-[50px] pt-[40px] pb-0">
       <header className="flex flex-col space-y-3 lg:space-y-0 lg:flex-row lg:justify-between lg:items-center">
         <h1 className="text-xl sm:text-2xl font-semibold">{travelDays}</h1>
         <div className="flex items-center justify-start lg:justify-end gap-2 sm:gap-3">
