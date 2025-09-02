@@ -6,7 +6,7 @@ export function createSearchInfoContent(
 ): HTMLElement {
   const container = document.createElement("div");
   container.style.padding = "0 16px";
-  container.style.maxWidth = "280px";
+  container.style.width = "280px";
 
   container.innerHTML = `
     <h3 style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: #333;">
@@ -29,7 +29,7 @@ export function createSearchInfoContent(
     
     <button
       class="add-schedule-btn"
-      style="width: 100%; padding: 8px; margin-bottom: 8px; background: #F9B5D0; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;"
+      style="width: 100%; padding: 8px; margin-bottom: 8px; background: #FF8E9E; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 400;"
     >
       일정 추가
     </button>

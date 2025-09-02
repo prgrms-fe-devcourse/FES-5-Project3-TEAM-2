@@ -9,7 +9,13 @@ interface SearchResultsProps {
   onAddSchedule: (result: SearchResult) => void;
 }
 
-function SearchResults({ results, isVisible, onResultClick, onHide, onAddSchedule }: SearchResultsProps) {
+function SearchResults({
+  results,
+  isVisible,
+  onResultClick,
+  onHide,
+  onAddSchedule,
+}: SearchResultsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // 검색 결과 바깥 클릭 시
@@ -17,21 +23,24 @@ function SearchResults({ results, isVisible, onResultClick, onHide, onAddSchedul
     if (!isVisible) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         onHide();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isVisible, onHide]);
 
   if (results.length === 0 || !isVisible) return null;
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className="absolute top-26 left-12 right-12 max-h-80 overflow-y-auto bg-white rounded-xl"
     >
@@ -49,7 +58,7 @@ function SearchResults({ results, isVisible, onResultClick, onHide, onAddSchedul
             )}
           </div>
           <button
-            className="px-3 py-1 text-sm bg-secondary text-white rounded-lg hover:bg-primary"
+            className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary"
             onClick={(e) => {
               e.stopPropagation();
               onAddSchedule(result);
