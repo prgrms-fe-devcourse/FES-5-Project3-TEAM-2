@@ -17,6 +17,11 @@ function TripDays() {
   // 항상 7일만 slice
   const visibleDays = tripDaysData.slice(centerIndex - 3, centerIndex + 4);
 
+  // tripDays가 바뀔 때 centerIndex 초기화
+  useEffect(() => {
+    setCenterIndex(3);
+  }, [tripDaysData]);
+
   // 선택된 날짜가 바뀔 때 수정 중인 아이템 정리
   const clearMyEditingItems = useCallback(() => {
     const myProfile = usePresenceStore.getState().myProfile;
