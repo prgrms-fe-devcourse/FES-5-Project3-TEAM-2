@@ -1,3 +1,4 @@
+import { toast } from "@/components/Sweetalert";
 import { useState, useCallback } from "react";
 
 interface SearchResult {
@@ -78,7 +79,11 @@ export function useSearchPlace(map: google.maps.Map | null) {
           }
         }
       } catch (error) {
-        console.error("Places search error:", error);
+        toast({
+          title: "장소 검색을 실패했습니다.",
+          icon: "error",
+          position: "top",
+        });
       }
       setIsSearching(false);
     },

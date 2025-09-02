@@ -1,3 +1,4 @@
+import { toast } from "@/components/Sweetalert";
 import { useCallback, useEffect } from "react";
 
 interface UseMapClickProps {
@@ -57,7 +58,11 @@ export const reverseGeocode = async (
       return "주소를 찾을 수 없습니다";
     }
   } catch (error) {
-    console.error("Reverse geocoding 오류:", error);
+    toast({
+      title: "주소를 가져오지 못했습니다.",
+      icon: "error",
+      position: "top",
+    });
     return "주소를 가져오는 중 오류가 발생했습니다";
   }
 };

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { insertPlanItem, type PlanItemInsert } from "../api/insertPlanItem";
+import { toast } from "@/components/Sweetalert";
 
 interface LocationData {
   lat: number;
@@ -80,7 +81,11 @@ export default function AddScheduleModal({
       resetForm();
       onClose();
     } catch (error) {
-      console.error("일정 저장 실패:", error);
+      toast({
+        title: "일정을 저장하지 못했습니다.",
+        icon: "error",
+        position: "top",
+      });
     } finally {
       setIsLoading(false);
     }

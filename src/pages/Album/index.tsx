@@ -13,6 +13,7 @@ import { formatTravelDays } from "./utils/formatTravelDays";
 import type { Photo } from "./types/photo";
 import { useFileDownload } from "./hooks/useFileDownload";
 import type { VirtuosoGridHandle } from "react-virtuoso";
+import { confirmDialog, toast } from "@/components/Sweetalert";
 
 function Album() {
   const { userId, groupId } = useParams();
@@ -50,8 +51,12 @@ function Album() {
       setPhotos((prev) => [photo, ...prev]);
       broadcastPhotoChange(groupId, userId, "upload", photo.id);
     },
-    onUploadError: (error) => {
-      console.error("업로드 에러:", error);
+    onUploadError: () => {
+      toast({
+        title: "사진 업로드를 실패했습니다.",
+        icon: "error",
+        position: "top",
+      });
     },
   });
 
@@ -60,8 +65,12 @@ function Album() {
       setPhotos((prev) => prev.filter((photo) => photo.id !== photoId));
       broadcastPhotoChange(groupId, userId, "delete", photoId);
     },
-    onDeleteError: (error) => {
-      console.error("삭제 에러:", error);
+    onDeleteError: () => {
+      toast({
+        title: "사진 삭제를 실패했습니다.",
+        icon: "error",
+        position: "top",
+      });
     },
   });
 
@@ -78,7 +87,11 @@ function Album() {
       const data = await loadGroup(groupId);
       setGroup(data);
     } catch (err) {
-      console.error("날짜 로드 에러:", err);
+      toast({
+        title: "날짜 정보를 불러오지 못했습니다.",
+        icon: "error",
+        position: "top",
+      });
     } finally {
       setIsLoadingGroup(false);
     }
@@ -101,7 +114,11 @@ function Album() {
         setHasMore(false);
       }
     } catch (err) {
-      console.error("사진 로드 에러:", err);
+      toast({
+        title: "사진을 불러오지 못했습니다.",
+        icon: "error",
+        position: "top",
+      });
     } finally {
       setIsLoadingPhotos(false);
     }
@@ -124,7 +141,11 @@ function Album() {
         setHasMore(newPhotos.length === 30);
       }
     } catch (err) {
-      console.error("추가 로딩 실패:", err);
+      toast({
+        title: "사진를 불러오지 못했습니다.",
+        icon: "error",
+        position: "top",
+      });
     } finally {
       setIsLoadingMore(false);
     }
@@ -151,7 +172,14 @@ function Album() {
     const photo = photos.find((p) => p.id === photoId);
     if (!photo) return;
 
-    if (window.confirm("정말로 이 사진을 삭제하시겠습니까?")) {
+    const ok = await confirmDialog({
+      title: "사진 삭제",
+      text: "이 사진을 삭제하시겠습니까?",
+      icon: "warning",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+    });
+    if (ok) {
       await deletePhoto(photoId, photo.url);
     }
   };
@@ -179,7 +207,11 @@ function Album() {
       }
       virtuosoRef.current?.scrollToIndex({ index: 0, behavior: "auto" });
     } catch (err) {
-      console.error("새로고침 에러:", err);
+      toast({
+        title: "새로고침을 실패했습니다.",
+        icon: "error",
+        position: "top",
+      });
     } finally {
       setIsRefreshing(false);
     }

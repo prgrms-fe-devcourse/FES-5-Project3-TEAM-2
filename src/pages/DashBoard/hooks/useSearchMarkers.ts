@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { SearchResult } from "../types/map";
+import { toast } from "@/components/Sweetalert";
 
 interface UseSearchMarkersProps {
   map: google.maps.Map | null;
@@ -73,7 +74,11 @@ export function useSearchMarkers({
 
         markersRef.current = newMarkers;
       } catch (error) {
-        console.error("마커 생성 중 오류:", error);
+        toast({
+          title: "마커 생성에 실패했습니다.",
+          icon: "error",
+          position: "top",
+        });
       }
     };
 

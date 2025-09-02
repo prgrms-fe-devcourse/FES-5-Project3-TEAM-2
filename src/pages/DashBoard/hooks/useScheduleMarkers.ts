@@ -7,6 +7,7 @@ import {
   createMarkerContent,
   loadMarkerLibrary,
 } from "../utils/mapScheduleMarker";
+import { toast } from "@/components/Sweetalert";
 
 interface UseScheduleMarkersProps {
   map: google.maps.Map | null;
@@ -98,7 +99,11 @@ export function useScheduleMarkers({
         const data = await scheduleApi.getSchedules(groupId);
         setSchedules(data);
       } catch (error) {
-        console.error("일정 로드 오류:", error);
+        toast({
+          title: "일정을 불러오지 못했습니다.",
+          icon: "error",
+          position: "top",
+        });
       } finally {
         setIsLoading(false);
       }
