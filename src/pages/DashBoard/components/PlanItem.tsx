@@ -7,6 +7,7 @@ import { MdEdit } from "react-icons/md";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { usePlanStore } from "../store/planStore";
 import { usePresenceStore } from "../store/presenceStore";
+import { useFocusStore } from "../store/focusStore";
 
 interface Props {
   id: string;
@@ -34,6 +35,8 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
 
   const myProfile = usePresenceStore((s) => s.myProfile);
 
+  const setPlanItemId = useFocusStore((s) => s.setPlanItemId);
+
   // 현재 아이템 수정자 찾기
   const editor = editingItemIds.find((e) => e.itemId === id);
   const isEditingByMe = editor?.userId === myProfile?.id;
@@ -46,7 +49,7 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
   const minutes = duration % 60;
 
   return (
-    <li ref={setNodeRef} style={style}>
+    <li ref={setNodeRef} style={style} onClick={() => setPlanItemId(id)}>
       <article
         className={`h-[50px] pr-2 flex items-center gap-2 rounded-[10px] border-2 font-extrabold shadow-md ${
           isEditingByMe
