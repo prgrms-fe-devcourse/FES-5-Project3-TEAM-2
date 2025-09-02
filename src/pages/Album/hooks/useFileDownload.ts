@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Photo } from "../types/photo";
+import { toast } from "@/components/Sweetalert";
 
 interface UseFileDownloadProps {
   onPhotoNotFound?: (photoId: string) => void;
@@ -31,9 +32,17 @@ export function useFileDownload({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      alert("팝업이 차단되었습니다. 브라우저 설정에서 팝업을 허용해주세요.");
+      toast({
+        title: "팝업이 차단되었습니다.",
+        icon: "info",
+        position: "top",
+      });
     } else {
-      alert("사진이 새 탭에서 열립니다. 길게 눌러 저장할 수 있습니다.");
+      toast({
+        title: "사진이 새 탭에서 열립니다. 길게 눌러 저장할 수 있습니다.",
+        icon: "info",
+        position: "top",
+      });
     }
   };
 
@@ -61,7 +70,11 @@ export function useFileDownload({
       });
 
       if (!response.ok) {
-        alert("이 사진은 삭제되었거나 더 이상 사용할 수 없습니다.");
+        toast({
+          title: "이미 삭제된 사진입니다.",
+          icon: "error",
+          position: "top",
+        });
         onPhotoNotFound?.(photoId);
         return;
       }
@@ -69,7 +82,11 @@ export function useFileDownload({
       const blob = await response.blob();
       downloadFile(blob, fileName);
     } catch {
-      alert("네트워크 오류로 다운로드에 실패했습니다.");
+      toast({
+        title: "다운로드에 실패했습니다.",
+        icon: "error",
+        position: "top",
+      });
     }
   };
 
@@ -89,7 +106,11 @@ export function useFileDownload({
         await downloadForDesktop(photo.url, fileName, photo.id);
       }
     } catch {
-      console.log("다운로드 실패");
+      toast({
+        title: "다운로드에 실패했습니다.",
+        icon: "error",
+        position: "top",
+      });
     } finally {
       setIsDownloading(false);
     }
