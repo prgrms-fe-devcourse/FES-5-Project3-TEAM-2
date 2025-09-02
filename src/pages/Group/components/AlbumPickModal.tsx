@@ -170,14 +170,19 @@ export default function AlbumPickModal({
                   <button
                     key={f.path}
                     type="button"
-                    className={`relative aspect-[20/9] rounded-lg overflow-hidden cursor-pointer border ${selected ? "ring-2 ring-tertiary border-transparent" : "border-slate-200"}`}
+                    className={`relative aspect-[20/9] rounded-lg overflow-hidden cursor-pointer border
+                      ${selected ? "ring-2 ring-tertiary border-transparent" : "border-slate-200"}
+                      group`}
                     onClick={() => setPicked(f.url)}
                     title={f.name}
                   >
-                    <img src={f.url} alt={f.name} className="h-full w-full object-cover" loading="lazy" />
-                    {selected && (
-                      <span className="absolute right-2 top-2 rounded-md bg-black/50 px-2 py-1 text-xs text-white">선택됨</span>
-                    )}
+                    <img src={f.url} alt={f.name} className="h-full w-full object-cover group-hover:scale-105 transition" loading="lazy" />
+
+                    {/* hover시만 보이도록 */}
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {selected && (
+                        <span className="absolute right-2 top-2 rounded-md bg-black/50 px-2 py-1 text-xs text-white">선택됨</span>
+                      )}
                   </button>
                 );
               })}
