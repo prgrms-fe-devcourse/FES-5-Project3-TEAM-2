@@ -8,21 +8,24 @@ import { useNavigate } from "react-router";
 import type { Group } from "./api/loadGroupData";
 import type { PlanItem } from "./api/loadPlanItem";
 import { usePresenceStore } from "./store/presenceStore";
+import { generateTripDays } from "./utils/generateTripDays";
 
 function DashBoard() {
-  const group = useGroupStore((state) => state.group); 
+  const group = useGroupStore((state) => state.group);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!group) return;
-    
+
     const myProfile = usePresenceStore.getState().myProfile;
     const editingItems = usePlanStore.getState().editingItemIds;
-    
+
     if (myProfile) {
-      const myEditingItems = editingItems.filter(item => item.userId === myProfile.id);
-      myEditingItems.forEach(item => {
+      const myEditingItems = editingItems.filter(
+        (item) => item.userId === myProfile.id,
+      );
+      myEditingItems.forEach((item) => {
         usePlanStore.getState().removeEditingItem(item.itemId);
       });
     }
@@ -48,9 +51,17 @@ function DashBoard() {
       },
       (payload) => {
         switch (payload.eventType) {
-          case "UPDATE":
-            useGroupStore.getState().setGroup(payload.new as Group);
+          case "UPDATE": {
+            const updatedGroup = payload.new as Group;
+            useGroupStore.getState().setGroup(updatedGroup);
+
+            const newTripDays = generateTripDays(
+              updatedGroup.start_day,
+              updatedGroup.end_day,
+            );
+            usePlanStore.getState().setTripDays(newTripDays);
             break;
+          }
           case "DELETE":
             navigate("/", { replace: true });
             break;
@@ -87,7 +98,7 @@ function DashBoard() {
     return () => {
       const myProfile = usePresenceStore.getState().myProfile;
       const editingItems = usePlanStore.getState().editingItemIds;
-      
+
       if (myProfile && editingItems.length > 0) {
         editingItems.forEach((item) => {
           if (item.userId === myProfile.id) {
@@ -99,11 +110,12 @@ function DashBoard() {
           }
         });
       }
-      
-      
+
       if (myProfile) {
-        const myEditingItems = editingItems.filter(item => item.userId === myProfile.id);
-        myEditingItems.forEach(item => {
+        const myEditingItems = editingItems.filter(
+          (item) => item.userId === myProfile.id,
+        );
+        myEditingItems.forEach((item) => {
           usePlanStore.getState().removeEditingItem(item.itemId);
         });
       }
