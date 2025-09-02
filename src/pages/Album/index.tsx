@@ -65,7 +65,11 @@ function Album() {
     },
   });
 
-  const { downloadPhoto, isDownloading } = useFileDownload();
+  const { downloadPhoto, isDownloading } = useFileDownload({
+    onPhotoNotFound: (photoId) => {
+      setPhotos((prev) => prev.filter((photo) => photo.id !== photoId));
+    },
+  });
 
   // 날짜 데이터 로드
   const fetchGroup = async () => {
@@ -181,6 +185,10 @@ function Album() {
     }
   };
 
+  const handlePhotoNotFound = (photoId: string) => {
+    setPhotos((prev) => prev.filter((photo) => photo.id !== photoId));
+  };
+
   // 데이터 로드
   useEffect(() => {
     fetchGroup();
@@ -199,10 +207,10 @@ function Album() {
     isLoadingPhotos || isUploading || isDeleting || isDownloading;
 
   return (
-    <main className="h-full overflow-hidden grid grid-rows-[auto_1fr] gap-y-4 px-6 pt-4 pb-0">
-      <header className="flex flex-wrap justify-between items-center gap-2 md:gap-3">
-        <h1 className="text-2xl font-semibold">{travelDays}</h1>
-        <div className="flex items-center gap-2">
+    <main className="h-full overflow-hidden grid grid-rows-[auto_1fr] gap-y-3 sm:gap-y-4 px-[50px] pt-[50px] pb-0">
+      <header className="flex flex-col space-y-3 lg:space-y-0 lg:flex-row lg:justify-between lg:items-center">
+        <h1 className="text-xl sm:text-2xl font-semibold">{travelDays}</h1>
+        <div className="flex items-center justify-start lg:justify-end gap-2 sm:gap-3">
           <Button
             variant="outline"
             onClick={handleRefresh}
@@ -210,7 +218,7 @@ function Album() {
               <FaSync className={isRefreshing ? "animate-spin" : ""} />
             }
             disabled={isRefreshing}
-            className="p-2 relative w-10 h-10"
+            className="p-2 relative w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0"
           >
             {hasUpdates && (
               <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
@@ -221,6 +229,7 @@ function Album() {
             onClick={handleAddPhoto}
             startIcon={isUploading ? undefined : <FaPlus />}
             isLoading={isUploading}
+            className="flex-shrink-0 text-sm sm:text-base"
           >
             {isUploading ? "업로드 중" : "사진 추가"}
           </Button>
@@ -247,6 +256,7 @@ function Album() {
         onDeletePhoto={handleDeletePhoto}
         onDownloadPhoto={handleDownloadPhoto}
         onLoadMore={loadMorePhotos}
+        onPhotoNotFound={handlePhotoNotFound}
       />
     </main>
   );

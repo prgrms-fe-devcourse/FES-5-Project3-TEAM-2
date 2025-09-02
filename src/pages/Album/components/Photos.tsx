@@ -17,6 +17,7 @@ interface PhotoGridProps {
   onDeletePhoto: (photoId: string) => void;
   onDownloadPhoto: (photo: Photo) => void;
   onLoadMore: () => void;
+  onPhotoNotFound: (photoId: string) => void;
   virtuosoRef?: React.RefObject<VirtuosoGridHandle | null>;
 }
 
@@ -30,6 +31,7 @@ function Photos({
   onDownloadPhoto,
   onLoadMore,
   virtuosoRef,
+  onPhotoNotFound,
 }: PhotoGridProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [showEndMessage, setShowEndMessage] = useState(false);
@@ -111,7 +113,7 @@ function Photos({
       )}
       <VirtuosoGrid
         ref={virtuosoRef}
-        className="scrollbar scrollbar-thumb-primary scrollbar-track-transparent pr-2"
+        className="scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2"
         style={{ height: "100%" }}
         totalCount={photos.length}
         components={gridComponents}
@@ -124,6 +126,7 @@ function Photos({
               photo={photo}
               onDownload={onDownloadPhoto}
               onDelete={onDeletePhoto}
+              onPhotoNotFound={onPhotoNotFound}
             />
           );
         }}
