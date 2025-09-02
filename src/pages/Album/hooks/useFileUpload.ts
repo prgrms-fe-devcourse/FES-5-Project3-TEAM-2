@@ -5,6 +5,7 @@ import { insertPhotoToDatabase } from "../api/insertPhoto";
 import { generateId } from "../utils/generateId";
 import { compressImages } from "../utils/compressImages";
 import { uploadFileToStorage } from "@/api/uploadStorage";
+import { deleteFileFromStorage } from "@/api/deleteStorage";
 
 interface UseFileUploadProps {
   groupId: string;
@@ -35,10 +36,18 @@ export function useFileUpload({
         fileName,
       );
 
-      // DB에 insert
-      const photo = await insertPhotoToDatabase(publicUrl, groupId);
-
-      return photo;
+      try {
+        // DB에 insert
+        const photo = await insertPhotoToDatabase(publicUrl, groupId);
+        return photo;
+      } catch (dbError) {
+        try {
+          await deleteFileFromStorage("album-photos", fileName);
+        } catch (rollbackError) {
+          console.error("Storage 롤백 실패:", rollbackError);
+        }
+        throw dbError;
+      }
     } catch (error) {
       console.error(`파일 ${file.name} 업로드 실패:`, error);
       onUploadError?.(error instanceof Error ? error.message : "업로드 실패");

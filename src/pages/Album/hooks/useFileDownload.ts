@@ -1,7 +1,13 @@
 import { useState } from "react";
 import type { Photo } from "../types/photo";
 
-export function useFileDownload() {
+interface UseFileDownloadProps {
+  onPhotoNotFound?: (photoId: string) => void;
+}
+
+export function useFileDownload({
+  onPhotoNotFound,
+}: UseFileDownloadProps = {}) {
   const [isDownloading, setIsDownloading] = useState(false);
 
   const getFileExtension = (url: string): string => {
@@ -16,20 +22,18 @@ export function useFileDownload() {
 
   const openInNewTab = (url: string) => {
     const newWindow = window.open(url, "_blank");
-
     if (!newWindow) {
-      // 팝업 차단된 경우
       const link = document.createElement("a");
       link.href = url;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       link.style.display = "none";
-
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-
       alert("팝업이 차단되었습니다. 브라우저 설정에서 팝업을 허용해주세요.");
+    } else {
+      alert("사진이 새 탭에서 열립니다. 길게 눌러 저장할 수 있습니다.");
     }
   };
 
@@ -39,15 +43,17 @@ export function useFileDownload() {
     link.href = url;
     link.download = fileName;
     link.style.display = "none";
-
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
     setTimeout(() => URL.revokeObjectURL(url), 100);
   };
 
-  const downloadForDesktop = async (photoUrl: string, fileName: string) => {
+  const downloadForDesktop = async (
+    photoUrl: string,
+    fileName: string,
+    photoId: string,
+  ) => {
     try {
       const response = await fetch(photoUrl, {
         mode: "cors",
@@ -55,13 +61,15 @@ export function useFileDownload() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        alert("이 사진은 삭제되었거나 더 이상 사용할 수 없습니다.");
+        onPhotoNotFound?.(photoId);
+        return;
       }
 
       const blob = await response.blob();
       downloadFile(blob, fileName);
     } catch {
-      openInNewTab(photoUrl);
+      alert("네트워크 오류로 다운로드에 실패했습니다.");
     }
   };
 
@@ -78,7 +86,7 @@ export function useFileDownload() {
       if (isIOS) {
         openInNewTab(photo.url);
       } else {
-        await downloadForDesktop(photo.url, fileName);
+        await downloadForDesktop(photo.url, fileName, photo.id);
       }
     } catch {
       console.log("다운로드 실패");
