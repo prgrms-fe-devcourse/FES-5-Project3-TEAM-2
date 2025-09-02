@@ -2,11 +2,11 @@ import { useGroupStore } from "@/store/groupStore";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 
 import defaultProfile from "@/assets/defaultprofile.svg";
-import calendar from "@/assets/icons/calendar.svg";
+import CalendarIcon from "@/assets/icons/calendar.svg?react";
 import GroupIcon from "@/assets/icons/group.svg?react";
 import logoutIcon from "@/assets/icons/logout.svg";
-import money from "@/assets/icons/money.svg";
-import photo from "@/assets/icons/photo.svg";
+import MoneyIcon from "@/assets/icons/money.svg?react";
+import PhotoIcon from "@/assets/icons/photo.svg?react";
 import logo from "@/assets/logo.png";
 import useCurrentGroup from "@/pages/Group/hooks/useCurrentGroup";
 import useCurrentProfile from "@/pages/Group/hooks/useCurrentProfile";
@@ -79,23 +79,51 @@ export default function Sidebar() {
       {/* 메뉴 */}
       <nav className="space-y-1">
         <NavLink end to={userBase ?? "/groups"} className={link}>
-          <GroupIcon className="w-5 h-5" />
-          <span className="text-1 font-sans font-semibold">그룹 관리</span>
+          {({ isActive }) => (
+            <>
+              <GroupIcon
+                className={`w-5 h-5 ${isActive ? "text-white" : "text-primary"}`}
+              />
+              <span className="text-1 font-sans font-semibold">그룹 관리</span>
+            </>
+          )}
         </NavLink>
 
         {groupBase && (
           <>
             <NavLink end to={groupBase} className={link}>
-              <img src={calendar} alt="달력 아이콘" className="w-5 h-5" />
-              <span className="text-1 font-sans font-semibold">대시보드</span>
+              {({ isActive }) => (
+                <>
+                  <CalendarIcon
+                    className={`w-5 h-5 ${isActive ? "text-white" : "text-primary"}`}
+                  />
+                  <span className="text-1 font-sans font-semibold">
+                    대시보드
+                  </span>
+                </>
+              )}
             </NavLink>
             <NavLink to={`${groupBase}/budget`} className={link}>
-              <img src={money} alt="예산 아이콘" className="w-5 h-5" />
-              <span className="text-1 font-sans font-semibold">예산 관리</span>
+              {({ isActive }) => (
+                <>
+                  <MoneyIcon
+                    className={`w-5 h-5 ${isActive ? "text-white" : "text-primary"}`}
+                  />
+                  <span className="text-1 font-sans font-semibold">
+                    예산 관리
+                  </span>
+                </>
+              )}
             </NavLink>
             <NavLink to={`${groupBase}/album`} className={link}>
-              <img src={photo} alt="앨범 아이콘" className="w-5 h-5" />
-              <span className="text-1 font-sans font-semibold">앨범</span>
+              {({ isActive }) => (
+                <>
+                  <PhotoIcon
+                    className={`w-5 h-5 ${isActive ? "text-white" : "text-primary"}`}
+                  />
+                  <span className="text-1 font-sans font-semibold">앨범</span>
+                </>
+              )}
             </NavLink>
           </>
         )}
