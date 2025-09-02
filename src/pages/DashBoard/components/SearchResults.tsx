@@ -42,15 +42,15 @@ function SearchResults({
   return (
     <div
       ref={containerRef}
-      className="absolute top-26 left-12 right-12 max-h-80 overflow-y-auto bg-white rounded-xl"
+      className="absolute top-26 left-12 right-12 max-h-60 sm:max-h-80 overflow-y-auto bg-white rounded-xl"
     >
       {results.map((result) => (
         <div
           key={result.id}
-          className="p-4 border-b border-gray-200 hover:bg-gray-50 cursor-pointer flex justify-between items-center last:border-b-0"
+          className="p-3 sm:p-4 border-b border-gray-200 hover:bg-gray-50 cursor-pointer flex flex-col sm:flex-row justify-between sm:items-center last:border-b-0"
           onClick={() => onResultClick(result.location)}
         >
-          <div>
+          <div className="flex-1 min-w-0">
             <div className="font-semibold">{result.name}</div>
             <div className="text-sm text-gray-600">{result.address}</div>
             {result.rating && (
@@ -58,7 +58,7 @@ function SearchResults({
             )}
           </div>
           <button
-            className="px-3 py-1 text-sm bg-primary text-white rounded-lg hover:bg-primary"
+            className="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm bg-primary text-white rounded-lg hover:bg-primary flex-shrink-0"
             onClick={(e) => {
               e.stopPropagation();
               onAddSchedule(result);

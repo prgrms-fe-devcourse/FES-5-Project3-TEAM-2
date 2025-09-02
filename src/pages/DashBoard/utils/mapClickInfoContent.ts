@@ -9,7 +9,7 @@ export function createMapClickInfoContent(
 ): HTMLElement {
   const container = document.createElement("div");
   container.style.padding = "0 16px";
-  container.style.width = "280px";
+  container.style.maxWidth = "280px";
 
   container.innerHTML = `
     <div style="text-align: center;">

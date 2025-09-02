@@ -86,6 +86,16 @@ export default function AddScheduleModal({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // 맥의 한글 IME 중복 처리 방지
+    if (e.nativeEvent.isComposing) return;
+
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
     if (errors.title) setErrors((prev) => ({ ...prev, title: "" }));
@@ -118,6 +128,7 @@ export default function AddScheduleModal({
             type="text"
             value={title}
             onChange={handleTitleChange}
+            onKeyDown={handleKeyDown}
             className={`mt-1 w-full rounded-md border px-3 py-2 outline-none focus:ring-2 ${
               errors.title
                 ? "border-red-300 focus:ring-red-300"
