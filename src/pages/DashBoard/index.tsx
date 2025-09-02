@@ -7,7 +7,6 @@ import { usePlanStore } from "./store/planStore";
 import { useNavigate } from "react-router";
 import type { Group } from "./api/loadGroupData";
 import type { PlanItem } from "./api/loadPlanItem";
-import type { RealtimePresenceState } from "@supabase/supabase-js";
 import { usePresenceStore } from "./store/presenceStore";
 
 function DashBoard() {
@@ -28,13 +27,7 @@ function DashBoard() {
       });
     }
 
-    const myUserId = myProfile?.id ?? "guest";
-
-    const channel = supabase.channel(group.id, {
-      config: {
-        presence: { key: myUserId },
-      },
-    });
+    const channel = supabase.channel(group.id);
 
     channel.on("broadcast", { event: "edit-start" }, ({ payload }) => {
       const { itemId, userId, userName } = payload;
@@ -89,20 +82,7 @@ function DashBoard() {
       },
     );
 
-    channel.on("presence", { event: "sync" }, () => {
-      const state = channel.presenceState() as RealtimePresenceState;
-      const onlineIds = Object.keys(state);
-      usePresenceStore.getState().setOnlineUserIds(onlineIds);
-    });
-
-    channel.subscribe((status) => {
-      if (status === "SUBSCRIBED") {
-        channel.track({
-          user_id: myUserId,
-          online_at: new Date().toISOString(),
-        });
-      }
-    });
+    channel.subscribe();
 
     return () => {
       const myProfile = usePresenceStore.getState().myProfile;
@@ -126,12 +106,7 @@ function DashBoard() {
         myEditingItems.forEach(item => {
           usePlanStore.getState().removeEditingItem(item.itemId);
         });
-        const currentOnline = usePresenceStore.getState().onlineUserIds;
-        const nextOnline = currentOnline.filter((id) => id !== myProfile.id);
-        usePresenceStore.getState().setOnlineUserIds(nextOnline);
       }
-
-      void channel.untrack();
 
       supabase.removeChannel(channel);
     };
