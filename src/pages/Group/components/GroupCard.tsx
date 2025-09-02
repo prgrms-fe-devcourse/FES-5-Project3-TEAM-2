@@ -344,7 +344,6 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
                 <input
                   type="date"
                   value={startISO}
-                  min={startISO}
                   onChange={(e) => setStartISO(e.target.value)}
                   className="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-rose-300 cursor-pointer"
                 />
