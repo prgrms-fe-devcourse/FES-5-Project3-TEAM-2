@@ -8,6 +8,10 @@ import { useNavigate, useParams } from "react-router";
 import Swal from "sweetalert2";
 import AlbumPickModal from "./AlbumPickModal";
 
+import { FaRegEdit } from "react-icons/fa";
+import { MdPhoto } from "react-icons/md";
+import { RiDeleteBin6Line } from "react-icons/ri";
+
 type Props = {
   g: Tables<"groups">;
   openMenuId?: string | null;
@@ -263,29 +267,32 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
           {menuOpen && (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="absolute right-0 mt-2 w-36 rounded-2xl bg-white z-20 overflow-hidden"
+              className="absolute right-0 mt-2 w-40 rounded-2xl bg-white z-20 overflow-hidden"
             >
               <button
                 type="button"
-                className="w-full px-4 py-3 text-center text-sm hover:bg-fourth  hover:text-tertiary transition cursor-pointer"
+                className="flex gap-2 items-center w-full px-4 py-3 text-center text-sm hover:bg-fourth  hover:text-tertiary transition cursor-pointer"
                 onClick={openEditInfo}
               >
+                <FaRegEdit size={14} />
                 그룹 정보 수정
               </button>
 
               <button
                 type="button"
-                className="w-full px-4 py-3 text-center text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer"
+                className="flex gap-2 items-center w-full px-4 py-3 text-center text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer"
                 onClick={openEditBackground}
               >
+                <MdPhoto size={14} />
                 배경 이미지 수정
               </button>
 
               <button
                 type="button"
-                className="w-full px-4 py-3 text-center text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer"
+                className="flex gap-2 items-center w-full px-4 py-3 text-center text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer"
                 onClick={handleDelete}
               >
+                <RiDeleteBin6Line  />
                 그룹 삭제
               </button>
             </div>
