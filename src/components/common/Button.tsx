@@ -23,11 +23,11 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center rounded-xl font-medium transition-colors focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center rounded-full font-medium transition-colors focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed";
 
   const variants: Record<Variant, string> = {
-    primary: "bg-primary text-white hover:bg-primary/90",
-    secondary: "bg-secondary text-gray-800 hover:bg-[#FEF0F6]",
+    primary: "bg-primary text-white hover:bg-primary/70",
+    secondary: "bg-secondary text-gray-800 hover:bg-secondary/70",
     outline: "border border-gray-300 text-gray-700 bg-white hover:bg-gray-50",
     danger: "bg-red-500 text-white hover:bg-red-600",
   };

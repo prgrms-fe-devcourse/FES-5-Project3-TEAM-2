@@ -84,7 +84,7 @@ export default function BudgetPage() {
           ).map((c) => (
             <Button
               key={c}
-              variant={selected === c ? "primary" : "secondary"}
+              variant={selected === c ? "secondary" : "primary"}
               onClick={() => setSelected(c)}
             >
               {c}
