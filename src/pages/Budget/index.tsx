@@ -75,7 +75,7 @@ export default function BudgetPage() {
   }, [groupId, setExpensesStore, setSharesStore]);
 
   return (
-    <div className="h-full overflow-hidden grid grid-rows-[auto_1fr] gap-y-4 px-6 py-4">
+    <div className="h-full overflow-hidden grid grid-rows-[auto_1fr] gap-y-4 px-[50px] py-[50px]">
       {/* 상단바 */}
       <div className="flex flex-wrap items-center justify-between gap-2 md:gap-3">
         <div className="flex gap-2">
