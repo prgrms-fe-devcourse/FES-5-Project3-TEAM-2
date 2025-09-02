@@ -12,6 +12,7 @@ interface LocationData {
 interface AddScheduleModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   scheduleData?: {
     location: LocationData;
     day: string;
@@ -22,6 +23,7 @@ interface AddScheduleModalProps {
 export default function AddScheduleModal({
   isOpen,
   onClose,
+  onSuccess,
   scheduleData,
 }: AddScheduleModalProps) {
   const [title, setTitle] = useState("");
@@ -80,6 +82,7 @@ export default function AddScheduleModal({
       await insertPlanItem(planItem);
       resetForm();
       onClose();
+      onSuccess?.();
     } catch (error) {
       toast({
         title: "일정을 저장하지 못했습니다.",

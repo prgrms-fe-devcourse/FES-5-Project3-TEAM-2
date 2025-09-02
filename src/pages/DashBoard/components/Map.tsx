@@ -26,6 +26,7 @@ import type { SearchResult } from "../types/map";
 import type { Schedule } from "../api/mapSchedule";
 import { usePlanStore } from "../store/planStore";
 import { useGroupStore } from "../store/groupStore";
+import { useFocusStore } from "../store/focusStore";
 
 type ScheduleItem =
   | { lat: number; lng: number; address: string }
@@ -53,6 +54,8 @@ function Map() {
   const selectedDay = usePlanStore((state) => state.selectedDay);
   const group = useGroupStore((state) => state.group);
   const groupId = group?.id;
+  const clickedPlanItemId = useFocusStore((state) => state.planItemId);
+  const clearPlanItemId = useFocusStore((state) => state.clearPlanItemId);
 
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
   const [scheduleModalData, setScheduleModalData] = useState<
@@ -131,6 +134,7 @@ function Map() {
       if (!map) return;
       const content = createSearchInfoContent(place, handleAddSchedule);
       showInfo(map, marker, content, "search", place, handleAddSchedule);
+      clearPlanItemId();
     },
     [map, showInfo, handleAddSchedule],
   );
@@ -206,6 +210,21 @@ function Map() {
     }
   }, [schedules]);
 
+  useEffect(() => {
+    if (!map || !clickedPlanItemId) return;
+    const targetSchedule = schedules.find((s) => s.id === clickedPlanItemId);
+
+    if (targetSchedule && targetSchedule.latitude && targetSchedule.longitude) {
+      const position = new google.maps.LatLng(
+        targetSchedule.latitude,
+        targetSchedule.longitude,
+      );
+
+      map.panTo(position);
+      map.setZoom(15);
+    }
+  }, [clickedPlanItemId, map]);
+
   // === 렌더링 ===
   return (
     <div className="flex-1 relative">
@@ -239,6 +258,10 @@ function Map() {
         <AddScheduleModal
           isOpen={isScheduleModalOpen}
           onClose={() => setIsScheduleModalOpen(false)}
+          onSuccess={() => {
+            clearPlanItemId();
+            setIsScheduleModalOpen(false);
+          }}
           scheduleData={scheduleModalData}
         />
       </Wrapper>

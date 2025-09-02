@@ -1,9 +1,10 @@
-import { create } from "zustand"
+import { create } from "zustand";
 
 type FocusStore = {
-  planItemId : string | null;
-  setPlanItemId : (id:string) => void
-}
+  planItemId: string | null;
+  setPlanItemId: (id: string) => void;
+  clearPlanItemId: () => void;
+};
 
 export const useFocusStore = create<FocusStore>((set) => ({
   planItemId: null,
@@ -11,4 +12,4 @@ export const useFocusStore = create<FocusStore>((set) => ({
   setPlanItemId: (id) => set({ planItemId: id }),
 
   clearPlanItemId: () => set({ planItemId: null }),
-}))
+}));
