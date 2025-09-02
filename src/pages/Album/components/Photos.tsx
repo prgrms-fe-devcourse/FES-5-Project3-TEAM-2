@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaArrowUp } from "react-icons/fa";
 import type { Photo } from "../types/photo";
 import { VirtuosoGrid, type VirtuosoGridHandle } from "react-virtuoso";
 import Loading from "./Loading";
@@ -35,6 +35,7 @@ function Photos({
 }: PhotoGridProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [showEndMessage, setShowEndMessage] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -57,6 +58,10 @@ function Photos({
     if (e.dataTransfer.files.length > 0) {
       onFilesDropped(e.dataTransfer.files);
     }
+  };
+
+  const handleScrollTop = () => {
+    virtuosoRef?.current?.scrollToIndex({ index: 0, behavior: "smooth" });
   };
 
   const gridComponents = {
@@ -94,6 +99,7 @@ function Photos({
       />
     );
   }
+
   return (
     <div
       className={`relative h-full w-full transition-colors ${
@@ -111,6 +117,7 @@ function Photos({
           </p>
         </div>
       )}
+
       <VirtuosoGrid
         ref={virtuosoRef}
         className="scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2"
@@ -140,7 +147,21 @@ function Photos({
             setShowEndMessage(true);
           }
         }}
+        rangeChanged={(range) => {
+          setShowScrollTop(range.startIndex > 6);
+        }}
       />
+
+      {showScrollTop && (
+        <button
+          onClick={handleScrollTop}
+          className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 w-10 h-10 sm:w-11 sm:h-11 bg-primary text-white rounded-full shadow-lg hover:bg-primary/90 transition-all duration-300 z-20 flex items-center justify-center"
+          title="맨 위로"
+        >
+          <FaArrowUp className="text-xs sm:text-sm" />
+        </button>
+      )}
+
       {!isLoading && isLoadingMore && <LoadingMore />}
       {!hasMore && photos.length > 0 && !isLoadingMore && showEndMessage && (
         <EndMessage
