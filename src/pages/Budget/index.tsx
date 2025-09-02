@@ -11,6 +11,7 @@ import {
 } from "@/pages/Budget/api/expenses";
 import { useMemo, useState } from "react";
 import Button from "@/components/common/Button";
+import { FaSync } from "react-icons/fa";
 
 export default function BudgetPage() {
   const expenses = useBudgetStore((s) => s.expenses);
@@ -19,6 +20,8 @@ export default function BudgetPage() {
   const setSharesStore = useBudgetStore((s) => s.setShares);
   const { groupId } = useParams<{ groupId: string }>();
   const [selected, setSelected] = useState<Category | "전체">("전체");
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasUpdates, setHasUpdates] = useState(false);
 
   const filteredExpenses = useMemo(
     () =>
@@ -47,6 +50,21 @@ export default function BudgetPage() {
       { name: "기타", value: acc["기타"], color: "#7EC8E3" },
     ];
   }, [expenses]);
+
+  const handleRefresh = async () => {
+    if (!groupId) return;
+    try {
+      setIsRefreshing(true);
+      setHasUpdates(false);
+      const { expenses: es, shares: ss } = await fetchExpensesAndShares(groupId);
+      setExpensesStore(es);
+      setSharesStore(ss);
+    } catch (err) {
+      console.error("새로고침 에러:", err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -92,39 +110,56 @@ export default function BudgetPage() {
           ))}
         </div>
         <div className="ml-auto">
-          <AddExpenseButton />
+          <div className="flex flex-row items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              startIcon={
+                <FaSync className={isRefreshing ? "animate-spin" : ""} />
+              }
+              disabled={isRefreshing}
+              className="p-2 relative w-10 h-10"
+            >
+              {hasUpdates && (
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              )}
+            </Button>
+            <AddExpenseButton />
+          </div>
         </div>
       </div>
 
       {/* 콘텐츠: 남은 높이 100% 사용, 내부 스크롤만 허용 */}
-      <div className="min-h-0 overflow-hidden grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_420px] gap-6">
-        {/* 전체 지출 내역 */}
-        <section className="flex min-h-0 flex-col rounded-2xl border border-secondary bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] pr-2">
-          <header className="shrink-0 sticky top-0 z-10 bg-white px-5 py-4 rounded-t-2xl">
-            <h3 className="text-xl font-extrabold">전체 지출 내역 📄</h3>
-          </header>
-          <div className="flex-1 min-h-0 overflow-auto px-5 scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2">
-            <ExpenseList items={filteredExpenses} />
-          </div>
-        </section>
+      <main>
+        <div className="min-h-0 overflow-hidden grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_420px] gap-6">
+          {/* 전체 지출 내역 */}
+          <section className="flex min-h-0 flex-col rounded-2xl border border-secondary bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] pr-2">
+            <header className="shrink-0 sticky top-0 z-10 bg-white px-5 py-4 rounded-t-2xl">
+              <h3 className="text-xl font-extrabold">전체 지출 내역 📄</h3>
+            </header>
+            <div className="flex-1 min-h-0 overflow-auto px-5 scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2">
+              <ExpenseList items={filteredExpenses} />
+            </div>
+          </section>
 
-        {/* 개인 정산 */}
-        <section className="flex min-h-0 flex-col rounded-2xl border border-secondary bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] pr-2">
-          <header className="shrink-0 sticky top-0 z-10 bg-white px-5 py-4 rounded-t-2xl">
-            <h3 className="text-xl font-extrabold">개인 정산 💵</h3>
-          </header>
-          <div className="flex-1 min-h-0 overflow-auto px-5 py-4 scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2">
-            <SettlementPanel />
-          </div>
-        </section>
+          {/* 개인 정산 */}
+          <section className="flex min-h-0 flex-col rounded-2xl border border-secondary bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] pr-2">
+            <header className="shrink-0 sticky top-0 z-10 bg-white px-5 py-4 rounded-t-2xl">
+              <h3 className="text-xl font-extrabold">개인 정산 💵</h3>
+            </header>
+            <div className="flex-1 min-h-0 overflow-auto px-5 py-4 scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent pr-2">
+              <SettlementPanel />
+            </div>
+          </section>
 
-        {/* 통계 */}
-        <BudgetStatsCard
-          title="통계 📊"
-          totalLabel="총 지출 내역"
-          data={dataForChart}
-        />
-      </div>
+          {/* 통계 */}
+          <BudgetStatsCard
+            title="통계 📊"
+            totalLabel="총 지출 내역"
+            data={dataForChart}
+          />
+        </div>
+      </main>
     </div>
   );
 }
