@@ -45,12 +45,12 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
 
   const menuOpen = openMenuId === g.id;
 
-  // ===== 배경이미지(수정 후엔 기본이미지 절대 안 보이게) =====
+  // 배경이미지
   const [albumOpen, setAlbumOpen] = useState(false);
 
   const LS_KEY = `group:${g.id}:bg_url`;
 
-  // 초기: 로컬캐시 > g.bg_url > null (cardbg는 렌더 시 bgUrl 없을 때만 사용)
+  // 초기: 로컬캐시 > g.bg_url > null (cardbg<기본이미지>는 렌더 시 bgUrl 없을 때만 사용)
   const [bgUrl, setBgUrl] = useState<string | null>(() => {
     try {
       const cached = localStorage.getItem(LS_KEY);
@@ -88,10 +88,8 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
     return () => {
       mounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [g.id]);
 
-  // 새 URL 적용될 때마다 페이드인 초기화
   useEffect(() => {
   }, [bgUrl, bgVer]);
 
@@ -205,7 +203,6 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
     setAlbumOpen(true);
   };
 
-  // 변경한 이미지 적용: 낙관적 반영 + 로컬캐시 + 캐시버스터
   const applyBackground = async (url: string) => {
     setAlbumOpen(false);
     setSaving(true);
