@@ -25,7 +25,7 @@ export function createScheduleInfoContent(
 
   // 공통 스타일 정의
   const buttonStyle =
-    "width: 100%; padding: 8px; margin-bottom: 8px; background: #F9B5D0; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;";
+    "width: 100%; padding: 8px; margin-bottom: 8px; background: #FF8E9E; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 400;";
 
   if (scheduleArray.length === 1) {
     // 단일 일정
@@ -50,22 +50,27 @@ function createSingleScheduleHTML(
 ): string {
   return `
     <h3 style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: #333;">
-      ${escapeHtml(schedule.title)}
+      일정
     </h3>
     
     ${
       schedule.address
-        ? `
-      <p style="margin-bottom: 8px; color: #666; font-size: 14px;">
-        📍 ${escapeHtml(schedule.address)}
-      </p>
-    `
+        ? `<div style="color: #666; font-size: 12px; margin-bottom: 12px;">
+             📍 ${escapeHtml(schedule.address)}
+           </div>`
         : ""
     }
     
-    <p style="margin-bottom: 16px; color: #888; font-size: 14px;">
-      📅 ${schedule.day}
-    </p>
+    <div style="margin-bottom: 16px;">
+      <div style="background-color: #F0F0F0; padding: 12px; border-radius: 8px;">
+        <div style="font-weight: 600; color: #333; margin-bottom: 4px;">
+          ${escapeHtml(schedule.title)}
+        </div>
+        <div style="color: #888; font-size: 12px;">
+          📅 ${schedule.day}
+        </div>
+      </div>
+    </div>
     
     <button class="add-schedule-btn" style="${buttonStyle}">
       일정 추가
@@ -77,26 +82,20 @@ function createMultipleSchedulesHTML(
   schedules: Schedule[],
   buttonStyle: string,
 ): string {
+  const commonAddress = schedules.find((s) => s.address)?.address;
+
   const scheduleListHTML = schedules
     .map(
       (schedule) => `
-    <div style="padding: 8px 0; border-bottom: 1px solid #eee;">
-      <div style="font-weight: 600; color: #333; margin-bottom: 4px;">
-        ${escapeHtml(schedule.title)}
+      <div style="background-color: #F0F0F0; padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+        <div style="font-weight: 600; color: #333; margin-bottom: 4px;">
+          ${escapeHtml(schedule.title)}
+        </div>
+        <div style="color: #888; font-size: 12px;">
+          📅 ${schedule.day}
+        </div>
       </div>
-        ${
-          schedule.address
-            ? `<div style="color: #666; font-size: 12px;">
-            📍 ${escapeHtml(schedule.address)}
-              </div>`
-            : ""
-        }
-      <div style="color: #888; font-size: 12px;">
-        📅 ${schedule.day}
-      </div>
-
-    </div>
-  `,
+    `,
     )
     .join("");
 
@@ -104,6 +103,14 @@ function createMultipleSchedulesHTML(
     <h3 style="margin-bottom: 8px; font-size: 16px; font-weight: bold; color: #333;">
       일정 (${schedules.length}개)
     </h3>
+    
+    ${
+      commonAddress
+        ? `<div style="color: #666; font-size: 12px; margin-bottom: 12px;">
+           📍 ${escapeHtml(commonAddress)}
+         </div>`
+        : ""
+    }
     
     <div style="max-height: 200px; overflow-y: auto; margin-bottom: 16px;">
       ${scheduleListHTML}
