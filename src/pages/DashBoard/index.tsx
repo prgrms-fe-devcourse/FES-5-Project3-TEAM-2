@@ -12,7 +12,6 @@ import { generateTripDays } from "./utils/generateTripDays";
 
 function DashBoard() {
   const group = useGroupStore((state) => state.group);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,6 +47,7 @@ function DashBoard() {
         event: "*",
         schema: "public",
         table: "groups",
+        filter: `id=eq.${group.id}`,
       },
       (payload) => {
         switch (payload.eventType) {
@@ -75,6 +75,7 @@ function DashBoard() {
         event: "*",
         schema: "public",
         table: "planitems",
+        filter: `group_id=eq.${group.id}`,
       },
       (payload) => {
         switch (payload.eventType) {
