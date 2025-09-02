@@ -13,13 +13,13 @@ export function createMapClickInfoContent(
 
   container.innerHTML = `
     <div style="text-align: center;">
-      <p style="margin-bottom: 12px; font-size: 16px; color: #333;">
+      <p style="margin-bottom: 16px; font-size: 16px; font-weight:400;">
         이 위치에 일정을 추가하시겠습니까?
       </p>
       
       <button
         class="add-schedule-btn"
-        style="width: 100%; padding: 8px; background: #F9B5D0; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;"
+        style="width: 100%; padding: 8px; background: #FF8E9E; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 400;"
       >
         일정 추가
       </button>

@@ -67,7 +67,7 @@ function SearchBox({
         </button>
       </div>
       <button
-        className="flex items-center justify-center px-2 py-2 h-12 w-16 rounded-xl text-white bg-secondary shadow-[2px_2px_2px_0_rgba(0,0,0,0.1)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center justify-center px-2 py-2 h-12 w-16 rounded-xl text-white bg-primary shadow-[2px_2px_2px_0_rgba(0,0,0,0.1)] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleSearch}
         disabled={isSearching}
       >
