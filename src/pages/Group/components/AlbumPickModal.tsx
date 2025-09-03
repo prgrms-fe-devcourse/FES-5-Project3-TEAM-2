@@ -96,13 +96,6 @@ export default function AlbumPickModal({
   const applyPick = async () => {
     if (!pickedFile) return;
 
-    await supabase
-    .from('groups')
-    .update({
-      bg_url: pickedFile.url,
-    })
-    .eq('id', groupId);
-
     onSelect(pickedFile.url);
     onClose();
   };
@@ -114,13 +107,6 @@ export default function AlbumPickModal({
     const key = `${UPLOAD_PREFIX}/${stamp}__${safe}`;
 
     const publicUrl = await uploadFileToStorage(bucket, file, key);
-
-    await supabase
-    .from('groups')
-    .update({
-      bg_url: publicUrl,
-    })
-    .eq('id', groupId);
 
     // 업로드 직후 바로 적용
     onSelect(publicUrl);
