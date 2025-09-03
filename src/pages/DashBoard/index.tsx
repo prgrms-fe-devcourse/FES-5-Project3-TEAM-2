@@ -83,9 +83,47 @@ function DashBoard() {
             usePlanStore.getState().addPlanItem(payload.new as PlanItem);
             break;
           case "UPDATE":
-            usePlanStore
-              .getState()
-              .updatePlanItem(payload.new.id, payload.new as PlanItem);
+            // 우선 로컬 아이템 내용 갱신
+            usePlanStore.getState().updatePlanItem(payload.new.id, payload.new as PlanItem);
+
+            // editing 필드의 변화 감지하여 에딧목록 동기화
+            try {
+              const oldEditing = (payload.old as Partial<PlanItem> | null)?.editing ?? null;
+              const newEditing = (payload.new as Partial<PlanItem> | null)?.editing ?? null;
+
+              if (oldEditing !== newEditing) {
+                // 이전 편집자 제거
+                if (oldEditing) {
+                  usePlanStore.getState().removeEditingItemRemote(payload.new.id, oldEditing);
+                }
+
+                // 신규 편집자 추가
+                if (newEditing) {
+                  const presenceMap = usePresenceStore.getState().onlineUsersById;
+                  const userName = presenceMap[newEditing] || "";
+                  if (!userName) {
+                    // fallback: profile에서 이름 조회
+                    void (async () => {
+                      try {
+                        const { data } = await supabase
+                          .from("profile")
+                          .select("id, name")
+                          .eq("id", newEditing)
+                          .maybeSingle();
+                        const resolvedName = data?.name ?? "";
+                        usePlanStore.getState().addEditingItemRemote(payload.new.id, newEditing, resolvedName);
+                      } catch {
+                        usePlanStore.getState().addEditingItemRemote(payload.new.id, newEditing, "");
+                      }
+                    })();
+                  } else {
+                    usePlanStore.getState().addEditingItemRemote(payload.new.id, newEditing, userName);
+                  }
+                }
+              }
+            } catch (e) {
+              console.error("editing 동기화 처리 중 오류:", e);
+            }
             break;
           case "DELETE":
             usePlanStore.getState().removePlanItem(payload.old.id);
@@ -110,6 +148,19 @@ function DashBoard() {
             });
           }
         });
+
+        // DB에도 내 editing 잠금을 일괄 해제
+        void (async () => {
+          try {
+            await supabase
+              .from("planitems")
+              .update({ editing: null })
+              .eq("group_id", group.id)
+              .eq("editing", myProfile.id);
+          } catch (e) {
+            console.error("언마운트 시 editing 해제 실패:", e);
+          }
+        })();
       }
 
       if (myProfile) {
