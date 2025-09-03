@@ -1,17 +1,21 @@
 import { supabase } from "@/lib/supabaseClient";
 import Album from "@/pages/Album";
-import AuthCallback from "@/pages/auth/AuthCallback";
+import AuthCallback from "@/pages/Auth/AuthCallback";
 import Budget from "@/pages/BudgetPage";
 import GroupJoinPage from "@/pages/Group/pages/GroupJoinPage";
 import GroupLayout from "@/pages/Group/components/GroupLayout";
 import GroupsPage from "@/pages/Group/pages/GroupsPage";
-import { createBrowserRouter, Outlet, redirect, type LoaderFunctionArgs } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Outlet,
+  redirect,
+  type LoaderFunctionArgs,
+} from "react-router-dom";
 import HomeLayout from "../HomeLayout";
 import DashBoard from "../pages/DashBoard/index";
 import Home from "../pages/Home";
 import Root from "../root";
 import { dashboardLoader } from "./loader/dashBoardLoader";
-
 
 /** 로그인 요구 + userId 반환 */
 async function requireAuthAndGetUserId() {
@@ -27,9 +31,12 @@ async function loadGroup({ params }: LoaderFunctionArgs) {
   const groupId = params.groupId;
   if (!groupId) throw redirect(`/groups/${myId}`);
 
-   // 1) 그룹 존재 확인
+  // 1) 그룹 존재 확인
   const { data: group, error: gErr } = await supabase
-    .from("groups").select("id,name").eq("id", groupId).single();
+    .from("groups")
+    .select("id,name")
+    .eq("id", groupId)
+    .single();
   if (gErr || !group) throw redirect(`/groups/${myId}`);
 
   // 2) 현재 로그인한 사용자가 이 그룹 멤버인지 확인 : user_id = myId
@@ -37,7 +44,7 @@ async function loadGroup({ params }: LoaderFunctionArgs) {
     .from("groupmembers")
     .select("group_id")
     .eq("group_id", groupId)
-    .eq('user_id', myId)
+    .eq("user_id", myId)
     .limit(1);
 
   if (!member || member.length === 0) throw redirect(`/groups/${myId}`);
@@ -50,12 +57,10 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <HomeLayout />,
-    children: [
-      { index: true, element: <Home /> },
-    ],
+    children: [{ index: true, element: <Home /> }],
   },
 
-   // AuthCallback 라우트 (콜백 처리)
+  // AuthCallback 라우트 (콜백 처리)
   {
     path: "/auth/callback",
     element: <AuthCallback />,
@@ -66,43 +71,43 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       // /groups/:userId
-      { path: "groups/:userId",
+      {
+        path: "groups/:userId",
         element: <Outlet />,
-        loader: async({params}: LoaderFunctionArgs) => {
+        loader: async ({ params }: LoaderFunctionArgs) => {
           const myId = await requireAuthAndGetUserId();
-          if(params.userId !== myId) {
-          if(params.userId && params.userId !== myId) {
-            throw redirect(`/groups/${myId}`);
+          if (params.userId !== myId) {
+            if (params.userId && params.userId !== myId) {
+              throw redirect(`/groups/${myId}`);
+            }
+            return null;
           }
-          return null;
-        }},
-        children:[
-          {index:true, element:<GroupsPage />},
-
-        // /groups/:userId/g/:groupId
-        {
-          id: "group-layout",
-          path:'g/:groupId',
-          loader: loadGroup,
-          element: <GroupLayout />,
-          children: [
-            {index:true, element: <DashBoard />, loader: dashboardLoader},
-            {path: "budget", element: <Budget />},
-            {path: "album", element: <Album />},
-          ],
         },
+        children: [
+          { index: true, element: <GroupsPage /> },
+
+          // /groups/:userId/g/:groupId
+          {
+            id: "group-layout",
+            path: "g/:groupId",
+            loader: loadGroup,
+            element: <GroupLayout />,
+            children: [
+              { index: true, element: <DashBoard />, loader: dashboardLoader },
+              { path: "budget", element: <Budget /> },
+              { path: "album", element: <Album /> },
+            ],
+          },
         ],
       },
-    
 
       // 매직링크
       {
         path: "g/:groupId",
-        element: <GroupJoinPage />
-      }
+        element: <GroupJoinPage />,
+      },
     ],
   },
-],
-)
+]);
 
 export default router;
