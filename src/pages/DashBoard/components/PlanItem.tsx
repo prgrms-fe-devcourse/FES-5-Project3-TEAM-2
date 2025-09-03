@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { MdOutlineDragIndicator } from "react-icons/md";
@@ -48,8 +48,42 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
   const hours = Math.floor(duration / 60);
   const minutes = duration % 60;
 
+  // 클릭 애니메이션 상태 (내가 수정 중일 때는 비활성화)
+  const canApplyClickEffect = !isEditingByMe;
+  const [isClickEffectActive, setIsClickEffectActive] = useState(false);
+
+  const handleMouseDown = () => {
+    if (!canApplyClickEffect) return;
+    setIsClickEffectActive(true);
+  };
+
+  const handleMouseUp = () => {
+    setIsClickEffectActive(false);
+  };
+
+  const handleMouseLeave = () => {
+    setIsClickEffectActive(false);
+  };
+
+  const stopPropagation = (e: MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <li ref={setNodeRef} style={style} onClick={() => setPlanItemId(id)}>
+    <li
+      ref={setNodeRef}
+      style={style}
+      onClick={() => {
+        if (isEditingByMe) return; // 수정 중에는 선택 전달 방지
+        setPlanItemId(id);
+      }}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+      className={`transition-transform duration-150 ease-out transform-gpu ${
+        isClickEffectActive ? "scale-95" : ""
+      }`}
+    >
       <article
         className={`h-[50px] pr-2 flex items-center gap-2 rounded-[10px] border-2 font-extrabold shadow-md ${
           isEditingByMe
@@ -59,11 +93,13 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
               : "bg-white border-secondary"
         }`}
       >
-        <MdOutlineDragIndicator 
-          className="size-8 shrink-0 cursor-grab active:cursor-grabbing text-gray-300 focus:outline-none"
-          {...attributes}
-          {...listeners}
-        />
+        <div onMouseDown={stopPropagation} onMouseUp={stopPropagation} onClick={stopPropagation}>
+          <MdOutlineDragIndicator 
+            className="size-8 shrink-0 cursor-grab active:cursor-grabbing text-gray-300 focus:outline-none"
+            {...attributes}
+            {...listeners}
+          />
+        </div>
 
         <span className="shrink-0 text-2xl text-primary">{displayIndex}</span>
 
@@ -105,7 +141,12 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
           // 아무도 수정 안 할 때
           <>
             <p className="font-extrabold">{title}</p>
-            <div className="ml-auto flex items-center gap-2">
+            <div
+              className="ml-auto flex items-center gap-2"
+              onMouseDown={stopPropagation}
+              onMouseUp={stopPropagation}
+              onClick={stopPropagation}
+            >
               <p className="text-lg text-primary">
                 {hours > 0 && `${hours}시간 `}
                 {minutes > 0 && `${minutes}분`}
@@ -113,7 +154,7 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
               </p>
               
               <MdEdit 
-                className={`size-6 cursor-pointer text-gray-300${
+                className={`size-6 cursor-pointer text-gray-300 ${
                   editingItemIds.some((e) => e.userId === myProfile?.id)
                     ? "opacity-50 cursor-not-allowed text-gray-300"
                     : ""
