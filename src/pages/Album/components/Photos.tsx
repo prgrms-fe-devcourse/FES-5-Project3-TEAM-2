@@ -103,15 +103,15 @@ function Photos({
   return (
     <div
       className={`relative h-full w-full transition-colors ${
-        isDragOver ? "border-blue-500 bg-blue-50 border-2 border-dashed" : ""
+        isDragOver ? "border-primary bg-[#ffeff4] border-2 border-dashed" : ""
       }`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       {isDragOver && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none bg-blue-50">
-          <FaPlus className="w-6 h-6 text-blue-500 mb-2" />
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none bg-[#ffeff4]">
+          <FaPlus className="w-6 h-6 text-primary mb-2" />
           <p className="text-center text-lg font-medium text-gray-500">
             사진을 여기에 놓으세요
           </p>
