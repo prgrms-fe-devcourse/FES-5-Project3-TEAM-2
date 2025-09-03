@@ -1,4 +1,3 @@
-import { Wrapper } from "@googlemaps/react-wrapper";
 import { useCallback, useEffect, useState } from "react";
 
 // 컴포넌트
@@ -227,45 +226,39 @@ function Map() {
 
   // === 렌더링 ===
   return (
-    <div className="flex-1 relative">
-      <Wrapper
-        apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-        libraries={["places"]}
-        version="weekly"
-      >
-        <GoogleMap onMapLoad={handleMapLoad} />
+    <>
+      <GoogleMap onMapLoad={handleMapLoad} />
 
-        <SearchBox
-          onSearch={handleSearch}
-          isSearching={isSearching}
-          onClear={clearResults}
-          onFocus={showResults}
-        />
+      <SearchBox
+        onSearch={handleSearch}
+        isSearching={isSearching}
+        onClear={clearResults}
+        onFocus={showResults}
+      />
 
-        <MapZoom
-          onZoomIn={() => handleZoom(1)}
-          onZoomOut={() => handleZoom(-1)}
-        />
+      <MapZoom
+        onZoomIn={() => handleZoom(1)}
+        onZoomOut={() => handleZoom(-1)}
+      />
 
-        <SearchResults
-          results={searchResults}
-          isVisible={isResultsVisible}
-          onResultClick={handleResultClick}
-          onHide={hideResults}
-          onAddSchedule={handleAddSchedule}
-        />
+      <SearchResults
+        results={searchResults}
+        isVisible={isResultsVisible}
+        onResultClick={handleResultClick}
+        onHide={hideResults}
+        onAddSchedule={handleAddSchedule}
+      />
 
-        <AddScheduleModal
-          isOpen={isScheduleModalOpen}
-          onClose={() => setIsScheduleModalOpen(false)}
-          onSuccess={() => {
-            clearPlanItemId();
-            setIsScheduleModalOpen(false);
-          }}
-          scheduleData={scheduleModalData}
-        />
-      </Wrapper>
-    </div>
+      <AddScheduleModal
+        isOpen={isScheduleModalOpen}
+        onClose={() => setIsScheduleModalOpen(false)}
+        onSuccess={() => {
+          clearPlanItemId();
+          setIsScheduleModalOpen(false);
+        }}
+        scheduleData={scheduleModalData}
+      />
+    </>
   );
 }
 

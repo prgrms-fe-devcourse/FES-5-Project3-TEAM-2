@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import Map from "@/pages/DashBoard/components/Map";
+import MapContainer from "./components/MapContainer";
 import Schedule from "@/pages/DashBoard/components/Schedule";
 import { supabase } from "@/lib/supabaseClient";
 import { useGroupStore } from "./store/groupStore";
@@ -128,7 +128,7 @@ function DashBoard() {
   return (
     <div className="h-full flex flex-row min-w-[1200px]">
       <Schedule />
-      <Map />
+      <MapContainer />
     </div>
   );
 }
