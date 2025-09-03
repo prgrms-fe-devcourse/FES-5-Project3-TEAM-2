@@ -24,11 +24,7 @@ const handleGoogleLogin = async () => {
 
   setLoading(true);
 
-  const redirectTo =
-  import.meta.env.MODE === "development"
-    ? "http://localhost:3000/auth/callback"
-    : "https://fes-5-project3-team-2.vercel.app/auth/callback";
-  // console.log("[login] redirectTo =", redirectTo);
+  const redirectTo = new URL('/auth/callback', window.location.origin).toString();
 
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -47,9 +43,12 @@ const handleGoogleLogin = async () => {
 
 
   return (
-    <div className="w-[580px] h-[700px] mt-[120px]
-                    bg-secondary/10 border-2 border-secondary rounded-[18px] shadow-[4px_4px_4px_rgba(0,0,0,0.25)] p-8
-                    flex flex-col items-center justify-center"
+    <div className=" w-full max-w-[580px] h-auto
+    lg:w-[580px] lg:h-[700px]
+    mt-20 lg:mt-[120px]
+    bg-secondary/10 border-2 border-secondary rounded-[18px]
+    shadow-[4px_4px_4px_rgba(0,0,0,0.25)] p-6 sm:p-8
+    flex flex-col items-center justify-center"
                   >
       <div className="w-full flex flex-col items-center justify-center mb-6">
         <div>

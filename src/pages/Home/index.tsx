@@ -1,14 +1,14 @@
-import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLayoutEffect, useRef } from "react";
 
-import LoginCard from "./components/LoginCard";
 import HomeSections from "./components/HomeSections";
+import LoginCard from "./components/LoginCard";
 
-import PlanTravelTogether from "../../assets/Plan. Travel. Together..png";
-import title from "../../assets/title.png";
 import description from "../../assets/description.svg";
 import logo from "../../assets/logo.png";
+import PlanTravelTogether from "../../assets/Plan. Travel. Together..png";
+import title from "../../assets/title.png";
 
 gsap.registerPlugin(ScrollTrigger);
 

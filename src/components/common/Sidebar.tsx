@@ -8,13 +8,13 @@ import logoutIcon from "@/assets/icons/logout.svg";
 import MoneyIcon from "@/assets/icons/money.svg?react";
 import PhotoIcon from "@/assets/icons/photo.svg?react";
 import logo from "@/assets/logo.png";
-import useCurrentGroup from "@/pages/Group/hooks/useCurrentGroup";
-import useCurrentProfile from "@/pages/Group/hooks/useCurrentProfile";
-import { useProfileStore } from "@/store/profileStore";
-import { LogoutAlert } from "../Sweetalert";
-import { useGroupMembers } from "@/pages/Group/hooks/useGroupMembers";
 import { usePresenceStore } from "@/pages/DashBoard/store/presenceStore";
 import GroupMemberList from "@/pages/Group/components/GroupMemberList";
+import useCurrentGroup from "@/pages/Group/hooks/useCurrentGroup";
+import useCurrentProfile from "@/pages/Group/hooks/useCurrentProfile";
+import { useGroupMembers } from "@/pages/Group/hooks/useGroupMembers";
+import { useProfileStore } from "@/store/profileStore";
+import { LogoutAlert } from "../Sweetalert";
 
 const link = ({ isActive }: { isActive: boolean }) =>
   [
@@ -63,7 +63,7 @@ export default function Sidebar() {
         </div>
         <div className="mt-2 text-black text-2 font-sans font-semibold">{profile?.name ?? "Guest"}</div>
         <div className="mt-2 text-1 text-gray-400 font-sans font-medium">
-          {currentGroup ? <>현재 그룹 : <span className="font-semibold">{currentGroup.name}</span></> : "현재 그룹 없음"}
+          {currentGroup ? <>현재 그룹 : <span className="font-semibold">{currentGroup.name}</span></> : ""}
         </div>
       </div>
 
