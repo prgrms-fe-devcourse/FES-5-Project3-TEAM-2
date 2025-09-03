@@ -16,14 +16,14 @@ export const EmptyState = ({
 }: EmptyStateProps) => (
   <div
     className={`relative flex flex-col items-center justify-center py-12 text-gray-500 transition-colors ${
-      isDragOver ? "border-blue-500 bg-blue-50 border-2 border-dashed" : ""
+      isDragOver ? "border-primary bg-[#ffeff4] border-2 border-dashed" : ""
     }`}
     onDragOver={onDragOver}
     onDragLeave={onDragLeave}
     onDrop={onDrop}
   >
     {isDragOver ? (
-      <FaPlus className="w-6 h-6 mb-4 text-blue-500" />
+      <FaPlus className="w-6 h-6 mb-4 text-primary" />
     ) : (
       <HiOutlinePhoto className="w-16 h-16 mb-2" />
     )}
