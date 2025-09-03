@@ -1,3 +1,4 @@
+// stores/planStore.ts
 import { create } from "zustand";
 import type { PlanItem } from "@/pages/DashBoard/api/loadPlanItem";
 import type { TripDay } from "../utils/generateTripDays";
@@ -15,92 +16,98 @@ type EditingUser = {
 };
 
 type PlanStore = {
+  // ─────────────────────────────
+  // 상태
   tripDays: TripDay[];
   selectedDay: string;
   allPlanItems: PlanItem[];
   editingItemIds: EditingUser[];
 
+  // ─────────────────────────────
+  // Setter
   setTripDays: (days: TripDay[]) => void;
   setSelectedDay: (day: string) => void;
   setAllPlanItems: (items: PlanItem[]) => void;
   setEditingItems: (items: EditingUser[]) => void;
+
+  // ─────────────────────────────
+  // CRUD 액션
   addPlanItem: (item: PlanItem) => void;
   updatePlanItem: (itemId: string, updates: Partial<PlanItem>) => void;
   removePlanItem: (itemId: string) => void;
   deletePlanItem: (itemId: string) => Promise<void>;
 
+  // ─────────────────────────────
+  // 편집 액션 (로컬/DB/브로드캐스트)
   addEditingItem: (itemId: string) => void;
   removeEditingItem: (itemId: string) => void;
   clearEditingItems: () => void;
 
-  // 원격 Broadcast 수신 처리
-  addEditingItemRemote: (
-    itemId: string,
-    userId: string,
-    userName: string,
-  ) => void;
+  addEditingItemRemote: (itemId: string, userId: string, userName: string) => void;
   removeEditingItemRemote: (itemId: string, userId: string) => void;
 
   confirmEditItem: (
     itemId: string,
-    updates: { title: string; duration: number },
+    updates: { title: string; duration: number }
   ) => Promise<void>;
 
+  // ─────────────────────────────
+  // 기타
   reorderPlanItems: (
     itemId: string,
     groupId: string,
     day: string,
-    currentItems: PlanItem[],
+    currentItems: PlanItem[]
   ) => Promise<void>;
 
   getSelectedDayItems: () => PlanItem[];
 };
 
+// ─────────────────────────────
+// 메인 Store
 export const usePlanStore = create<PlanStore>((set, get) => ({
+  // 상태 초기값
   tripDays: [],
   selectedDay: "",
   allPlanItems: [],
   editingItemIds: [],
 
+  // Setter
   setTripDays: (days) => set({ tripDays: days }),
   setSelectedDay: (day) => set({ selectedDay: day }),
   setAllPlanItems: (items) => set({ allPlanItems: items }),
   setEditingItems: (items) => set({ editingItemIds: items }),
 
-  addPlanItem: (item) => {
-    const { allPlanItems } = get();
-    set({ allPlanItems: [...allPlanItems, item] });
-  },
+  // ─────────────────────────────
+  // CRUD 액션
+  addPlanItem: (item) =>
+    set((state) => ({ allPlanItems: [...state.allPlanItems, item] })),
 
-  updatePlanItem: (itemId, updates) => {
-    const { allPlanItems } = get();
-    set({
-      allPlanItems: allPlanItems.map((item) =>
-        item.id === itemId ? { ...item, ...updates } : item,
+  updatePlanItem: (itemId, updates) =>
+    set((state) => ({
+      allPlanItems: state.allPlanItems.map((item) =>
+        item.id === itemId ? { ...item, ...updates } : item
       ),
-    });
-  },
+    })),
 
-  removePlanItem: (itemId: string) => {
-    const { allPlanItems } = get();
-    set({
-      allPlanItems: allPlanItems.filter((item) => item.id !== itemId),
-    });
-  },
+  removePlanItem: (itemId) =>
+    set((state) => ({
+      allPlanItems: state.allPlanItems.filter((item) => item.id !== itemId),
+    })),
 
   deletePlanItem: async (itemId) => {
     try {
       await deletePlanItem(itemId);
-      const { allPlanItems } = get();
-      set({
-        allPlanItems: allPlanItems.filter((item) => item.id !== itemId),
-      });
+      set((state) => ({
+        allPlanItems: state.allPlanItems.filter((item) => item.id !== itemId),
+      }));
     } catch (err) {
       console.error("일정 삭제 실패:", err);
     }
   },
 
-  // 편집 시작: DB에 원자적으로 클레임 후 로컬/브로드캐스트 반영
+  // ─────────────────────────────
+  // 편집 시작
   addEditingItem: (itemId) => {
     const myProfile = usePresenceStore.getState().myProfile;
     const group = useGroupStore.getState().group;
@@ -108,9 +115,8 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
 
     const { id: userId, name: userName } = myProfile;
 
-    // 이미 내가 편집 중이면 금지
-    const alreadyEditing = get().editingItemIds.some((e) => e.userId === userId);
-    if (alreadyEditing) {
+    // 이미 내가 편집 중이면 차단
+    if (get().editingItemIds.some((e) => e.userId === userId)) {
       console.warn("이미 다른 아이템을 편집 중입니다.");
       return;
     }
@@ -132,18 +138,19 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
 
         if (error) {
           console.error("편집 시작 DB 반영 실패:", error);
+          return;
         }
-
         if (!data) {
           console.warn("편집 클레임 실패: 이미 다른 사용자가 편집 중입니다.");
           return;
         }
 
+        // 로컬 반영
         set((state) => ({
           editingItemIds: [...state.editingItemIds, { itemId, userId, userName }],
         }));
 
-        // Broadcast 송신
+        // Broadcast
         supabase.channel(group.id).send({
           type: "broadcast",
           event: "edit-start",
@@ -155,7 +162,7 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
     })();
   },
 
-  // 편집 종료: DB 해제 후 로컬/브로드캐스트 반영
+  // 편집 종료
   removeEditingItem: (itemId) => {
     const myProfile = usePresenceStore.getState().myProfile;
     const group = useGroupStore.getState().group;
@@ -179,11 +186,11 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
       } finally {
         set((state) => ({
           editingItemIds: state.editingItemIds.filter(
-            (e) => !(e.itemId === itemId && e.userId === userId),
+            (e) => !(e.itemId === itemId && e.userId === userId)
           ),
         }));
 
-        // Broadcast 송신
+        // Broadcast
         supabase.channel(group.id).send({
           type: "broadcast",
           event: "edit-end",
@@ -195,14 +202,11 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
 
   clearEditingItems: () => set({ editingItemIds: [] }),
 
-  // 원격 Broadcast 수신
+  // ─────────────────────────────
+  // 원격 Broadcast 수신 처리
   addEditingItemRemote: (itemId, userId, userName) =>
     set((state) => {
-      if (
-        state.editingItemIds.some(
-          (e) => e.itemId === itemId && e.userId === userId,
-        )
-      ) {
+      if (state.editingItemIds.some((e) => e.itemId === itemId && e.userId === userId)) {
         return state; // 중복 방지
       }
       return {
@@ -213,10 +217,12 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
   removeEditingItemRemote: (itemId, userId) =>
     set((state) => ({
       editingItemIds: state.editingItemIds.filter(
-        (e) => !(e.itemId === itemId && e.userId === userId),
+        (e) => !(e.itemId === itemId && e.userId === userId)
       ),
     })),
 
+  // ─────────────────────────────
+  // 편집 저장 확정
   confirmEditItem: async (itemId, updates) => {
     const { selectedDay, allPlanItems } = get();
     const item = allPlanItems.find((i) => i.id === itemId);
@@ -239,13 +245,10 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
       });
 
       set({
-        allPlanItems: allPlanItems.map((i) =>
-          i.id === updated.id ? updated : i,
-        ),
+        allPlanItems: allPlanItems.map((i) => (i.id === updated.id ? updated : i)),
         editingItemIds: get().editingItemIds.filter((e) => e.itemId !== itemId),
       });
 
-      // 편집 종료 브로드캐스트 송신
       supabase.channel(group.id).send({
         type: "broadcast",
         event: "edit-end",
@@ -256,6 +259,8 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
     }
   },
 
+  // ─────────────────────────────
+  // Drag & Drop 순서 변경
   reorderPlanItems: async (itemId, groupId, day, currentItems) => {
     try {
       const withDraggedFlag: DraggedPlanItem[] = currentItems.map((item) => ({
@@ -270,17 +275,18 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
         currentItems: withDraggedFlag,
       });
 
-      const { allPlanItems } = get();
-      set({
-        allPlanItems: allPlanItems.map((i) =>
-          i.id === updated.id ? updated : i,
+      set((state) => ({
+        allPlanItems: state.allPlanItems.map((i) =>
+          i.id === updated.id ? updated : i
         ),
-      });
+      }));
     } catch (err) {
       console.error("reorderPlanItems 실패:", err);
     }
   },
 
+  // ─────────────────────────────
+  // 선택된 날짜 일정 가져오기
   getSelectedDayItems: () => {
     const { allPlanItems, selectedDay } = get();
     return allPlanItems
@@ -288,4 +294,3 @@ export const usePlanStore = create<PlanStore>((set, get) => ({
       .sort((a, b) => a.sort_order.localeCompare(b.sort_order));
   },
 }));
-
