@@ -10,6 +10,7 @@ export interface UpdatePlanItemParams {
   day: string; // 'YYYY-MM-DD' format
   title: string;
   duration: number;
+  editorUserId?: string; // 현재 편집자(본인) id
 }
 
 
@@ -18,7 +19,8 @@ export async function editUpdate({
   groupId,
   day,
   title,
-  duration
+  duration,
+  editorUserId,
 }: UpdatePlanItemParams): Promise<PlanItem> {
   try {
     if (!itemId || !groupId || !day) {
@@ -34,17 +36,19 @@ export async function editUpdate({
     }
 
     // Supabase 업데이트
-    const { data, error } = await supabase
+    const query = supabase
       .from('planitems')
       .update({ 
         title: title.trim(),
-        duration 
+        duration,
+        editing: null,
       })
       .eq('id', itemId)
       .eq('group_id', groupId) 
-      .eq('day', day)         
-      .select()
-      .single();
+      .eq('day', day);
+
+    const conditioned = editorUserId ? query.eq('editing', editorUserId) : query;
+    const { data, error } = await conditioned.select().single();
 
     if (error) {
       throw new Error(`Supabase 업데이트 실패: ${error.message}`);
