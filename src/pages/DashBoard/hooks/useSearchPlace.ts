@@ -75,7 +75,7 @@ export function useSearchPlace(map: google.maps.Map | null) {
           // 첫 번째 결과로 지도 이동
           if (formattedResults[0] && map) {
             map.panTo(formattedResults[0].location);
-            map.setZoom(15);
+            map.setZoom(16);
           }
         }
       } catch (error) {
