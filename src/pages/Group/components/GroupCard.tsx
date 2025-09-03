@@ -255,7 +255,8 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
   return (
     <div
       onClick={handleCardClick}
-      className="w-full max-w-[480px] bg-white rounded-2xl cursor-pointer shadow-[4px_4px_4px_rgba(0,0,0,0.25)]"
+      className="relative w-full max-w-[480px] bg-white rounded-2xl cursor-pointer shadow-[4px_4px_4px_rgba(0,0,0,0.25)]
+      md:max-w-[460px] sm:max-w-[440px]"
     >
       <div className="relative aspect-[20/9] w-full rounded-t-2xl overflow-hidden">
         {/* 저장된 배경이 있으면 그것만 보여줌, 없으면 기본이미지 */}
@@ -273,48 +274,64 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
           />
         )}
 
-        <h3 className="absolute px-2 mr-20 left-5 top-5 text-7 font-extrabold text-white">
+        <h3 className="absolute px-2 mr-20 left-5 top-5 font-extrabold text-white
+              text-[clamp(24px,1.8vw,40px)]">
           {g.name}
         </h3>
+        </div>
 
         <div className="absolute right-4 top-4">
+          <div className="relative inline-block">
           <button
             type="button"
             onClick={onEditClick}
-            className="px-4 py-3 hover:bg-gray-50/50 hover:px-4 rounded-3xl cursor-pointer"
-          >
+            className="px-4 py-4 hover:bg-gray-50/50 hover:px-4 rounded-3xl cursor-pointer
+            md:px-3 md:py-3 sm:px-2 sm:py-2">
             <img src={edit} alt="카드 편집 버튼" />
           </button>
 
           {menuOpen && (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="absolute right-0 mt-2 w-40 rounded-2xl bg-white z-20 overflow-hidden"
+              className="absolute right-0 mt-2 w-40 rounded-2xl bg-white z-20 overflow-hidden
+              md:w-36 sm:w-32"
             >
               <button
                 type="button"
-                className="flex gap-2 items-center w-full px-4 py-3 text-center text-sm hover:bg-fourth  hover:text-tertiary transition cursor-pointer"
+                className="flex gap-2 items-center w-full px-4 py-3 text-center text-sm hover:bg-fourth  hover:text-tertiary transition cursor-pointer
+                md:px-3 md:py-2 md:text-xs
+                sm:px-2 sm:py-2 sm"
                 onClick={openEditInfo}
               >
-                <FaRegEdit size={14} />
+                <span className="text-sm md:text-xs">
+                <FaRegEdit />
+              </span>
                 그룹 정보 수정
               </button>
 
               <button
                 type="button"
-                className="flex gap-2 items-center w-full px-4 py-3 text-center text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer"
+                className="flex gap-2 items-center w-full px-4 py-3 text-center text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer
+                md:px-3 md:py-2 md:text-xs
+                sm:px-2 sm:py-2 sm"
                 onClick={openEditBackground}
               >
-                <MdPhoto size={14} />
+                <span className="text-sm md:text-xs">
+                <MdPhoto />
+              </span>
                 배경 이미지 수정
               </button>
 
               <button
                 type="button"
-                className="flex gap-2 items-center w-full px-4 py-3 text-center text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer"
+                className="flex gap-2 items-center w-full px-4 py-3 text-center text-sm hover:bg-fourth hover:text-tertiary transition cursor-pointer
+                md:px-3 md:py-2 md:text-xs
+                sm:px-2 sm:py-2 sm"
                 onClick={handleDelete}
               >
-                <RiDeleteBin6Line  />
+                <span className="text-sm md:text-xs">
+                <RiDeleteBin6Line />
+              </span>
                 그룹 삭제
               </button>
             </div>
@@ -322,14 +339,20 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-6 h-14 py-3 rounded-b-2xl">
-        <p className="text-1">
+      <div className="flex items-center justify-between px-6 h-14 py-3 rounded-b-2xl
+        md:px-5 md:py-2 md:h-12
+        sm:px-3 sm:py-2 sm:h-10
+      "
+      >
+        <p className="text-1 md:text-sm sm:text-xs">
           {formatDate(g.start_day)} ~ {formatDate(g.end_day)}
         </p>
         <button
           type="button"
           onClick={copyInvite}
-          className="text-1 text-white bg-tertiary px-3 py-2 rounded-4xl cursor-pointer hover:bg-fourth hover:text-tertiary transition"
+          className="text-white bg-tertiary rounded-4xl cursor-pointer hover:bg-fourth hover:text-tertiary transition
+          text-[clamp(8px,1.1vw,12px)]
+          px-[clamp(8px,1.6vw,10px)] py-[clamp(6px,1.1vw,8px)]"
         >
           초대링크 복사
         </button>
@@ -345,12 +368,15 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
               saveEditInfo();
             }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-[460px] rounded-xl bg-white p-5 shadow-xl"
+            className="relative w-[460px] rounded-xl bg-white p-5 shadow-xl
+            md:w-[420px] md:p-4
+            sm:w-[90%] sm:p-4"
+
             role="dialog"
             aria-modal="true"
             aria-labelledby="edit-group-title"
           >
-            <h3 id="edit-group-title" className="mb-4 text-lg font-bold">
+            <h3 id="edit-group-title" className="mb-4 text-lg font-bold md:text-1 sm:text-sm">
               그룹 정보 수정
             </h3>
 
