@@ -80,9 +80,7 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      className={`transition-transform duration-150 ease-out transform-gpu ${
-        isClickEffectActive ? "scale-95" : ""
-      }`}
+      className={`transition-transform duration-150 ease-out transform-gpu ${isClickEffectActive ? "scale-95" : ""} ${canApplyClickEffect ? "cursor-pointer" : "cursor-default"}`}
     >
       <article
         className={`h-[50px] pr-2 flex items-center gap-2 rounded-[10px] border-2 font-extrabold shadow-md ${
