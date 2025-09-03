@@ -197,6 +197,7 @@ export type Database = {
           address: string | null
           day: string
           duration: number
+          editing: string | null
           group_id: string
           id: string
           jitter: string | null
@@ -209,6 +210,7 @@ export type Database = {
           address?: string | null
           day: string
           duration?: number
+          editing?: string | null
           group_id: string
           id?: string
           jitter?: string | null
@@ -221,6 +223,7 @@ export type Database = {
           address?: string | null
           day?: string
           duration?: number
+          editing?: string | null
           group_id?: string
           id?: string
           jitter?: string | null
