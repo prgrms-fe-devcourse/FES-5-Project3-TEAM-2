@@ -59,11 +59,16 @@ export default function GroupList({
       onAdd();
       }}
       disabled={creating}
-      className="w-full max-w-[480px] bg-primary rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.25)] overflow-hidden cursor-pointer"
+      className="w-full max-w-[480px] bg-primary rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.25)] overflow-hidden cursor-pointer
+      md:max-w-[460px] sm:max-w-[440px]"
       >
-        <div className="aspect-[20/9] w-full bg-primary flex flex-col items-center justify-center gap-4">
-          <img src={cardAdd} alt="그룹 카드 추가" />
-          <p className="text-5 font-extrabold text-white">
+        <div className="aspect-[20/9] w-full bg-primary flex flex-col items-center justify-center gap-4 px-6 py-4
+        md:px-4 md:py-3 sm:px-3 sm:py-2">
+          <img src={cardAdd} alt="그룹 카드 추가"
+          className="w-20"
+          />
+          <p className="text-7 font-extrabold text-white
+          sm:text-4">
           {creating ? "생성 중..." : "그룹 추가"}
           </p>
         </div>
