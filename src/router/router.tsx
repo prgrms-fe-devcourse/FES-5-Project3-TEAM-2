@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
 import Album from "@/pages/Album";
 import AuthCallback from "@/pages/Auth/AuthCallback";
-import Budget from "@/pages/BudgetPage";
+import BudgetPage from "@/pages/Budget/index"
 import GroupJoinPage from "@/pages/Group/pages/GroupJoinPage";
 import GroupLayout from "@/pages/Group/components/GroupLayout";
 import GroupsPage from "@/pages/Group/pages/GroupsPage";
@@ -94,7 +94,7 @@ const router = createBrowserRouter([
             element: <GroupLayout />,
             children: [
               { index: true, element: <DashBoard />, loader: dashboardLoader },
-              { path: "budget", element: <Budget /> },
+              { path: "budget", element: <BudgetPage /> },
               { path: "album", element: <Album /> },
             ],
           },
