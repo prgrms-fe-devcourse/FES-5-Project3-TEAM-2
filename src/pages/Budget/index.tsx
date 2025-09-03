@@ -56,7 +56,8 @@ export default function BudgetPage() {
     try {
       setIsRefreshing(true);
       setHasUpdates(false);
-      const { expenses: es, shares: ss } = await fetchExpensesAndShares(groupId);
+      const { expenses: es, shares: ss } =
+        await fetchExpensesAndShares(groupId);
       setExpensesStore(es);
       setSharesStore(ss);
     } catch (err) {
@@ -93,7 +94,7 @@ export default function BudgetPage() {
   }, [groupId, setExpensesStore, setSharesStore]);
 
   return (
-    <div className="h-full min-h-0 box-border overflow-hidden grid grid-rows-[auto_1fr] gap-y-4 px-[50px] py-[50px]">
+    <div className="h-full min-h-0 box-border overflow-hidden grid grid-rows-[auto_1fr] gap-y-4 px-4 py-4 md:px-8 md:py-6 xl:px-12 xl:py-12">
       {/* 상단바 */}
       <div className="flex flex-wrap items-center justify-between gap-2 md:gap-3">
         <div className="flex gap-2">
@@ -131,7 +132,7 @@ export default function BudgetPage() {
 
       {/* 콘텐츠: 남은 높이 100% 사용, 내부 스크롤만 허용 */}
       <main className="h-full min-h-0 overflow-hidden">
-        <div className="h-full min-h-0 overflow-hidden grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_420px] gap-6">
+        <div className="h-full min-h-0 overflow-hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_420px] gap-6">
           {/* 전체 지출 내역 */}
           <section className="flex min-h-0 flex-col rounded-2xl border border-secondary bg-white shadow-[0_4px_16px_rgba(0,0,0,0.06)] pr-2">
             <header className="shrink-0 sticky top-0 z-10 bg-white px-5 py-4 rounded-t-2xl">
@@ -153,11 +154,13 @@ export default function BudgetPage() {
           </section>
 
           {/* 통계 */}
-          <BudgetStatsCard
-            title="통계 📊"
-            totalLabel="총 지출 내역"
-            data={dataForChart}
-          />
+          <div className="min-h-0 md:col-span-2 lg:col-span-1 ">
+            <BudgetStatsCard
+              title="통계 📊"
+              totalLabel="총 지출 내역"
+              data={dataForChart}
+            />
+          </div>
         </div>
       </main>
     </div>

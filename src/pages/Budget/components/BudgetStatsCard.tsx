@@ -79,52 +79,57 @@ export default function BudgetStatsCard({
   }));
 
   return (
-    <section className="max-h-screen overflow-hidden rounded-2xl border border-secondary bg-white px-5 py-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
-      <h3 className="text-xl font-extrabold mb-3">{title}</h3>
+    <section className="h-full max-h-screen rounded-2xl border border-secondary bg-white pl-5 pr-2 py-4 shadow-[0_4px_16px_rgba(0,0,0,0.06)] overflow-hidden">
+      <div
+        className="h-full min-h-0 overflow-auto scrollbar-thin scrollbar-thumb-primary scrollbar-track-transparent"
+        style={{ scrollbarGutter: "stable" }}
+      >
+        <h3 className="text-xl font-extrabold mb-3">{title}</h3>
 
-      <div className="mb-1 text-xs text-gray-400">{totalLabel}</div>
-      <div className="mb-4 text-3xl font-extrabold tracking-tight">
-        {formatWon(total)}
-      </div>
+        <div className="mb-1 text-xs text-gray-400">{totalLabel}</div>
+        <div className="mb-4 text-3xl font-extrabold tracking-tight">
+          {formatWon(total)}
+        </div>
 
-      <div className="h-[300px] md:h-[360px] grid grid-rows-[1fr_auto]">
-        <div className="h-full">
-          <ResponsiveContainer width="100%" height={height}>
-            <PieChart>
-              <Pie
-                data={withColor}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                innerRadius={70}
-                outerRadius={110}
-                stroke="transparent"
-                labelLine={false}
-                label={renderLabel}
-              >
-                {withColor.map((entry, i) => (
-                  <Cell key={i} fill={entry.color!} />
-                ))}
-              </Pie>
+        <div className="h-[300px] md:h-[360px] grid grid-rows-[1fr_auto]">
+          <div className="h-full">
+            <ResponsiveContainer width="100%" height={height}>
+              <PieChart>
+                <Pie
+                  data={withColor}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={70}
+                  outerRadius={110}
+                  stroke="transparent"
+                  labelLine={false}
+                  label={renderLabel}
+                >
+                  {withColor.map((entry, i) => (
+                    <Cell key={i} fill={entry.color!} />
+                  ))}
+                </Pie>
 
-              <Tooltip
-                formatter={(v: string | number, name: string | number) => {
-                  const value = Array.isArray(v as any)
-                    ? Number((v as any)[0])
-                    : Number(v);
-                  const percent =
-                    total > 0 ? Math.round((value / total) * 100) : 0;
-                  return [`${formatWon(value)} (${percent}%)`, String(name)];
-                }}
-              />
-              <Legend
-                verticalAlign="bottom"
-                iconType="circle"
-                wrapperStyle={{ paddingTop: 8 }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+                <Tooltip
+                  formatter={(v: string | number, name: string | number) => {
+                    const value = Array.isArray(v as any)
+                      ? Number((v as any)[0])
+                      : Number(v);
+                    const percent =
+                      total > 0 ? Math.round((value / total) * 100) : 0;
+                    return [`${formatWon(value)} (${percent}%)`, String(name)];
+                  }}
+                />
+                <Legend
+                  verticalAlign="bottom"
+                  iconType="circle"
+                  wrapperStyle={{ paddingTop: 8 }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
     </section>

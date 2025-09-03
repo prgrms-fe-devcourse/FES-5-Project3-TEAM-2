@@ -8,7 +8,7 @@ export default function AddExpenseButton() {
   return (
     <>
       <Button
-        variant="secondary"
+        variant="primary"
         startIcon={<CardIcon className="w-4 h-4" />}
         onClick={() => setOpen(true)}
       >
