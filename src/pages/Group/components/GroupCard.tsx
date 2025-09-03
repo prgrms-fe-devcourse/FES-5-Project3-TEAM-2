@@ -8,9 +8,11 @@ import { useNavigate, useParams } from "react-router";
 import Swal from "sweetalert2";
 import AlbumPickModal from "./AlbumPickModal";
 
+import { deleteFileFromStorage } from "@/api/deleteStorage";
 import { FaRegEdit } from "react-icons/fa";
 import { MdPhoto } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { extractStorageKeyFromPublicUrl, isGroupCoverUrl } from "../utils/storagePublicUrl";
 
 type Props = {
   g: Tables<"groups">;
@@ -204,6 +206,10 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
   };
 
   const applyBackground = async (url: string) => {
+
+    const BUCKET = "album-photos";
+    const prevUrl = bgUrl; // 이전 값 백업
+
     setAlbumOpen(false);
     setSaving(true);
     try {
@@ -214,18 +220,37 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
       });
       try { localStorage.setItem(LS_KEY, url); } catch {}
 
-      const patch: Pick<TablesUpdate<"groups">, "bg_url"> = { bg_url: url };
-      const { error } = await supabase.from("groups").update(patch).eq("id", g.id);
-      if (error) throw error;
+       // DB 업데이트
+      const { error } = await supabase
+      .from("groups")
+      .update({ bg_url: url })
+      .eq("id", g.id);
 
-      onUpdated?.({ id: g.id, bg_url: url });
-      await toast({ title: "배경이미지가 변경되었습니다.", icon: "success", position: "top" });
-    } catch {
-      await errorAlert({ title: "수정 실패", text: "다시 시도해주세요." });
-    } finally {
-      setSaving(false);
+      if (error) {
+      // 새로 업로드한 이미지가 covers 버킷이면(기존 이미지와 동일하다면) 파일을 삭제
+      if (isGroupCoverUrl(url, BUCKET, g.id)) {
+        const newKey = extractStorageKeyFromPublicUrl(url, BUCKET);
+        if (newKey) { try { await deleteFileFromStorage(BUCKET, newKey); } catch {} }
+      }
+      throw error;
     }
-  };
+
+    // 이전 이미지가 covers 버킷에 있었고 기존이미지가 새 이미지와 다르다면 기존 이미지 삭제
+    if (prevUrl && prevUrl !== url && isGroupCoverUrl(prevUrl, BUCKET, g.id)) {
+      const oldKey = extractStorageKeyFromPublicUrl(prevUrl, BUCKET);
+      if (oldKey) { try { await deleteFileFromStorage(BUCKET, oldKey); } catch {} }
+    }
+
+    onUpdated?.({ id: g.id, bg_url: url });
+    await toast({ title: "배경이미지가 변경되었습니다.", icon: "success", position: "top" });
+  } catch {
+    await errorAlert({ title: "수정 실패", text: "다시 시도해주세요." });
+  } finally {
+    setSaving(false);
+  }
+};
+
+
 
   return (
     <div
