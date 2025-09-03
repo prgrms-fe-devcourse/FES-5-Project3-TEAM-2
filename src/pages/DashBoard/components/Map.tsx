@@ -220,7 +220,7 @@ function Map() {
       );
 
       map.panTo(position);
-      map.setZoom(15);
+      map.setZoom(18);
     }
   }, [clickedPlanItemId, map]);
 

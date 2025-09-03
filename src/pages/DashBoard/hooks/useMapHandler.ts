@@ -21,7 +21,7 @@ export function useMapHandlers() {
     (location: google.maps.LatLngLiteral) => {
       if (!map) return;
       map.panTo(location);
-      map.setZoom(15);
+      map.setZoom(18);
     },
     [map],
   );
