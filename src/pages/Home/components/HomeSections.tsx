@@ -6,7 +6,7 @@ import nature3 from '@/assets/nature3.jpg';
 
 export default function HomeSections() {
     return (
-      <section className="px-4 py-16 max-w-[560px]">
+      <section className="w-full px-4 py-16 max-w-[560px]">
         <div className="grid gap-12 md:gap-16">
           <FeatureCard
             title="일정 관리"
@@ -46,7 +46,7 @@ export default function HomeSections() {
       align === "right" ? "md:ml-auto" : ""; // 가운데 그리드에서 좌/우로 배치 느낌
     return (
       <article
-        className={`feature-card relative w-[400px] ${alignCls}
+        className={`feature-card relative w-full max-w-[400px] ${alignCls}
                     rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.12)]`}
       >
         <img
