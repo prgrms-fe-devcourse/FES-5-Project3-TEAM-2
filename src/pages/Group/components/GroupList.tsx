@@ -60,9 +60,12 @@ export default function GroupList({
       }}
       disabled={creating}
       className="w-full max-w-[480px] bg-primary rounded-2xl shadow-[4px_4px_4px_rgba(0,0,0,0.25)] overflow-hidden cursor-pointer
+      transition-all duration-300 ease-out
+      hover:bg-primary/80 hover:-translate-y-[4px] hover:scale-[1.01]
+      active:scale-[0.98]
       md:max-w-[460px] sm:max-w-[440px]"
       >
-        <div className="aspect-[20/9] w-full bg-primary flex flex-col items-center justify-center gap-4 px-6 py-4
+        <div className="aspect-[20/9] w-full flex flex-col items-center justify-center gap-4 px-6 py-4
         md:px-4 md:py-3 sm:px-3 sm:py-2">
           <img src={cardAdd} alt="그룹 카드 추가"
           className="w-20"

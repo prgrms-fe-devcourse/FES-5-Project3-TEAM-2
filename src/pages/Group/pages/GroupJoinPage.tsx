@@ -1,5 +1,6 @@
+import { errorAlert, toast } from "@/components/Sweetalert";
 import { supabase } from "@/lib/supabaseClient";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 
 
@@ -7,11 +8,10 @@ export default function GroupJoinPage() {
 
   const {groupId} = useParams<{groupId:string}>();
   const navigate = useNavigate();
-  const [msg, setMsg] = useState('그룹 합류 중...');
 
   useEffect(() => {
     if(!groupId) {
-      setMsg('존재하지 않은 초대 링크입니다.');
+      errorAlert({title:'잘못된 링크', text:'존재하지 않는 초대 링크입니다.'});
       return;
     }
 
@@ -41,22 +41,26 @@ export default function GroupJoinPage() {
       );
 
       if(mErr){
-        setMsg(mErr.message);
+        errorAlert({title:'가입 실패', text:mErr.message});
         return;
       }
 
       // 4) 참여한 그룹 대시보드로 이동
-      setMsg('초대받은 그룹으로 이동합니다!');
-      navigate(`/groups/${uid}/g/${groupId}`, {replace:true});
+      await toast({
+        title: "초대받은 그룹으로 이동중... 🌱",
+        icon: "success",
+        position: "top-end"
+      });
+
+      setTimeout(() => {
+        navigate(`/groups/${uid}/g/${groupId}`, {replace:true});
+      })
+
     } catch (e:unknown){
-      setMsg('알 수 없는 오류 발생');
+      errorAlert({title:'오류 발생', text:'다시 시도해주세요.'});
     }
   })();
   }, [groupId, navigate]);
 
-  return (
-    <div>
-      <p>{msg}</p>
-    </div>
-  )
+  return null;
 }

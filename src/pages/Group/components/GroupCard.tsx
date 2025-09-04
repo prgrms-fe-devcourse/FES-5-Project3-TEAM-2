@@ -95,9 +95,18 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
   useEffect(() => {
   }, [bgUrl, bgVer]);
 
-  const openDashboard = () => {
+  const openDashboard = async () => {
+  await toast({
+    title: "해당 그룹으로 이동중...",
+    icon: "info",
+    position: "top-end",
+    timer: 1000,
+  });
+
+  setTimeout(() => {
     navigate(`/groups/${userId}/g/${g.id}`);
-  };
+  }, 500);
+};
 
   const validateEdit = () => {
     if (!name.trim()) return "그룹명을 입력해주세요.";
@@ -285,7 +294,7 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
           <button
             type="button"
             onClick={onEditClick}
-            className="px-4 py-4 hover:bg-gray-50/50 hover:px-4 rounded-3xl cursor-pointer
+            className="px-4 py-4 hover:bg-gray-50/50 rounded-3xl cursor-pointer
             md:px-3 md:py-3 sm:px-2 sm:py-2">
             <img src={edit} alt="카드 편집 버튼" />
           </button>
@@ -350,9 +359,11 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
         <button
           type="button"
           onClick={copyInvite}
-          className="text-white bg-tertiary rounded-4xl cursor-pointer hover:bg-fourth hover:text-tertiary transition
+          className="text-white bg-tertiary rounded-4xl cursor-pointer hover:bg-fourth hover:text-tertiary transition-all duration-300 ease-out
           text-[clamp(8px,1.1vw,12px)]
-          px-[clamp(8px,1.6vw,10px)] py-[clamp(6px,1.1vw,8px)]"
+          px-[clamp(8px,1.6vw,10px)] py-[clamp(6px,1.1vw,8px)]
+          border border-white/20
+          "
         >
           초대링크 복사
         </button>
