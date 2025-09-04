@@ -138,14 +138,14 @@ function PlanItem({ id, title, duration, displayIndex }: Props) {
         ) : (
           // 아무도 수정 안 할 때
           <>
-            <p className="font-extrabold">{title}</p>
+            <p className="font-extrabold flex-1 min-w-0 truncate">{title}</p>
             <div
-              className="ml-auto flex items-center gap-2"
+              className="ml-auto flex items-center gap-2 shrink-0"
               onMouseDown={stopPropagation}
               onMouseUp={stopPropagation}
               onClick={stopPropagation}
             >
-              <p className="text-lg text-primary">
+              <p className="text-lg text-primary whitespace-nowrap">
                 {hours > 0 && `${hours}시간 `}
                 {minutes > 0 && `${minutes}분`}
                 {hours === 0 && minutes === 0 && "0분"}
