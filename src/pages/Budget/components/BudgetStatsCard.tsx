@@ -91,7 +91,7 @@ export default function BudgetStatsCard({
           {formatWon(total)}
         </div>
 
-        <div className="h-[300px] md:h-[360px] grid grid-rows-[1fr_auto]">
+        <div className="h-[280px] md:h-[360px] grid grid-rows-[1fr_auto]">
           <div className="h-full">
             <ResponsiveContainer width="100%" height={height}>
               <PieChart>
