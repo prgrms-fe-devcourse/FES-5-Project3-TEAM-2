@@ -60,6 +60,10 @@
 .swal2-popup {
   border-radius: 20px !important;
   background: #EEEEEE !important;
+  width: 430px !important;
+  max-width: 80% !important;
+  padding: 1.5rem !important;
+  font-size: 0.9rem !important;
 }
 
 /* 버튼 스타일 */
@@ -79,4 +83,12 @@
 /* 진행바 색상 */
 .swal2-timer-progress-bar {
   background: #8ACCD5 !important;
+}
+
+/* 토스트창 자체 높이 줄이기 */
+.swal2-popup.swal2-toast {
+  width: auto !important;
+  padding: 12px 12px !important;
+  font-size: 0.85rem;
+  border-radius: 6px;
 }
