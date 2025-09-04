@@ -1,9 +1,9 @@
 import google from "@/assets/icons/google.svg";
 import logo from "@/assets/logo.png";
 import { useState } from "react";
+import { FaPlane } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { supabase } from "../../../lib/supabaseClient";
-import { FaPlane } from "react-icons/fa";
 
 export default function LoginCard() {
   const [loading, setLoading] = useState(false);
@@ -36,12 +36,12 @@ export default function LoginCard() {
       },
     });
 
-    if (error) {
-      // console.error("Google login error:", error.message);
-      alert("로그인 중 문제가 발생했습니다.");
-      setLoading(false);
-    }
-  };
+  if (error) {
+    alert("로그인 중 문제가 발생했습니다.");
+    setLoading(false);
+  }
+};
+
 
   return (
     <div
