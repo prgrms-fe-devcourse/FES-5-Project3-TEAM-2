@@ -1,12 +1,14 @@
-
-import { HelmetProvider } from '@dr.pogodin/react-helmet';
-import { RouterProvider } from 'react-router-dom';
-import router from './router/router';
+import { HelmetProvider } from "@dr.pogodin/react-helmet";
+import ResponsiveWrapper from "./ResponsiveWrapper";
+import { RouterProvider } from "react-router-dom";
+import router from "./router/router";
 
 function App() {
   return (
     <HelmetProvider>
-      <RouterProvider router={router} />
+      <ResponsiveWrapper>
+        <RouterProvider router={router} />
+      </ResponsiveWrapper>
     </HelmetProvider>
   );
 }
