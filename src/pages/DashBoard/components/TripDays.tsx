@@ -101,11 +101,11 @@ function TripDays() {
             : "cursor-pointer text-primary"
         }
       >
-        <BsFillCaretLeftFill className="size-8" />
+        <BsFillCaretLeftFill className="size-6 md:size-7 min-[1400px]:size-8" />
       </button>
 
       {/* 날짜 리스트 */}
-      <div className="flex w-full max-w-3xl justify-between px-4">
+      <div className="flex w-full max-w-3xl justify-between px-2 min-[1400px]:px-4">
         {visibleDays.map(({ dayOfTheWeek, date, fullDate }, idx) => {
           const isCenter = idx === 3;
           const globalIndex = centerIndex - 3 + idx;
@@ -115,12 +115,12 @@ function TripDays() {
             <div
               key={fullDate}
               onClick={() => clickable && handleDayClick(idx)}
-              className={`flex w-14 flex-col items-center justify-center space-y-[-7px] rounded-[20px] pt-1
+              className={`flex w-12 min-[1400px]:w-14 flex-col items-center justify-center space-y-[-7px] rounded-[16px] min-[1400px]:rounded-[20px] pt-1
                 ${isCenter ? "bg-primary" : ""}
                 ${clickable ? "cursor-pointer" : "cursor-not-allowed"}`}
             >
               <p
-                className={`text-1 font-bold select-none ${
+                className={`text-[12px] min-[1400px]:text-1 font-bold select-none ${
                   isCenter
                     ? "text-white"
                     : clickable
@@ -131,7 +131,7 @@ function TripDays() {
                 {dayOfTheWeek}
               </p>
               <p
-                className={`text-3 font-bold select-none ${
+                className={`text-[18px] min-[1400px]:text-3 font-bold select-none ${
                   isCenter
                     ? "text-white"
                     : clickable
@@ -157,7 +157,7 @@ function TripDays() {
             : "cursor-pointer text-primary"
         }
       >
-        <BsFillCaretRightFill className="size-8" />
+        <BsFillCaretRightFill className="size-6 md:size-7 min-[1400px]:size-8" />
       </button>
     </div>
   );
