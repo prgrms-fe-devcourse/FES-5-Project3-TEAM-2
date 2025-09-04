@@ -1,10 +1,11 @@
 import { supabase } from "@/lib/supabaseClient";
 import Album from "@/pages/Album";
 import AuthCallback from "@/pages/Auth/AuthCallback";
-import BudgetPage from "@/pages/Budget/index"
+import BudgetPage from "@/pages/Budget/index";
 import GroupJoinPage from "@/pages/Group/pages/GroupJoinPage";
 import GroupLayout from "@/pages/Group/components/GroupLayout";
 import GroupsPage from "@/pages/Group/pages/GroupsPage";
+import NotFound from "@/pages/NotFound";
 import {
   createBrowserRouter,
   Outlet,
@@ -107,6 +108,12 @@ const router = createBrowserRouter([
         element: <GroupJoinPage />,
       },
     ],
+  },
+
+  // 404
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 
