@@ -84,22 +84,29 @@ function DashBoard() {
             break;
           case "UPDATE":
             // 우선 로컬 아이템 내용 갱신
-            usePlanStore.getState().updatePlanItem(payload.new.id, payload.new as PlanItem);
+            usePlanStore
+              .getState()
+              .updatePlanItem(payload.new.id, payload.new as PlanItem);
 
             // editing 필드의 변화 감지하여 에딧목록 동기화
             try {
-              const oldEditing = (payload.old as Partial<PlanItem> | null)?.editing ?? null;
-              const newEditing = (payload.new as Partial<PlanItem> | null)?.editing ?? null;
+              const oldEditing =
+                (payload.old as Partial<PlanItem> | null)?.editing ?? null;
+              const newEditing =
+                (payload.new as Partial<PlanItem> | null)?.editing ?? null;
 
               if (oldEditing !== newEditing) {
                 // 이전 편집자 제거
                 if (oldEditing) {
-                  usePlanStore.getState().removeEditingItemRemote(payload.new.id, oldEditing);
+                  usePlanStore
+                    .getState()
+                    .removeEditingItemRemote(payload.new.id, oldEditing);
                 }
 
                 // 신규 편집자 추가
                 if (newEditing) {
-                  const presenceMap = usePresenceStore.getState().onlineUsersById;
+                  const presenceMap =
+                    usePresenceStore.getState().onlineUsersById;
                   const userName = presenceMap[newEditing] || "";
                   if (!userName) {
                     // fallback: profile에서 이름 조회
@@ -111,13 +118,27 @@ function DashBoard() {
                           .eq("id", newEditing)
                           .maybeSingle();
                         const resolvedName = data?.name ?? "";
-                        usePlanStore.getState().addEditingItemRemote(payload.new.id, newEditing, resolvedName);
+                        usePlanStore
+                          .getState()
+                          .addEditingItemRemote(
+                            payload.new.id,
+                            newEditing,
+                            resolvedName,
+                          );
                       } catch {
-                        usePlanStore.getState().addEditingItemRemote(payload.new.id, newEditing, "");
+                        usePlanStore
+                          .getState()
+                          .addEditingItemRemote(payload.new.id, newEditing, "");
                       }
                     })();
                   } else {
-                    usePlanStore.getState().addEditingItemRemote(payload.new.id, newEditing, userName);
+                    usePlanStore
+                      .getState()
+                      .addEditingItemRemote(
+                        payload.new.id,
+                        newEditing,
+                        userName,
+                      );
                   }
                 }
               }
