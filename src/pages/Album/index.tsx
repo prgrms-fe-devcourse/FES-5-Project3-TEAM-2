@@ -253,7 +253,7 @@ function Album() {
             className="p-2 relative w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0"
           >
             {hasUpdates && (
-              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              <div className="absolute -top-[0.1px] -right-[0.1px] w-2 h-2 bg-red-500 rounded-full animate-pulse" />
             )}
           </Button>
           <Button
