@@ -83,6 +83,7 @@ function Photos({
         </div>
       ),
     ),
+    Footer: () => <div className="h-[40px]" />,
   };
 
   if (isLoading) {
