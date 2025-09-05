@@ -107,7 +107,7 @@ project-root/
 <tr>
 <td width="50%" align="center">
 
-### 🔑 그룹 참여
+#### 🔑 그룹 참여
 구글 소셜 로그인
 **초대 링크**로 그룹 참여
 그룹 정보 관리 (이름, 여행 날짜, 썸네일)
@@ -116,7 +116,7 @@ project-root/
 </td>
 <td width="50%" align="center">
 
-### 🗓️ 일정 관리
+#### 🗓️ 일정 관리
 날짜별 일정 표시
 지도에서 일정 추가
 **드래그 앤 드롭**으로 순서 변경
@@ -128,7 +128,7 @@ project-root/
 <tr>
 <td width="50%" align="center">
 
-### 🗺️ 지도
+#### 🗺️ 지도
 **Google Maps API 연동**
 장소 검색 (이름, 주소, 평점)
 일정 마커 + InfoWindow
@@ -137,7 +137,7 @@ project-root/
 </td>
 <td width="50%" align="center">
 
-### 💰 예산 관리
+#### 💰 예산 관리
 카테고리별 내역 CRUD
 **개인별 자동 정산**
 카테고리별 통계 그래프
@@ -148,7 +148,7 @@ project-root/
 <tr>
 <td colspan="2" align="center">
 
-### 📸 앨범
+#### 📸 앨범
 사진 추가 / 삭제 (드래그 앤 드롭)
 가상화 & 무한 스크롤
 <b>사진 변경 시 실시간 알림</b>
