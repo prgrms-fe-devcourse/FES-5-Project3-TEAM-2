@@ -47,7 +47,7 @@ function SearchBox({
 
   return (
     <div className="flex items-center gap-2 sm:gap-5 absolute top-12 left-12 right-12">
-      <div className="flex gap-3 items-center flex-1 min-w-0 border border-gray-300 rounded-xl bg-white shadow-[2px_2px_2px_0_rgba(0,0,0,0.1)] px-2 py-2 h-12">
+      <div className="flex gap-3 items-center flex-1 min-w-0 border border-gray-300 rounded-xl bg-white shadow-[2px_2px_2px_0_rgba(0,0,0,0.1)] px-3 py-1 h-12">
         <img src={searchIcon} alt="검색 아이콘" className="flex-shrink-0" />
         <input
           ref={searchInputRef}
@@ -60,7 +60,7 @@ function SearchBox({
         />
         <button
           onClick={handleClear}
-          className="flex-shrink-0 hover:bg-gray-100 rounded-full transition-colors"
+          className="flex-shrink-0 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
           title="검색 지우기"
         >
           <FaTimes className="text-gray-500 text-sm" />

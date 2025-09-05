@@ -66,7 +66,7 @@ function SearchResults({
           </div>
           <div className="flex gap-2">
             <button
-              className="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm bg-primary text-white rounded-lg hover:bg-primary flex-shrink-0"
+              className="px-2 py-1 sm:px-3 sm:py-1 text-xs sm:text-sm bg-primary text-white rounded-lg hover:bg-primary flex-shrink-0 cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 onAddSchedule(result);
@@ -75,7 +75,7 @@ function SearchResults({
               일정 추가
             </button>
             <button
-              className="w-7 h-7 flex items-center justify-center hover:opacity-100 flex-shrink-0 opacity-60 transition-opacity"
+              className="w-7 h-7 flex items-center justify-center hover:opacity-100 flex-shrink-0 opacity-60 transition-opacity cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 handleGoogleSearch(result);
