@@ -99,7 +99,7 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
   await toast({
     title: "해당 그룹으로 이동중...",
     icon: "info",
-    position: "top-end",
+    position: "top",
     timer: 1000,
   });
 
