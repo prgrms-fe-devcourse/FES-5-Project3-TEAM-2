@@ -1,6 +1,6 @@
+import { toast } from "@/components/Sweetalert";
 import { useState } from "react";
 import type { Photo } from "../types/photo";
-import { toast } from "@/components/Sweetalert";
 
 interface UseFileDownloadProps {
   onPhotoNotFound?: (photoId: string) => void;
