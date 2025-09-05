@@ -1,6 +1,6 @@
+import { toast } from "@/components/Sweetalert";
 import { useEffect, useRef } from "react";
 import type { SearchResult } from "../types/map";
-import { toast } from "@/components/Sweetalert";
 
 interface UseSearchMarkersProps {
   map: google.maps.Map | null;

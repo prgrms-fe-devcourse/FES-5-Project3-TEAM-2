@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import { scheduleApi, type Schedule } from "../api/mapSchedule";
-import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
-import { groupSchedulesByLocation } from "../utils/scheduleMarkersGrouping";
-import {
-  clearAllMarkers,
-  createMarkerContent,
-  loadMarkerLibrary,
-} from "../utils/mapScheduleMarker";
 import { toast } from "@/components/Sweetalert";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { scheduleApi, type Schedule } from "../api/mapSchedule";
+import {
+    clearAllMarkers,
+    createMarkerContent,
+    loadMarkerLibrary,
+} from "../utils/mapScheduleMarker";
+import { groupSchedulesByLocation } from "../utils/scheduleMarkersGrouping";
 
 interface UseScheduleMarkersProps {
   map: google.maps.Map | null;

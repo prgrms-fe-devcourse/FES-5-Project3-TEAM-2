@@ -103,9 +103,7 @@ export default function GroupCard({ g, openMenuId, setOpenMenuId, onDelete, onUp
     timer: 1000,
   });
 
-  setTimeout(() => {
     navigate(`/groups/${userId}/g/${g.id}`);
-  }, 500);
 };
 
   const validateEdit = () => {
